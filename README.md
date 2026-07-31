@@ -1,14 +1,10 @@
 # StratOS
 
-StratOS is a portable, policy-governed skill and workflow system for AI-assisted engineering. Version 3 uses one canonical source and generates validated host adapters for Gemini, Codex, Cursor, Windsurf, and OpenCode.
+![StratOS system illustration](assets/anti-gravity-hero.png)
 
 <div align="center">
 
-- **General by default:** engineering, product, security, operations, testing, and general interface work are always available.
-- **Spatial by choice:** high-end interior, showroom, gallery, and architecture-adjacent guidance is an optional profile.
-- **Host authority first:** StratOS never overrides platform, organization, developer, user, sandbox, or approval policy.
-- **Safe installation:** every installation is namespaced under `stratos`, supports dry-run, and backs up an existing namespace without clearing shared configuration directories.
-- **Canonical validation:** schemas, routes, links, adapters, generated payloads, private paths, and unresolved tokens are checked before build.
+**One governed source. Five AI coding environments.**
 
 [![CI](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/badge/release-3.0.0-38bdf8)
@@ -22,6 +18,14 @@ StratOS is a portable, policy-governed skill and workflow system for AI-assisted
 StratOS is a portable governance and execution layer for AI coding agents. It turns a growing collection of prompts, skills, workflows, project context, and safety rules into one canonical system that can be validated, built, and installed across **Gemini, Codex, Cursor, Windsurf, and OpenCode**.
 
 It is not an LLM and it is not a replacement desktop operating system. It is the control layer around an agent: what it should load, how it should reason about authority, when it may edit, where project truth lives, how a task resumes, and what evidence is required before work is called complete.
+
+## Design
+
+- **General by default:** engineering, product, security, operations, testing, and general interface work are always available.
+- **Spatial by choice:** high-end interior, showroom, gallery, and architecture-adjacent guidance is an optional profile.
+- **Host authority first:** StratOS never overrides platform, organization, developer, user, sandbox, or approval policy.
+- **Safe installation:** every installation is namespaced under `stratos`, supports dry-run, and backs up an existing namespace without clearing shared configuration directories.
+- **Canonical validation:** schemas, routes, links, adapters, generated payloads, private paths, and unresolved tokens are checked before build.
 
 ## What exists today
 
