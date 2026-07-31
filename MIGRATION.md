@@ -1,4 +1,4 @@
-# Migrating to Anti-Gravity OS 3
+# Migrating to StratOS 3
 
 Version 3 replaces duplicated, host-coupled configuration with canonical source and generated adapters.
 
@@ -28,7 +28,7 @@ Host-specific fields belong in adapters or generated metadata, not canonical fro
 
 ## Installation behavior
 
-The installer no longer clears a host configuration directory. It writes to `<selected-target>/antigravity`, stages the new payload, moves any existing Anti-Gravity namespace to `.antigravity-backups/`, and activates atomically.
+The installer no longer clears a host configuration directory. It writes to `<selected-target>/stratos`, stages the new payload, moves any existing StratOS namespace to `.stratos-backups/`, and activates atomically.
 
 If migration fails after backup creation, the previous namespace is restored.
 

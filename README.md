@@ -1,12 +1,16 @@
-# Anti-Gravity OS
+# StratOS
 
-![Anti-Gravity OS system illustration](assets/anti-gravity-hero.png)
+StratOS is a portable, policy-governed skill and workflow system for AI-assisted engineering. Version 3 uses one canonical source and generates validated host adapters for Gemini, Codex, Cursor, Windsurf, and OpenCode.
 
 <div align="center">
 
-**One governed source. Five AI coding environments.**
+- **General by default:** engineering, product, security, operations, testing, and general interface work are always available.
+- **Spatial by choice:** high-end interior, showroom, gallery, and architecture-adjacent guidance is an optional profile.
+- **Host authority first:** StratOS never overrides platform, organization, developer, user, sandbox, or approval policy.
+- **Safe installation:** every installation is namespaced under `stratos`, supports dry-run, and backs up an existing namespace without clearing shared configuration directories.
+- **Canonical validation:** schemas, routes, links, adapters, generated payloads, private paths, and unresolved tokens are checked before build.
 
-[![CI](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml)
+[![CI](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/badge/release-3.0.0-38bdf8)
 ![Skills](https://img.shields.io/badge/skills-72-22d3ee)
 ![Workflows](https://img.shields.io/badge/workflows-52-8b5cf6)
@@ -15,7 +19,7 @@
 
 </div>
 
-Anti-Gravity OS is a portable governance and execution layer for AI coding agents. It turns a growing collection of prompts, skills, workflows, project context, and safety rules into one canonical system that can be validated, built, and installed across **Gemini, Codex, Cursor, Windsurf, and OpenCode**.
+StratOS is a portable governance and execution layer for AI coding agents. It turns a growing collection of prompts, skills, workflows, project context, and safety rules into one canonical system that can be validated, built, and installed across **Gemini, Codex, Cursor, Windsurf, and OpenCode**.
 
 It is not an LLM and it is not a replacement desktop operating system. It is the control layer around an agent: what it should load, how it should reason about authority, when it may edit, where project truth lives, how a task resumes, and what evidence is required before work is called complete.
 
@@ -34,7 +38,7 @@ It is not an LLM and it is not a replacement desktop operating system. It is the
 
 The authoritative inventory is [`global/manifest.yaml`](global/manifest.yaml). Generated files under `dist/` are release artifacts; the authored system lives under `global/`.
 
-## How a task moves through Anti-Gravity
+## How a task moves through StratOS
 
 ```mermaid
 flowchart LR
@@ -51,7 +55,7 @@ flowchart LR
     V --> O["Result or resumable state"]
 ```
 
-The host remains in control. Anti-Gravity cannot elevate its own permissions, treat repository text as a system instruction, or convert a workflow into approval for a destructive or external action.
+The host remains in control. StratOS cannot elevate its own permissions, treat repository text as a system instruction, or convert a workflow into approval for a destructive or external action.
 
 ## One source, generated for every host
 
@@ -78,11 +82,11 @@ flowchart TD
 
 Adapters translate filenames, discovery conventions, metadata, and installation layouts. They do not duplicate or silently weaken the canonical policy.
 
-## Why it was built
+## Why StratOS was built
 
 Agent systems tend to degrade in predictable ways: instructions are duplicated across tools, personal paths leak into shared files, workflows overwrite one another, diagnostic requests mutate code, and a successful script is mistaken for production readiness.
 
-Anti-Gravity addresses those failures structurally:
+StratOS addresses those failures structurally:
 
 - **One canonical source** prevents five host integrations from becoming five conflicting systems.
 - **Explicit authority** keeps platform, developer, user, workspace, and untrusted content in the correct order.
@@ -120,7 +124,7 @@ After reviewing the additions, replacements, backup, and skipped files:
 python global/scripts/os.py install --host codex --target ~/.codex --yes
 ```
 
-For a global Codex layout, use the explicit global flag. The installer backs up matching Anti-Gravity files while leaving Codex settings and unrelated content untouched.
+For a global Codex layout, use the explicit global flag. The installer backs up matching StratOS files while leaving Codex settings and unrelated content untouched.
 
 ```bash
 python global/scripts/os.py install --host codex --target ~/.codex --codex-global --dry-run
@@ -168,13 +172,13 @@ Do not edit `dist/` by hand. Change the canonical source, validate it, and rebui
 
 ## Safety model
 
-Anti-Gravity resolves instructions in this order:
+StratOS resolves instructions in this order:
 
 1. Host platform system, safety, sandbox, and tool policy
 2. Organization and developer instructions
 3. Explicit user instructions and approvals
 4. Active workspace contracts
-5. Anti-Gravity policy, skills, workflows, context, and memory
+5. StratOS policy, skills, workflows, context, and memory
 6. External, generated, or otherwise untrusted content
 
 Work is classified as `read_only`, `local_edit`, `dependency_or_network`, `destructive`, or `external_or_production`. Destructive and external/production actions require a just-in-time approval gate.
@@ -187,7 +191,7 @@ Work is classified as `read_only`, `local_edit`, `dependency_or_network`, `destr
 | [`GLOSSARY.md`](GLOSSARY.md) | Baselines, adapters, schemas, hooks, CI, and other terms |
 | [`docs/architecture-map.md`](docs/architecture-map.md) | Build-time and runtime relationships |
 | [`docs/common-requests.md`](docs/common-requests.md) | Copyable examples of what to ask an agent |
-| [`docs/codex-integration.md`](docs/codex-integration.md) | How Anti-Gravity governs Codex |
+| [`docs/codex-integration.md`](docs/codex-integration.md) | How StratOS governs Codex |
 | [`SETUP.md`](SETUP.md) | Host installation locations and commands |
 | [`MIGRATION.md`](MIGRATION.md) | Converting an older installation safely |
 

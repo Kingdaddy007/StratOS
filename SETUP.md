@@ -1,4 +1,4 @@
-# Anti-Gravity OS 3 Setup
+# StratOS 3 Setup
 
 Installation is a user-authorized operation. Reading this document does not authorize an AI assistant to modify global configuration.
 
@@ -6,11 +6,11 @@ Installation is a user-authorized operation. Reading this document does not auth
 
 | Installer choice | Host | Default namespace |
 | --- | --- | --- |
-| 1 | Gemini | `~/.gemini/antigravity` |
-| 2 | Codex | `~/.codex/antigravity` |
-| 3 | Cursor | `~/.cursor/rules/antigravity` |
-| 4 | Windsurf | `~/.codeium/windsurf/memories/antigravity` |
-| 5 | OpenCode | `~/.config/opencode/antigravity` |
+| 1 | Gemini | `~/.gemini/stratos` |
+| 2 | Codex | `~/.codex/stratos` |
+| 3 | Cursor | `~/.cursor/rules/stratos` |
+| 4 | Windsurf | `~/.codeium/windsurf/memories/stratos` |
+| 5 | OpenCode | `~/.config/opencode/stratos` |
 
 Each host receives a generated adapter payload. Canonical `global/` source is never installed directly.
 
@@ -22,7 +22,7 @@ Each host receives a generated adapter payload. Canonical `global/` source is ne
 4. Approve the real installation explicitly.
 5. Verify the adapter-declared instruction file exists after activation.
 
-The installer may replace only the dedicated `antigravity` namespace. It never clears its shared parent. An existing namespace is staged and backed up under `.antigravity-backups/`; unrelated files in the parent remain untouched. Failed activation restores the backup.
+The installer may replace only the dedicated `stratos` namespace. It never clears its shared parent. An existing namespace is staged and backed up under `.stratos-backups/`; unrelated files in the parent remain untouched. Failed activation restores the backup.
 
 ## Windows
 
@@ -35,7 +35,7 @@ Gemini uses the generated `GEMINI.md` adapter payload. Preview and approve the n
 .\install.ps1 -IDE 1 -Yes
 ```
 
-The canonical source remains in the repository; Gemini receives a generated copy under its `antigravity` namespace.
+The canonical source remains in the repository; Gemini receives a generated copy under its `stratos` namespace.
 
 ```powershell
 # Preview; no target files are written
@@ -96,7 +96,7 @@ python global/scripts/os.py install --host codex --target ~/.codex --codex-globa
 python global/scripts/os.py install --host codex --target ~/.codex --codex-global --yes
 ```
 
-The installer keeps a complete generated copy at `~/.codex/antigravity/`, records the backup in `~/.codex/antigravity/installation.json`, and does not modify `config.toml`, `config.json`, permissions, plugins, or unrelated files. Start a new Codex task after installation so the global instructions reload.
+The installer keeps a complete generated copy at `~/.codex/stratos/`, records the backup in `~/.codex/stratos/installation.json`, and does not modify `config.toml`, `config.json`, permissions, plugins, or unrelated files. Start a new Codex task after installation so the global instructions reload.
 
 Use `--profile spatial` only for interior, showroom, gallery, luxury-home, furniture, decor, staging, or architecture-adjacent work. General engineering is the default.
 

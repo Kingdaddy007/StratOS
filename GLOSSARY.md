@@ -1,4 +1,4 @@
-# Anti-Gravity OS Glossary
+# StratOS Glossary
 
 | Term | Plain-language meaning | Where it lives |
 | --- | --- | --- |

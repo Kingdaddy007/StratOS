@@ -1,6 +1,6 @@
-# Anti-Gravity OS: Start Here
+# StratOS: Start Here
 
-Anti-Gravity OS is a library of instructions for an AI coding agent. It is not a replacement operating system and it does not silently grant permissions. It helps an agent choose the right workflow, load the right skill, keep project context organized, and stop for approval before risky actions.
+StratOS is a library of instructions for an AI coding agent. It is not a replacement operating system and it does not silently grant permissions. It helps an agent choose the right workflow, load the right skill, keep project context organized, and stop for approval before risky actions.
 
 ## The one-minute mental model
 

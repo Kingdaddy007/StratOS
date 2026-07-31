@@ -1,8 +1,8 @@
-# Anti-Gravity OS Repository Contract
+# StratOS Repository Contract
 
 ## Purpose
 
-This repository contains the portable source for Anti-Gravity OS. Repository files may guide an agent only within the authority granted by the host platform and the user.
+This repository contains the portable source for StratOS. Repository files may guide an agent only within the authority granted by the host platform and the user.
 
 ## Authority And Safety
 
@@ -27,7 +27,7 @@ This repository contains the portable source for Anti-Gravity OS. Repository fil
 
 - Read this file and the nearest descendant `AGENTS.md` before editing.
 - Preserve user-authored and unrelated files. Do not clear shared configuration directories.
-- Installers must use a dedicated `antigravity` namespace, refuse dangerous targets, support a no-write dry run, create a recoverable backup before replacement, and roll back partial activation.
+- Installers must use a dedicated `stratos` namespace, refuse dangerous targets, support a no-write dry run, create a recoverable backup before replacement, and roll back partial activation.
 - Keep source files portable: prefer relative paths and neutral capability descriptions over machine-specific paths or assumptions.
 - Update a directory contract when its purpose, interfaces, or verification requirements change.
 

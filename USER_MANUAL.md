@@ -1,4 +1,4 @@
-# Anti-Gravity OS User Manual
+# StratOS User Manual
 
 ## 1. Choose a profile
 
@@ -52,6 +52,6 @@ Run a dry-run first:
 python global/scripts/os.py install --host gemini --target ~/.gemini --dry-run
 ```
 
-The installer writes only to the dedicated `antigravity` namespace. When replacing an existing namespace it creates a timestamped backup under `.antigravity-backups/`. Files beside that namespace are outside its authority and remain untouched.
+The installer writes only to the dedicated `stratos` namespace. When replacing an existing namespace it creates a timestamped backup under `.stratos-backups/`. Files beside that namespace are outside its authority and remain untouched.
 
 See `SETUP.md` for installation and `MIGRATION.md` for upgrades.
