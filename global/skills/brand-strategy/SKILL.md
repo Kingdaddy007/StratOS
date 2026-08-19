@@ -141,7 +141,9 @@ Translate positioning into constraints and criteria, not a selected visual conce
 
 These are inputs to concept exploration. Do not select the hero, page sequence, palette, anchor object, animation, or motion archetype during diagnosis. Do not output abstract adjectives without observable constraints.
 
-For color palette selection and color psychology decisions, load the `color-system` skill.
+For a material colour decision, load the UI/UX `color-and-contrast.md` reference.
+Load its `color-evidence-and-context.md` reference only when brand expression,
+culture, audience, or a psychology claim materially affects the decision.
 
 ## OUTPUT SHAPE
 

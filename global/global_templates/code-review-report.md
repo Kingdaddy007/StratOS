@@ -5,7 +5,7 @@
 **Tier:** 3 — Loaded on demand
 **File:** templates/code-review-report.md
 **Purpose:** Standardized format for delivering code review findings with consistent severity classification, explicit approval conditions, and actionable feedback. Ensures intent, risk, severity, and approval status are communicated consistently.
-**Loaded When:** Delivering the output of a code review. Referenced by `workflow-review-code.md`.
+**Loaded When:** Delivering the output of a code review. Referenced by the `review-audit` skill.
 
 ***
 
@@ -261,7 +261,7 @@ For quick review feedback with one or two findings, use inline comments instead 
 
 ## Related Files
 
-- `workflows/workflow-review-code.md`
+- `skills/review-audit/SKILL.md`
 - [contexts/...]
 - [skills/...]
 

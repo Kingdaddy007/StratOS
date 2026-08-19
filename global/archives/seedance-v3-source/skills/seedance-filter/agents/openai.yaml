@@ -1,0 +1,4 @@
+interface:
+  display_name: "Seedance Filter"
+  short_description: "Policy-safe diagnosis of an observed Seedance refusal"
+  default_prompt: "Use $seedance-filter to diagnose an observed refusal and identify a policy-compliant next step without bypassing safeguards."

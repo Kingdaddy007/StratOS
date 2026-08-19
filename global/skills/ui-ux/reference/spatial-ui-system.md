@@ -89,7 +89,9 @@ Map UI responsibilities to whichever jobs the selected concept uses:
 - Do not make every section the same width, rhythm, or grid.
 - Use image crops deliberately; mobile crops must preserve room subject and lighting.
 - Use OKLCH or a consistent token system for implementation, but choose colors from material/light behavior first.
-- For color palette selection, functional color mapping, and color psychology, load the `color-system` skill.
+- For a material colour decision, load `color-and-contrast.md`. Load
+  `color-evidence-and-context.md` only when scene, material, light, culture,
+  or a psychology claim affects the decision.
 
 ## ACCESSIBILITY AND STATE COVERAGE
 

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Seedance Filter"
-  short_description: "Guidance for seedance filter tasks"
-  default_prompt: "Use $seedance-filter to help complete this task with its domain workflow."

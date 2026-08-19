@@ -1,532 +1,76 @@
 ---
 id: plan-architecture
-version: 1
+version: 2
 status: active
-intent: Execute plan architecture with explicit authority, state, outputs, and evidence.
-use_when: [the task matches plan architecture]
-do_not_use_when: [another workflow more precisely matches the requested outcome]
-inputs: [user objective, workspace context, constraints, requested authority mode]
-required_resources: [applicable AGENTS.md files, referenced skills and contexts]
+intent: Make a consequential system decision inspectable by recording the real quality attributes, options, evidence, accepted trade-offs, and re-evaluation conditions without treating analysis as permission to build.
+use_when: [a durable boundary, state owner, API/data contract, integration, migration path, reliability posture, or hard-to-reverse technology decision needs an explicit decision record]
+do_not_use_when: [a small local implementation follows an already accepted pattern, the product problem is still unclear, an observed fault needs diagnosis, an API/data choice is bounded and reversible, or a decision is being made only to satisfy a ritual]
+inputs: [decision question, current system and project facts, affected users and owners, desired qualities and constraints, known options/evidence, reversibility and authority limits]
+required_resources: [applicable AGENTS.md files, architecture skill, current project contexts and accepted decisions, Product Design Assurance or Staff Engineering contribution only when the decision creates their question]
 mutation_class: read_only
-approval_gates: [confirm implement mode before any mutation]
-states: [intake, assess, propose, approve-if-needed, execute-if-authorized, verify, deliver]
-outputs: [task result, changed-artifact list when applicable, evidence, residual risks]
-verification: [run proportionate checks, record raw evidence, label anything unverified]
-failure_paths: [stop on authority or contract conflict, preserve state, report blocker and safe next action]
-resume_contract: task-scoped .agents/workflows/plan-architecture.json using the workflows directory contract
-next_workflows: [none]
+approval_gates: [analysis and recommendation remain read_only, require explicit approval before a durable local architecture record is created or replaced, require a separate requested implementation route before code/configuration changes, require just-in-time approval before dependency/network, database, deployment, production, destructive, or external action]
+states: [received, classified, evidence-framed, options-shaped, challenged, decision-pending, recorded, stopped]
+outputs: [decision statement, quality attributes and constraints, current-state/evidence map, viable options and trade-offs, recommendation or no-decision outcome, accepted consequences, re-evaluation triggers, required next approval]
+verification: [trace each recommendation to a stated constraint or evidence item, distinguish fact from inference and unknown, test the riskiest reversible assumption when practical, confirm ownership and failure/recovery implications, and record limitations]
+failure_paths: [stop on missing decision owner, false precision, unresolved product meaning, incompatible authority, absent evidence for an irreversible commitment, or a decision that belongs to a smaller direct specialist operation]
+resume_contract: task-scoped .agents/workflows/<task-id>.json following the workflows directory contract; record decision status, evidence, alternatives, approvals, blockers, next action, owner, and timestamps
+next_workflows: [project-inception, build-feature, database-migration, security-audit, dependency-upgrade, test-strategy, none]
 profiles: [general]
 ---
 
-# WORKFLOW: PLAN ARCHITECTURE (FULL SOURCE)
+# Plan Architecture
 
-**Version:** Gold v1.1 (Master Merge)
-**Layer:** 8 — Execution Workflow
-**Tier:** 2 — Loaded by task
-**Primary Mode:** Architect
-**Secondary Modes:** Research, Security, Performance, Product Thinking
-**Purpose:** The systematic sequence for making architectural decisions — from understanding requirements through evaluating options to documenting the decision with tradeoffs and implementation guidance. Ensures architectural decisions are made deliberately rather than defaulting to whatever pattern is most familiar.
-**Loaded When:** Designing a new system or module, restructuring existing architecture, evaluating technology choices, defining service or module boundaries, or making decisions that will be expensive to reverse.
-**Inherits From:** execution-workflow.md (universal process)
+## Purpose and boundary
 
----
+Use this route for a decision that is expensive to reverse or affects more than one bounded concern. The `architecture` capability supplies the detailed reasoning method; this workflow makes the decision, authority, and consequences visible.
 
-## WHAT THIS WORKFLOW DOES
+Do not run it for every folder, component, endpoint, or implementation detail. A small reversible decision should be made directly by the owner using existing project conventions. A request with unclear value or scope belongs in `project-inception` first.
 
-This workflow ensures architectural decisions are made deliberately — with requirements understood, options evaluated, tradeoffs documented, and failure modes considered.
+## Classify before investing effort
 
-Without this workflow, architecture tends to be either over-engineered for a team that does not need that complexity, or under-designed and growing organically until the codebase becomes unmaintainable. Both extremes are caused by the same root issue: choosing a shape before understanding the problem.
+| Decision shape | Default route |
+| --- | --- |
+| Local and easily corrected, with an existing accepted pattern | Direct Systems/Staff operation; record only the rationale needed for the project. |
+| Material but reversible boundary, integration, data, reliability, or cost choice | Use this route proportionately. |
+| Hard-to-reverse, sensitive, regulated, externally committed, or high-blast-radius choice | Use this route with Product and Assurance input; stop at the named human approval before any commitment. |
 
----
+Classification does not turn an unknown into a metric. State what is known, what is estimated, and what must be learned before a commitment.
 
-## ACTIVATION
+## Shape the decision
 
-### Use When
+1. State the decision in one sentence: who/what is affected, what must be decided now, and what is deliberately out of scope.
+2. Identify the quality attributes that actually matter: for example correctness, privacy, cost, latency, recovery, operability, change speed, accessibility, or data integrity. Rank conflicts rather than claiming everything is equally critical.
+3. Map current boundaries, state/data ownership, interfaces, dependencies, failure behaviour, and real constraints. Mark evidence as fact, reported, inference, or unknown.
+4. Generate the viable options that differ in a meaningful way. Include the existing/simple path when viable. Do not manufacture three tiers or a fashionable alternative merely to fill a table.
+5. For each option, describe the useful boundary, responsibility/ownership, failure and recovery shape, operational burden, reversibility/migration path, and the quality attributes it sacrifices.
+6. Invite only the leads whose decision is affected: Product for outcome/scope, Design for an experience consequence, Staff Engineering for delivery/operability, and Assurance for sensitive risk or an independent challenge.
+7. Recommend an option only at the strength the evidence supports. If an assumption is decisive and cheaply testable, propose the smallest spike or measurement instead of pretending to know the answer.
 
-- "How should I structure this?"
-- "What architecture should we use?"
-- "Should we split this into [X]?"
-- "What technology should we use for [Y]?"
-- "Plan the architecture"
-- "How should these components interact?"
-- "Monolith or microservices?"
-- "What should live where?"
-- Starting a new project or major feature
-- Redesigning an existing module or system
-- Any decision that will be expensive to reverse
+## State and approval
 
-### Do NOT Use When
+| State | Required result | Next state |
+| --- | --- | --- |
+| `received` | A decision question and owner are identifiable. | `classified` or `stopped` |
+| `classified` | Decision consequence, reversibility, affected concerns, and route are clear. | `evidence-framed`, direct operation, or `stopped` |
+| `evidence-framed` | Current state, constraints, unknowns, and quality priorities are visible. | `options-shaped` or `stopped` |
+| `options-shaped` | Viable options and their material trade-offs are explicit. | `challenged`, `decision-pending`, or `stopped` |
+| `challenged` | Relevant cross-boundary objections or evidence gaps are resolved, bounded, or named. | `decision-pending` or `stopped` |
+| `decision-pending` | Recommendation, consequences, and exact human approval or test are visible. | `recorded`, selected next workflow, or `stopped` |
+| `recorded` | The approved decision and re-evaluation trigger are stored only when local-write authority exists. | Selected next workflow or `stopped` |
+| `stopped` | No decision, insufficient evidence, or authority block is honest and actionable. | Reopen only with a changed fact, request, or approval. |
 
-- Implementing already-decided architecture → use `workflow-build-feature.md`
-- Debugging an architectural issue → use `workflow-debug-issue.md`
-- Refactoring without changing architecture → use `workflow-refactor-module.md`
-- Quick Type 2 technology comparison → use Research Mode directly with a time-box
-- Reviewing a finished diff where architecture is already embodied → use `workflow-review-code.md`
+This workflow never authorises code, a database migration, package installation, deployment, or external communication. A decision record is not an implementation approval.
 
----
+## Decision record and handoff
 
-## DECISION CLASSIFICATION
+Deliver a concise record containing:
 
-Before investing deep analysis, classify the decision:
+- decision and scope;
+- current-state evidence, assumptions, and unknowns;
+- ranked quality attributes and constraints;
+- viable options, rejected option reasoning, and recommendation strength;
+- ownership, failure/recovery, operational, migration, and security consequences;
+- what is sacrificed and what would make the decision wrong later; and
+- exact next owner, workflow, and approval boundary.
 
-| Classification | Definition | Analysis Investment | Use This Workflow? |
-| :--- | :--- | :--- | :--- |
-| **Type 1 — Irreversible, High-Stakes** | Hard to undo, high blast radius if wrong | Full workflow, all steps, ADR documented | ✅ Full workflow |
-| **Type 1.5 — Partially Reversible** | Costly but possible to undo | Steps 1 through 4 at moderate depth, brief ADR | ✅ Abbreviated workflow |
-| **Type 2 — Reversible, Low-Stakes** | Easy to change later | Time-boxed 30 to 60 minutes, brief reasoning | ❌ Skip workflow |
-
-**Most engineering decisions are Type 2.** Do not use this full workflow for library selection, naming conventions, or internal tooling choices.
-
----
-
-## REQUIRED FILES
-
-### Skills — Always Load
-
-| Priority | Skill | Why |
-| :--- | :--- | :--- |
-| Primary | `skill-architecture` | System decomposition, boundaries, patterns |
-| Secondary | `skill-product-thinking` | Ensuring architecture serves user needs |
-| Secondary | `skill-research-analysis` | Option evaluation methodology |
-
-### Skills — Load When Relevant
-
-| Condition | Skill |
-| :--- | :--- |
-| Architecture involves data layer decisions | `skill-database` |
-| Architecture involves API or service boundaries | `skill-api-design` |
-| Architecture has security-sensitive components | `skill-security` |
-| Architecture is driven by performance requirements | `skill-performance` |
-| Architecture involves deployment or infrastructure | `skill-devops-infra` |
-
-### Contexts — Always Load
-
-- `project-context.md`
-- `architecture-context.md`
-- `business-priorities.md`
-- `stack-context.md`
-- `domain-rules.md`
-
-### Contexts — Load When Relevant
-
-| Condition | Context |
-| :--- | :--- |
-| Data architecture decisions | `database-context.md` |
-| Infrastructure decisions | `infra-context.md` |
-| API architecture decisions | `api-conventions.md` |
-| Security architecture | `security-baselines.md` |
-
----
-
-## REQUIRED INPUTS
-
-At minimum, Anti-Gravity should have or establish before proceeding:
-
-- a clearly stated or inferable system or problem objective
-- enough context to understand the main constraints
-- scale expectations
-- ownership and team boundaries
-- reversibility concerns and timeline pressure
-
-### If inputs are incomplete
-
-Do NOT jump straight into boxes and arrows. Instead:
-
-1. Define the real architectural decision being made
-1. Identify the minimum constraint set that shapes the answer
-1. State assumptions explicitly
-1. Ask clarification only when missing information would materially change the architecture recommendation
-
----
-
-## EXECUTION SEQUENCE
-
----
-
-### STEP 1 — UNDERSTAND THE REQUIREMENTS
-
-**Mode:** Architect
-**Goal:** Know WHAT the architecture must accomplish before deciding HOW. An architecture that does not serve the requirements is wrong regardless of how elegant it is.
-
-**Gate:** Do NOT evaluate solutions until requirements are clearly defined.
-
-#### Functional Requirements (Step 1)
-
-1. **Identify Capabilities:**
-   - What capabilities must the system provide?
-   - What user problems does it solve? Check `project-context.md`
-   - What workflows must it support?
-   - What success looks like after the architecture decision
-
-#### Non-Functional Requirements (Step 1)
-
-| Dimension | Question | How to Quantify |
-| :--- | :--- | :--- |
-| Scale | How many users, requests, records? | Current: [X]. In 12 months: [Y] |
-| Performance | What latency is acceptable? | p95 target: [X]ms |
-| Availability | What uptime is required? | Target: [X]% |
-| Consistency | How important is data consistency? | Strong for [X], eventual acceptable for [Y] |
-| Security | What data sensitivity level? | Per `security-baselines.md` |
-| Compliance | Any regulatory requirements? | GDPR, SOC 2, etc. |
-
-#### Constraints (Step 1)
-
-1. **Assess Limitations:**
-   - Team size and expertise — check `project-context.md`
-   - Budget constraints — check `business-priorities.md`
-   - Timeline constraints
-   - Technology constraints — check `stack-context.md`
-   - Organizational constraints
-   - Already-locked architectural decisions that must be respected
-
-#### Current State Assessment (Step 1)
-
-1. **Audit Existing System:**
-   - What is the current architecture? Check `architecture-context.md`
-   - What works well and should be preserved?
-   - What is causing pain and needs to change?
-   - What technical debt or drift exists?
-   - What cannot realistically change right now?
-
-#### Output (Step 1)
-
-```text
-Architectural objective: [what is being decided]
-Decision focus: [boundaries / deployment / data / extensibility / scale]
-Functional requirements: [list]
-Non-functional requirements: [quantified where possible]
-Hard constraints: [list]
-Current state: [brief assessment]
-Success looks like: [measurable condition]
-```
-
----
-
-### STEP 2 — MAP THE SYSTEM AND IDENTIFY TENSIONS
-
-**Mode:** Architect
-**Goal:** Understand the full system context and expose the tradeoffs that make this a real architecture problem.
-
-#### System Mapping Actions (Step 2)
-
-1. **Component Inventory:**
-   - Identify major functional areas and their boundaries
-   - Map main actors and flows
-   - Identify inputs, outputs, and dependencies
-   - Identify what data each component owns
-   - Identify integration points with external systems
-   - Identify critical paths and likely failure domains
-   - Identify what must remain stable versus what needs flexibility
-   - Apply the deep module principle: is each component's interface simple while hiding internal complexity?
-
-#### Architectural Tensions (Step 2)
-
-1. **Expose Tradeoffs:**
-   - Identify the primary tensions: speed vs flexibility, simplicity vs scale, coupling vs coordination cost, centralization vs autonomy
-   - Identify what would be gained by one direction and sacrificed by another
-   - Separate current needs from imagined future needs
-   - Identify what is hard to reverse if chosen badly
-
-#### Output (Step 2)
-
-```text
-Component map: [major parts and boundaries]
-Data flow: [how data moves through the system]
-Integration points: [external connections and failure behavior]
-
-Primary tensions:
-
-- [tension 1]
-- [tension 2]
-
-Hard-to-reverse choices:
-
-- [list]
-
-```
-
-#### Gate (Step 2)
-
-If no real tension is visible, the problem may be smaller than assumed — or not architectural yet. Do not fabricate complexity.
-
----
-
-### STEP 3 — GENERATE OPTIONS
-
-**Mode:** Architect
-**Goal:** Identify at least three viable architectural approaches before evaluating any of them.
-
-**RULE:** Never evaluate fewer than 3 options. A single option is a default, not a decision.
-
-#### Option Specification (Step 3)
-
-For Each Option, Define:
-
-| Dimension | What to Specify |
-| :--- | :--- |
-| Description | What is this approach in one paragraph? |
-| Components | What are the major parts and how do they connect? |
-| Technology | What specific technologies would be used? |
-| Data model | How would data be structured and stored? |
-| Deployment | How would this be deployed and operated? |
-| Scale path | How does this approach handle 10x growth? |
-| Failure modes | How can this break? What is the blast radius? |
-| Team fit | Can the current team build and maintain this? |
-| Migration path | How do we get from current state to this? |
-
-#### Option Generation Safeguards (Step 3)
-
-1. **Boring Technology Bias:** Include the most boring option that still solves the problem. Boring means well-understood, well-documented, and frequently debugged.
-1. **Gray Thinking:** Are options unnecessarily polarized? Monolith versus microservices often misses modular monolith.
-1. **Framing Bias:** Are all options within the current frame? Look for a fresh perspective.
-1. **Anti-Comfort:** If one option feels obviously right, look harder at the others.
-1. **Overkill Check:** Would any option be overkill for the current stage? Name that explicitly.
-
-#### Output (Step 3)
-
-```text
-Option A: [name — usually the boring or simplest option]
-[description, components, technology, data, deployment, scale, failure modes, team fit, migration path]
-
-Option B: [name]
-[same dimensions]
-
-Option C: [name]
-[same dimensions]
-```
-
----
-
-### STEP 4 — EVALUATE TRADEOFFS
-
-**Mode:** Architect
-**Goal:** Compare options systematically against real requirements. If the recommendation is not visibly tied to the criteria, the decision is still too opinion-shaped.
-
-#### Evaluation Matrix (Step 4)
-
-| Criterion                      | Weight | Option A | Option B | Option C |
-| :----------------------------- | :----- | :------- | :------- | :------- |
-| Meets functional requirements  | High   | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ |
-| Meets performance requirements | Med    |          |          |          |
-| Team expertise fit             | High   |          |          |          |
-| Implementation cost            | Med    |          |          |          |
-| Operational complexity         | Med    |          |          |          |
-| Migration risk                 | High   |          |          |          |
-| Reversibility                  | High   |          |          |          |
-| Infrastructure cost            | Med    |          |          |          |
-| Time to implement              | Med    |          |          |          |
-| Scale path clarity             | Med    |          |          |          |
-| Security posture               | High   |          |          |          |
-| Failure blast radius           | High   |          |          |          |
-
-#### Analysis Frameworks (Step 4)
-
-1. **The 2 AM Test:** "It is 2 AM. This component is failing. A mid-level engineer who did not build it is on-call. Can they fix it without tribal knowledge?"
-1. **What Would Have to Be True:** "What would have to be true about our situation for this option to be the right choice?"
-1. **Pre-Mortem:** "It is 6 months from now and this architecture has failed. What went wrong?"
-1. **Steel-Manning:** Before rejecting an option, articulate its strongest version. Why would a smart engineer choose it?
-
-#### Output (Step 4)
-
-```text
-Criteria comparison: [matrix filled in]
-2 AM test result for each option: [assessment]
-Pre-mortem on leading option: [risks surfaced]
-Recommendation: [option and primary reason]
-Tradeoffs accepted: [what is being sacrificed]
-```
-
----
-
-### STEP 5 — DEFINE THE ARCHITECTURE SHAPE AND BOUNDARIES
-
-**Mode:** Architect
-**Goal:** Make the recommendation explicit and structurally clear enough that implementation can proceed without inventing architecture ad hoc.
-
-#### Structural Definition (Step 5)
-
-1. **Shape Boundaries:**
-   - State the recommended architecture direction
-   - Define the major boundaries clearly
-   - Define what responsibilities live where
-   - Define key interactions between parts
-   - Define data ownership and mutation boundaries
-   - Identify what should remain tightly coupled and what should not
-   - Avoid premature decomposition where simpler structure fits
-   - Define where security and observability concerns must live
-
-#### Runtime Implications (Step 5)
-
-1. **Operational Audit:**
-   - How does data flow across boundaries?
-   - What happens at integration points when external systems fail?
-   - How does the architecture affect change velocity and debugging?
-   - Does the architecture assume organizational maturity the team does not have?
-   - How does it look on a static diagram versus in production at 2 AM?
-
-#### Output (Step 5)
-
-```text
-Recommended shape: [description]
-
-Major boundaries:
-
-- [boundary 1: what lives here, what does not]
-- [boundary 2]
-
-Interaction model:
-
-- [how parts communicate]
-- [data ownership rules]
-- [integration failure behavior]
-
-Operational implications:
-
-- [deployment]
-- [observability]
-- [rollback]
-
-```
-
-#### Gate (Step 5)
-
-If boundaries are still fuzzy after this step, implementation will invent the real architecture later without coordination.
-
----
-
-### STEP 6 — DOCUMENT THE DECISION AS AN ADR
-
-**Mode:** Architect → Communicator
-**Goal:** Make the decision and document it in a way that prevents re-litigation and informs future work.
-
-#### Load Template (Step 6)
-
-- [REQUIRED] Load [architecture-decision-record.md](../global_templates/architecture-decision-record.md)
-- Follow the structure and guidance in the template exactly to record the decision.
-
-#### Post-ADR Actions (Step 6)
-
-1. **Sync Contexts:**
-   - Update `architecture-context.md` if this moves the needle
-   - Update `stack-context.md` for new technology
-   - Update `database-context.md` for data shifts
-   - Log the decision in `memory/decisions-log.md`
-
----
-
-### STEP 7 — DEFINE IMPLEMENTATION PATH
-
-**Mode:** Architect → Builder Mode transition
-**Goal:** Translate architecture into implementable direction so future work inherits the decision cleanly.
-
-#### Phased Implementation (Step 7)
-
-1. **Define Sequence:**
-   - What should be built first — foundation, highest-risk, or highest-value?
-   - What can run in parallel?
-   - What are the dependencies between phases?
-   - Note where future workflow files should inherit the architecture choice
-
-#### Migration Protocol (Step 7)
-
-1. **Move Strategy:**
-   - What is the step-by-step migration path?
-   - What can be done incrementally versus all at once?
-   - What are the rollback points?
-   - Consider Strangler Fig pattern for legacy systems
-
-#### Verification Plan (Step 7)
-
-1. **Audit Success:**
-   - How will the architecture be verified as it is built?
-   - What metrics will indicate success or emerging problems?
-   - When should the team pause and evaluate?
-
-#### Output (Step 7)
-
-```text
-Build first: [list]
-Defer or keep open: [list]
-
-Migration sequence: [steps if applicable]
-Verification checkpoints: [when and what to check]
-```
-
----
-
-## CHECKPOINTS AND QUALITY GATES
-
-| Gate | Condition | Action |
-| :--- | :--- | :--- |
-| Gate 1 — Objective vague | Cannot state what structural decision is being made | Suspend and clarify first |
-| Gate 2 — Constraints weak | Recommendation made without scale or team context | Re-gather constraints before deciding |
-| Gate 3 — Single option | Only one option considered or alternatives are straw-men | Generate 3 viable options |
-| Gate 4 — Operational risk | Design assumes maturity the team does not have | Simplify or re-scope |
-| Gate 5 — Fuzzy boundaries | Implementation still depends on invented future decisions | Define more granular boundaries |
-| Gate 6 — No Pre-Mortem | Risks not surfaced before commitment | Run pre-mortem before finalizing |
-
----
-
-## QUALITY GATE CHECKLIST
-
-Before delivering an architecture recommendation:
-
-- [ ] Decision classified as Type 1, 1.5, or 2
-- [ ] Requirements defined: functional, non-functional, constraints
-- [ ] Current state assessed — what works, what does not, what cannot change
-- [ ] System mapped with boundaries, data flow, and integration points
-- [ ] Architectural tensions identified
-- [ ] At least three options generated
-- [ ] Boring technology option included
-- [ ] Gray-thinking check applied — no false polarization
-- [ ] Options evaluated against requirements systematically via matrix
-- [ ] Tradeoffs explicitly named — gains AND sacrifices per option
-- [ ] 2 AM test applied to leading option
-- [ ] What Would Have to Be True test applied
-- [ ] Pre-mortem conducted for leading option
-- [ ] Steel-man applied to rejected options
-- [ ] Architecture shape defined with clear boundaries and ownership
-- [ ] Operational and data implications inspected
-- [ ] Decision documented as ADR with assumptions and review triggers
-- [ ] Relevant context files updated
-- [ ] Implementation path defined with phases and verification
-
----
-
-## WORKFLOW ANTI-PATTERNS
-
-| Anti-Pattern | Why It Is Harmful | How This Workflow Prevents It |
-| :--- | :--- | :--- |
-| Diagram-First Architecture | Architecture becomes aesthetic rather than operational | Define problem and constraints before shaping the system |
-| Pattern Worship | System inherits complexity that does not fit its real needs | Choose simplest structure that survives failure |
-| Future-Fantasy | Current simplicity is sacrificed for hypothetical pain | Design for current reality plus near-adjacent change |
-| Unbounded Architecture | Implementation ends up inventing architecture ad hoc | Define responsibilities and boundaries explicitly |
-| Single Option Bias | Confirmation bias shapes the entire analysis | Generate at least three options before evaluating |
-
----
-
-## FAILURE MODES AND ESCALATION PATHS
-
-| Failure Mode | What It Looks Like | Escalation |
-| :--- | :--- | :--- |
-| Non-Architectural | Decision is smaller than initially framed | Return to feature-level logic |
-| Pure Research | Main need is exploration without commitment | Switch to research-analysis mode |
-| Product Aspiration | System shape depends on unclear user goals | Bring in product reasoning first |
-| Stack Vacuum | Cannot finalize without stack decisions | Separate what is decided from what is open |
-| Deep Refactor | Architecture change is not implementation-trivial | Coordinate with refactor planning |
-
----
-
-## FINAL RULE
-
-Choose the simplest architecture that solves the actual problem, survives likely failure, and remains understandable to the people who will have to change it later.
-
-An architecture that looks elegant on a diagram but fails the 2 AM test, cannot be explained to the team, or requires organizational maturity that does not exist is not a good architecture for this project right now.
-
----
-
-## VERSION HISTORY
-
-| Version | Date | Changes |
-| :--- | :--- | :--- |
-| Gold v1.1 | Initial | Established the systematic sequence for making architectural decisions |
+Use `build-feature` for authorised implementation, `database-migration` for data mutation, `security-audit` for material security evidence, and `test-strategy` for a risk-sized proof plan. Never describe a future review date as a substitute for a required present decision.

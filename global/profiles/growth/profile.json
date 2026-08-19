@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "growth",
+  "description": "Optional commercial-intelligence capability for positioning, offers, copy, conversion diagnosis, prospect preparation, and sales enablement.",
+  "always_active": false,
+  "extends": "general",
+  "activation": [
+    "The request concerns positioning, offers, copy, conversion diagnosis, prospect preparation, sales material, or client acquisition preparation.",
+    "The user explicitly selects the growth pack."
+  ],
+  "exclusions": [
+    "Routine product requirements, implementation, debugging, database, security, or infrastructure work.",
+    "External messaging or outreach without the separate approval required before effect."
+  ]
+}

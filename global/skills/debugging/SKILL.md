@@ -1,216 +1,77 @@
 ---
 name: debugging
-description: 'Use this skill when investigating errors, crashes, unexpected behavior, or system failures. Activated when the user reports a bug, shares a stack trace or error message, describes tests failing unexpectedly, notices a regression (a feature that used to work no longer does), or when production telemetry alerts have fired. Examples: "this is broken", "I''m getting an error", "the tests are failing", "this stopped working after my last change", "the system is down". Do NOT use for general implementation work (use coding skill) or architecture decisions (use architecture skill).'
+description: 'Use when diagnosing a failure, regression, crash, unexpected behavior, flaky test, integration fault, or incident. Separates evidence-led diagnosis from repair and supports diagnose, propose, implement, and incident-mitigate modes. Do NOT use for approved new implementation with no observed failure (use coding), or to choose a system structure (use architecture).'
 ---
 
-# DEBUGGING & SYSTEMATIC TROUBLESHOOTING
+# Debugging
 
-## WHEN TO USE THIS
+## Purpose and boundary
 
-- User reports an error, crash, or unexpected behavior
-- Stack trace or error message is provided
-- Tests are failing unexpectedly
-- A regression is suspected — something that previously worked no longer does
-- Production telemetry alerts have fired
+Debugging is a controlled investigation, not a patch-generation loop. Turn an observed symptom into evidence, test competing explanations safely, then either repair the established mechanism or stop with an honest uncertainty, mitigation, escalation, or no-code conclusion.
 
-## NEVER DO
+Do not treat a stack-trace endpoint, a reporter's suspected file, a green test suite, or a plausible-looking patch as causal proof. Never claim to have inspected evidence or run a check that did not occur.
 
-- Propose a fix before gathering evidence
-- Write bug fixes or modify codebase logic without a running, red-capable repro command
-- Change more than one variable at a time when testing a hypothesis
-- Swallow exceptions or add null guards without finding why the bad state exists
-- Leave debug prints or untagged log statements in the codebase after fixing (always tag with `[DEBUG-xxxx]`)
-- Declare a fix done without verifying the root cause, not just the symptom
-- Leave failed experiments (commented blocks, abandoned print statements) in the code
-- Say "I don't know why this works, but it does" and move on
-- **Attempt a 4th fix if 3 fixes have already failed. Stop and question the architecture instead.**
+## Select the mode before acting
 
----
-
-## MINDSET
-
-You are a detective. Do not guess; gather evidence. Assume your mental model of the codebase is flawed — rely exclusively on empirical data (logs, traces, state, errors).
-
-The error message is a starting point, not the whole story. Fixing the symptom without understanding the cause guarantees the bug returns. Isolate variables, binary-search the execution path, apply the 5 Whys to find the structural flaw that allowed the bug to exist.
-
-A bug is not just an error in the code. It is a failure of the system's boundaries, assumptions, or tests. The goal: understand exactly why it happened and prove the fix mathematically.
-
----
-
-## DECISION FRAMEWORK — BY REPRODUCIBILITY
-
-| Scenario | Characteristics | Approach |
+| Mode | Default authority | Outcome |
 | --- | --- | --- |
-| **Consistently reproducible** | Happens every time a specific action is taken | Binary search via step-through or logging. Divide the execution path in half. Determine which half contains the error. Repeat. |
-| **Intermittent / prod only** | Happens randomly, under load, or in specific environments | Telemetry analysis. Correlate structured logs across services. Formulate hypotheses around race conditions, state mutations, timeouts, environment discrepancies. |
-| **System-wide outage** | System down or severely degraded | Mitigate first: roll back the deployment, isolate traffic, expand capacity. Once bleeding is stopped, begin root cause analysis. |
+| `diagnose` | Read-only | Evidence-led explanation, ranked hypotheses, and next safe observation. |
+| `propose` | Read-only | Diagnosis plus the smallest repair or non-code action plan; no edit is applied. |
+| `implement` | Scoped local edit only after explicit authorization | A narrowly justified repair with validation and reversal path. |
+| `incident-mitigate` | Escalate to `incident-response` | Restore or contain impact through its just-in-time production approval gate; root-cause work remains separate. |
 
----
+Default to `diagnose` when the user asks why something happens. Urgency does not grant implementation or production authority. Data integrity, authorization, privacy, secrets, irreversible state, or customer-impacting incidents require a narrower safety boundary and may need a human owner before mutation.
 
-## DEBUGGING LENSES
+## Core loop
 
-Apply all eight before and during investigation:
+**Frame -> Observe -> Model -> Hypothesize -> Test -> Update -> Decide -> Repair or stop -> Verify -> Record.**
 
-### 1. Symptom Precision
+1. **Frame the symptom.** Separate observed from expected behavior, reporter interpretation, affected scope, time window, frequency, environment, and impact. Name known facts and missing facts.
+2. **Observe available evidence.** Inspect the relevant error, test output, state, logs, traces, metrics, recent code/config/dependency changes, and boundary inputs/outputs that actually exist. A minimal or repeatable reproduction is valuable when safe and feasible; it is not a universal gate.
+3. **Model the causal path.** Trace the relevant boundary: input, transformation, authorization, serialization, persistence, cache, configuration, timing, dependency, or client state. The visible crash may be downstream of the first invalid state.
+4. **Maintain distinguishable hypotheses.** For each meaningful theory record its mechanism, evidence for and against, assumption, predicted observation, and smallest safe discriminator. Do not preserve a disproven theory because its patch seems attractive.
+5. **Test for information, not activity.** Prefer the least invasive observation, replay, controlled fixture, comparison, or targeted experiment that can split the hypotheses. Use a known-good versus failing comparison or bisection only when the comparison order and oracle are reliable.
+6. **Decide honestly.** Mark a cause as `confirmed`, `strongly supported`, `likely`, `unverified`, or `ruled out`. `No justified code change`, `mitigation without root cause`, and `insufficient evidence` are valid outcomes.
+7. **Repair only behind the gate.** In `implement` mode, apply the smallest reversible change that addresses the established mechanism. Do not hide the symptom by deleting/skipping a test, swallowing an error, weakening a guard, or hard-coding an expected value.
+8. **Verify the claimed mechanism.** Check the original symptom, the affected contract or invariant, genuinely similar sibling paths where applicable, and relevant side effects. Passing tests are evidence, not proof by themselves.
 
-- What exactly is wrong? Expected vs actual behavior?
-- Under what conditions does it happen? Since when?
+## Evidence and repair gate
 
-### 2. Reproducibility
+A `confirmed` cause explains the observed behavior and survives a targeted causal check or controlled counterfactual in the inspected context. A `likely` cause has coherent supporting evidence but retains an important untested alternative. An `unverified` theory cannot authorize a repair.
 
-- Can this be reproduced reliably? In which environment?
-- What is the smallest environment where it can still be observed?
+Begin a local repair only when all four are true:
 
-### 3. Scope Isolation
+- the user has requested or explicitly approved `implement` mode;
+- the mechanism is established to the level the risk requires;
+- the patch is the smallest credible way to address that mechanism; and
+- a failure-before/failure-after, invariant, differential, or other credible validation plus a reversal path is available.
 
-- Which component, module, boundary, or dependency is most implicated?
-- Is this local, distributed, data-driven, environment-specific, timing-sensitive, or input-specific?
+Stop and report the safe next action when evidence remains contradictory, the oracle is invalid, the required experiment is unsafe, the patch expands beyond the mechanism, or a data/security/production action needs an approval that is absent.
 
-### 4. Change History
+## Load detail only when it changes the investigation
 
-- What changed recently in code, config, dependencies, infrastructure, data, or usage patterns?
-- Did this appear after a release, migration, flag change, or operational event?
+- For evidence cards, causal mapping, hypothesis records, comparison, or bisection, read [evidence-and-hypotheses.md](references/evidence-and-hypotheses.md).
+- For a selected fault class—configuration, cache, integration, timing, UI, performance, or data/security—read [fault-class-map.md](references/fault-class-map.md).
+- For repair authority, incident containment, high-risk data, or an incident handoff, read [incident-and-repair-boundaries.md](references/incident-and-repair-boundaries.md).
+- For the complete routing guide and source snapshot, read [resource-index.md](references/resource-index.md).
+- For behavioral regression checks on this skill, read [debugging-scenarios.md](evals/debugging-scenarios.md).
 
-### 5. Evidence Quality
+## Return a traceable result
 
-- What logs, traces, metrics, tests, or state snapshots exist?
-- What evidence is strong, weak, missing, or misleading?
+For a small issue, state the symptom, evidence checked and missing, leading explanation with its label, and next safe action. For a substantive issue, also state:
 
-### 6. Hypothesis Quality
-
-- What are the top plausible causes? Which is most likely? Which has the greatest blast radius?
-- What evidence would falsify each hypothesis?
-
-### 7. Root Cause vs Contributing Factors
-
-- What is the core mechanism that caused the failure?
-- What merely made it easier to happen or harder to detect?
-
-### 8. Regression and Recurrence Risk
-
-- If fixed, what else might break?
-- What guardrail is needed to stop this class of issue from returning?
-
----
-
-## BEHAVIORAL WORKFLOW
-
-Follow this sequence. Do not skip to Step 5.
-
-### Step 1 — Restate and Separate
-
-Restate the exact symptom observed. Separate the *symptom* (what happened) from the *suspected cause* (why we think it happened). They are not the same thing.
-
-### Step 2 — Gather Evidence
-
-- Read the exact error message completely. Do not skim.
-- Read the stack trace top to bottom. Where does it cross from library code into application code?
-- When did it last work? What changed between then and now?
-- What was the exact input or state that triggered the failure?
-
-### Step 3 — Secure Reproduction (The Repro Gate)
-
-Define the exact sequence of events, state conditions, and inputs to reproduce. 
-Before writing fixes, you MUST construct a deterministic test or script (a failing unit test, curl command, etc.) that fails specifically on this bug. You cannot proceed until you have a single command that deterministically prints the failure symptom. If it cannot be reproduced, aggregate log and trace evidence to reconstruct the event virtually.
-
-### Step 4 — Formulate and Rank Hypotheses
-
-Based on evidence, generate 2–3 plausible explanations. Rank by likelihood and ease of verification.
-
-### Step 5 — Isolate the Variable
-
-Test the highest-ranked hypothesis. Change *only one thing at a time*. If you change three things and the bug disappears, you do not know which one fixed it. If the hypothesis is wrong, revert the change immediately.
-**Log Isolation:** If injecting logs, tag every temporary diagnostic log with a unique string (e.g., `[DEBUG-ab92]`). This makes cleanup a single grep command and deletion trivial.
-
-### Step 6 — Identify Root Cause (5 Whys)
-
-Once the failure point is found, ask "Why?" until you hit a structural issue.
-
-- *Symptom:* Application crashed.
-- *Why 1:* Database query timed out.
-- *Why 2:* Table was locked.
-- *Why 3:* Background worker ran a massive unindexed update.
-- *Root Cause:* Worker lacks chunking; schema lacks an index for this access pattern. Fix this — do not just increase the timeout.
-
-### Step 7 — Implement and Verify the Fix
-
-Implement the targeted fix. Verify the original symptom is gone. Check for regressions. Document why the fix works.
-
-> **THE RULE OF THREE:** If you attempt 3 targeted fixes and all of them fail or reveal new symptoms elsewhere, **STOP.** Do not attempt a 4th fix. This is an architectural failure, not a simple bug. Discuss the pattern with the user before proceeding.
-
-### Step 8 — Prevent Recurrence
-
-Recommend or write an automated test that fails without the fix and passes with it. If no test seam exists to prevent this bug from reoccurring, report this architectural blocker to the user. A system without test seams is broken by design.
-
----
-
-## KEY DIAGNOSTIC QUESTIONS
-
-Ask these when stuck:
-
-- **Assumption Check:** What am I assuming to be true that the empirical data is currently proving false?
-- **Boundary Check:** Why did the system allow this invalid state to be reached? What validation or boundary failed?
-- **Delta Check:** What changed recently? Code, environment, data volume, third-party API?
-- **Silent Failure Check:** Is the error I'm looking at the *actual* error, or a downstream consequence of an earlier error that was swallowed silently?
-- **State Check:** What is the actual value of variables at the moment of failure — not what I think they should be?
-- **Instrumentation Check:** If this issue returned next month, what would I wish I had instrumented today?
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Looks Like | Why It's Harmful | Fix |
-| --- | --- | --- | --- |
-| **Shotgun Debugging** | Random changes, arbitrary print statements, commenting out blocks hoping it resolves | Destroys baseline state; even if it "works" you don't know why; introduces new bugs | Formulate a hypothesis first. Test deliberately. One change at a time. |
-| **Vibe Debugging** | Reading files and immediately writing a "fix" based on a hunch without a failing repro case | Fixes the wrong code, creates regressions, and leaves the actual bug active | Halt work. Build a reproducing test case first before touching logic |
-| **Symptom Suppression** | Catching an exception and returning null; adding `if (data === undefined) return;` without finding why | Hides the structural flaw; corrupted data propagates silently, causing worse bugs later | Let it crash until root cause is found. Fix the source of the bad data. |
-| **Confirming the First Guess** | Seeing an error, assuming it's an API timeout, rewriting the network layer without checking logs | Wastes time solving the wrong problem | Prove your guess with evidence before writing a single line of fix code. |
-| **"Works On My Machine"** | Dismissing a bug report because it's not locally reproducible | Ignores production realities: concurrency, bad data, latency, varying state | Look at production telemetry. Understand environmental differences. |
-
----
-
-## OUTPUT SHAPE
-
-```markdown
-
-## Symptom
-
-Precise description of the observed problem.
-
-## Investigation & Evidence
-
-What the logs/traces/errors actually say.
-
-## Hypotheses
-
-1. [Hypothesis 1]
-2. [Hypothesis 2]
-
-## Root Cause
-
-The structural reason this happened (5 Whys result).
-
-## Fix
-
-[The code change]
-
-## Why This Fixes It
-
-Explanation connecting the fix directly to the root cause.
-
-## Regression Check & Prevention
-
-What else could this affect, and how we test to ensure it doesn't return.
+```text
+Symptom and impact:
+Reproduction: confirmed | intermittent | not reproduced | unavailable with current access
+Evidence: inspected facts, negative evidence, and unperformed checks
+Hypotheses: label, mechanism, support/contradiction, next discriminator
+Decision: stay read-only | propose | implement | mitigate | escalate | no justified code change
+If repairing: scope, reason, rollback/reversal, validation, residual risk
 ```
 
----
+## Non-negotiable checks
 
-## NON-NEGOTIABLE CHECKLIST
-
-- [ ] Symptom precisely defined and separated from the cause
-- [ ] Stack trace and error messages read completely
-- [ ] Evidence supports the hypothesis — no guessing
-- [ ] Root cause identified, not just symptom patched
-- [ ] Fix is targeted and minimal
-- [ ] Regression risk evaluated
-- [ ] Fix preserves existing behavior everywhere else
+- Keep observation separate from explanation and mitigation separate from root cause.
+- Preserve evidence and approval boundaries; do not create new production or data side effects during diagnosis.
+- Make uncertainty and unperformed checks visible.
+- Do not let an appealing patch outrun its causal evidence.

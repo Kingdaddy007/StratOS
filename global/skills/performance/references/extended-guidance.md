@@ -1,149 +1,110 @@
-# Extended Guidance
+# Performance Evidence and Intervention Guide
 
 ## Contents
 
-- [PERFORMANCE STRATEGY GUIDANCE](#performance-strategy-guidance)
-- [KEY DIAGNOSTIC QUESTIONS](#key-diagnostic-questions)
-  - [Before Starting](#before-starting)
-  - [During Investigation](#during-investigation)
-  - [Before Optimizing](#before-optimizing)
-  - [After Optimizing](#after-optimizing)
-- [ANTI-PATTERNS](#anti-patterns)
-- [OUTPUT SHAPE](#output-shape)
-  - [For Performance Diagnosis](#for-performance-diagnosis)
-  - [For Performance Optimization](#for-performance-optimization)
-- [NON-NEGOTIABLE CHECKLIST](#non-negotiable-checklist)
-  - [Evidence](#evidence)
-  - [Targeting](#targeting)
-  - [Quality Preservation](#quality-preservation)
-  - [Verification](#verification)
+- [Choose the measurement](#choose-the-measurement)
+- [Diagnose by boundary](#diagnose-by-boundary)
+- [Design a credible comparison](#design-a-credible-comparison)
+- [Cache, retry, and degradation decisions](#cache-retry-and-degradation-decisions)
+- [Capacity and load evidence](#capacity-and-load-evidence)
+- [Anti-patterns](#anti-patterns)
+- [Evidence record](#evidence-record)
 
-## PERFORMANCE STRATEGY GUIDANCE
+## Choose the measurement
 
-**Frontend:** Bundle size, code splitting, critical rendering path, blocking scripts, render frequency, image/asset optimization, network waterfalls, Core Web Vitals (LCP, FID/INP, CLS), perceived responsiveness, hydration cost for SSR/SSG.
+| Claim | Prefer | Avoid |
+| --- | --- | --- |
+| A page or interaction feels slow | Interaction, render, network, and device evidence at the client boundary | Declaring success from server time alone |
+| An API regressed | Success/error behaviour plus central and, when relevant, tail latency under a named workload | A percentile without the observation count or workload |
+| A batch job is late | Completion time, deadline success, queue age, failed/duplicate work, and throughput | Forcing request-percentile language onto a job |
+| CPU, memory, lock, or render cost is suspected | A suitable profile or runtime trace after a focused hypothesis | High-overhead instrumentation that materially changes the behaviour being diagnosed |
+| A dependency is slow or failing | Dependency duration/outcome, timeout/retry count, queueing and saturation evidence | Adding retries before deciding whether the operation is safe to repeat |
 
-**Backend / Service:** Endpoint critical path end-to-end, query efficiency and N+1 patterns, I/O latency and unnecessary blocking, connection pooling and reuse, batch vs per-item work, serialization cost, external dependency latency and timeout behavior.
+Use mean or median to describe typical behaviour. Add a tail measure when slow outcomes themselves change the decision. State why the chosen statistic answers the question. A small or changing sample does not establish a stable population percentile.
 
-**Database:** Query plan quality and index usage, indexing strategy for hot access patterns, N+1 behavior and eager loading, cardinality and data volume growth, locking and contention, transaction scope, hot rows under concurrent write load.
+## Diagnose by boundary
 
-**Distributed / Infrastructure:** Queue depth growth and drain rate, retry amplification and thundering herd behavior, backpressure mechanisms between services, saturation points and autoscaling thresholds, cross-service latency chains, noisy-neighbor contention, circuit breaker behavior under partial failure.
+Inspect the path where harm appears before choosing the mechanism:
 
----
+- **Browser/UI:** capture the representative interaction, device/network conditions, runtime work, rendering, assets, and dependent requests. Use field evidence only when it exists and state when laboratory evidence is substituted.
+- **Request/service:** inspect entry, application work, data access, external calls, serialization, timeouts/retries, queues, and saturation. Add traces only when correlation through the path cannot be reconstructed from simpler evidence.
+- **Data access:** inspect query shape, query count, plans where available, cardinality, lock/transaction scope, cache effects, and connection use. Do not assume an index is the answer before observing the access pattern.
+- **Job/queue:** inspect work-unit semantics, arrival and drain rate, queue age/depth, retry/duplicate handling, deadlines, checkpoints, and downstream failure.
+- **Resource leak:** compare resource use across a repeatable scenario and time window. Separate a temporary allocation peak from retained growth.
 
-## KEY DIAGNOSTIC QUESTIONS
+## Design a credible comparison
 
-### Before Starting
+Keep treatment and baseline comparable. Record the input or request mix, arrival/concurrency model, data state, cache state, warmup, device/network conditions, dependency behaviour, build/version, measurement overhead, sample count, and time window.
 
-- What is the specific performance target?
-- Is this latency, throughput, or resource consumption?
-- Where is the evidence that this is actually slow?
-- Has this degraded recently, or has it always been slow?
+Use an unchanged path, prior release, treatment/control, or explicit target. If the baseline changed, say so and narrow the conclusion. Label synthetic results as synthetic; state which user, traffic, data, and dependency conditions they omit. Escalate from local or synthetic evidence only when the decision needs capacity, tail, concurrency, or production-exposure confidence.
 
-### During Investigation
+## Cache, retry, and degradation decisions
 
-- Where does each millisecond go in the request lifecycle?
-- Which single component is consuming the most time or resources?
-- How many database queries does this operation trigger? Are they indexed?
-- Is the application doing work it does not need to do?
-- At exactly what load does response time begin to degrade nonlinearly?
+### Cache
 
-### Before Optimizing
+Before adding a cache, write:
 
-- Am I targeting the proven bottleneck, or optimizing something that feels slow?
-- Can I eliminate this work entirely instead of making it faster?
-- Can I fix the root cause instead of caching the symptom?
-- Am I about to change multiple variables at once, losing causal clarity?
-- How will I verify that the optimization actually improved performance?
-
-### After Optimizing
-
-- Did the metrics improve by the expected amount?
-- **If the metric did not change — what does that imply about the original bottleneck hypothesis?**
-- Has the bottleneck shifted to another component?
-- Did the optimization introduce any correctness regressions?
-- Does the system still degrade gracefully under extreme load?
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Looks Like | Why It's Harmful | Fix |
-| --- | --- | --- | --- |
-| **Premature Optimization** | Rewriting with bit-shifting tricks before any profiling | Adds complexity with no proven benefit; actual bottleneck is almost always elsewhere | Write the simple version. Profile under realistic load. Optimize surgically only if this is the bottleneck. |
-| **Optimizing the Non-Bottleneck** | Week spent optimizing a 2% function while the 85% DB query goes unexamined | The system's performance is governed by its single narrowest constraint | Profile the full request path. Identify the bottleneck. Optimize only that. |
-| **Average-Based Reasoning** | "Average response time is 150ms, fine" while p99 is 4,200ms | Averages are dominated by fast requests and conceal tail latency | Always use percentile metrics. |
-| **Cache-First Thinking** | First response to "query is slow" is "let's cache it" | Caching adds invalidation complexity, staleness risk, memory pressure on top of a fixable problem | Fix the root cause first. Cache only if inherently expensive and cannot be further optimized. |
-| **N+1 Blindness** | List page loading 50 items, each triggering a separate query (51 queries total) | Destroys throughput. Under concurrent load, exhausts connection pools. | Examine every list operation for N+1. Use eager loading, batch fetching, or joined queries. |
-| **Local-Machine Benchmarking** | "It returns in 5ms on my laptop with 100 rows. Fine." | 5ms with 100 rows may be 30 seconds with 10 million. Local benchmarks prove nothing about production behavior. | Test with production-scale data and realistic concurrent load. |
-| **Multi-Change Chaos** | Adding cache, rewriting a query, upgrading a library, adding CDN simultaneously | Cannot isolate what caused improvement or regression | Change one variable per optimization cycle. Measure after each change. |
-| **Optimization Theater** | Replacing `for` loops with streams for endpoints running once per hour | Optimized-looking code that doesn't materially improve any user-facing metric | Ask: if this change succeeds completely, what metric improves by how much? If not much, don't make the change. |
-| **Degradation Ignorance** | System works at normal load but crashes completely at 2x traffic with no rate limiting | Traffic spikes are inevitable. Systems that crash cause cascading failures. | Design degradation: rate limiting, load shedding, circuit breakers, backpressure. |
-| **Scale Fantasy** | Sharding a database for an application with 200 active users | Adds architectural complexity for performance scenarios that will never occur at current scale | Optimize for the scale that exists today with a clear, low-cost upgrade path. |
-| **One-Shot Tuning** | Single investigation, apply a fix, close the ticket, never monitor again | Performance regressions recur. Data volumes grow. Traffic patterns shift. | After every optimization, confirm monitoring exists to detect recurrence. |
-
----
-
-## OUTPUT SHAPE
-
-### For Performance Diagnosis
-
-```markdown
-
-1. Problem statement — what is slow, for whom, under what conditions
-2. Baseline metrics — current p95/p99 latency, throughput, resource usage
-3. Methodology — how the bottleneck was identified
-4. Identified bottleneck — the specific component, query, or operation
-5. Evidence — the data that proves this is the bottleneck
-6. Recommended interventions — ranked by impact-to-complexity ratio
-7. Expected improvement — quantified estimate for each intervention
-8. Tradeoffs — what each intervention costs
+```text
+Value and owner:
+Key and variation inputs:
+Freshness and invalidation:
+Consistency tolerance:
+Authorization and privacy boundary:
+Miss, stale, eviction, and origin-failure behaviour:
+Storage/cost limit:
+Evidence of repeated work or transfer:
 ```
 
-### For Performance Optimization
+Treat personalized or authenticated responses as a privacy boundary. Follow the applicable HTTP cache semantics; do not infer safe sharing from a URL alone.
 
-```markdown
+### Retry and timeout
 
-1. Bottleneck targeted — what was the constraint and what evidence proved it
-2. Baseline metrics — pre-optimization measurements
-3. Intervention applied — what was changed and why
-4. Post-optimization metrics — same measurement methodology as baseline
-5. Improvement achieved — e.g., "p99 reduced from 1,200ms to 180ms"
-6. Tradeoff accepted — what was sacrificed
-7. Operational requirements — any new monitoring, cache management, or config needs
-8. Next bottleneck — if target not fully met, where the constraint has shifted
+Before retrying, decide:
+
+```text
+Operation and side effect:
+Idempotency or idempotency key:
+Deadline:
+Retry budget, backoff, and jitter:
+Dependency-unavailable behaviour:
+User-visible result and recovery path:
 ```
 
----
+Avoid automatic retry where repeat execution can duplicate an external or durable effect and the safety mechanism is uncertain. Observe queue growth and dependency pressure; retry amplification is a failure mode, not a cure.
 
-## NON-NEGOTIABLE CHECKLIST
+### Degradation
 
-### Evidence
+Name the degraded behaviour: stale public content, optional feature disabled, low-priority work deferred, bounded failure, or queued recovery. Reject a degradation plan that can disclose data, create an irreversible duplicate effect, violate a business invariant, or conceal a safety hazard.
 
-- [ ] Bottleneck identified through measurement — not assumption or intuition
-- [ ] Baseline metrics captured before any optimization was applied
-- [ ] Metrics use percentiles (p95, p99) — not averages
-- [ ] Testing performed under realistic conditions (production-like data volume and concurrency)
+## Capacity and load evidence
 
-### Targeting
+Use the smallest representative evidence that can change the decision. A local microbenchmark may answer an algorithm comparison. A service capacity claim may require a workload that represents arrival pattern, concurrency, cache effects, dependencies, and the relevant failure behaviour. Closed-loop generators can hide queueing by reducing demand when a system slows; state the load model and its limits.
 
-- [ ] Optimization targets the proven bottleneck — not unrelated code
-- [ ] Root cause examined before caching was considered
-- [ ] N+1 query patterns checked and eliminated where found
-- [ ] Only one variable changed per optimization cycle to preserve causal clarity
+Stop when the stated target is met with evidence suited to the risk, when further improvement has no demonstrated user or business value, or when additional complexity and blast radius exceed expected benefit. Stop and escalate if the workload is unrepresentative, measurements conflict, the baseline moved, instrumentation perturbs the result, or recovery cannot be demonstrated.
 
-### Quality Preservation
+## Anti-patterns
 
-- [ ] Code readability preserved or complexity encapsulated behind clean interfaces
-- [ ] Optimization logic documented with WHY comments where non-obvious
-- [ ] No correctness regressions introduced
+| Anti-pattern | What it is | Fix |
+| --- | --- | --- |
+| Metric substitution | Server time is used to prove a browser experience improved | Measure at the client/interaction boundary or state the missing bridge |
+| Percentile ritual | p99 is required for a small local tool without a tail-risk decision | Choose a statistic matched to the consequence and sample |
+| Benchmark overclaim | Laptop or synthetic results are presented as production capacity | Label evidence, name omissions, and escalate only when necessary |
+| Cache-by-URL | Personalized data is shared because keying/privacy was not designed | Define variation, authorization, freshness, and cross-user tests |
+| Retry amplification | Timed-out work is blindly repeated during dependency failure | Define idempotency, budget, deadline, and unavailable-state behaviour |
+| Multi-change causality loss | Cache, query, library, and infrastructure changes land together | Narrow the change or separate evidence and behaviour changes |
+| Tuning without a decision | Work continues after target/value is already clear | Set a decision threshold and stopping condition |
 
-### Verification
+## Evidence record
 
-- [ ] Post-optimization metrics captured using the same methodology as baseline
-- [ ] Improvement quantified and compared against the performance target
-- [ ] Whether the bottleneck moved was checked and documented
-- [ ] Degradation behavior under extreme load considered
+```markdown
+## Evidence record
 
----
-
-**Final Rule:** Never optimize without evidence. Never assume without measuring. Never cache without first fixing. Never claim improvement without re-measuring. The fastest operation is the one you eliminate entirely. A strong performance result makes clear what was actually slow, why it was slow, what change had the best payoff, what the optimization costs, and how we will know if the improvement is real.
+- Claim and harm boundary:
+- Environment and version:
+- Workload, concurrency, cache/warmup state:
+- Method and measurement overhead:
+- Baseline/control:
+- Results and observation count:
+- Limitations and excluded conditions:
+- Decision threshold, result, and next action:
+```

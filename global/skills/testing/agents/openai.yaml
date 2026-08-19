@@ -1,4 +1,4 @@
 interface:
-  display_name: "Testing"
-  short_description: "Guidance for testing tasks"
-  default_prompt: "Use $testing to help complete this task with its domain workflow."
+  display_name: "Testing and Verification"
+  short_description: "Risk-sized evidence for software changes"
+  default_prompt: "Use $testing to choose and interpret credible evidence for this change."

@@ -1,227 +1,93 @@
 ---
 name: marketing-psychology
-description: 'When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when the user mentions ''psychology,'' ''mental models,'' ''cognitive bias,'' ''persuasion,'' ''behavioral science,'' ''why people buy,'' ''decision-making,'' ''consumer behavior,'' ''anchoring,'' ''social proof,'' ''scarcity,'' ''loss aversion,'' ''framing,'' or ''nudge.'' Use this whenever someone wants to understand or leverage how people think and make decisions in a marketing context.'
+description: 'Use when a user asks how behavioural insight, cognitive load, trust, framing, choice, social proof, urgency, defaults, or decision friction might affect a specific marketing, product, website, or service decision. Do NOT use as a generic persuasion toolkit, to claim that a bias will increase conversion, to design experiments (use testing), to solve interface/accessibility issues (use ui-ux or page-cro), or to replace product/positioning evidence.'
 ---
 
-# Marketing Psychology & Mental Models
+# Ethical Behavioural Insight
 
-You are an expert in applying psychological principles and mental models to marketing. Your goal is to help users understand why people buy, how to influence behavior ethically, and how to make better marketing decisions.
+## WHEN TO USE THIS
 
-## How to Use This Skill
+- Explain or assess a named behavioural concept in the context of a defined audience, decision, channel, and desired informed action.
+- Help a product, service, website, or message reduce unnecessary cognitive load, ambiguity, trust friction, or avoidable choice confusion.
+- Frame a behaviour-related change as a bounded hypothesis with limits, evidence needs, and a route to product, UI/UX, CRO, or testing.
 
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before applying mental models. Use that context to tailor recommendations to the specific product and audience.
+## NEVER DO
 
-Mental models are thinking tools that help you make better decisions, understand customer behavior, and create more effective marketing. When helping users:
+- Never treat a bias, heuristic, framework, model, or case study as a guaranteed conversion lever or evidence of a person’s private motive.
+- Never recommend fake scarcity, deceptive comparison, hidden defaults, confirmshaming, obstructive cancellation, fabricated social proof, coercive urgency, stereotype-based targeting, or exploitation of vulnerable people.
+- Never use behavioural insight to hide a weak product, unsupported claim, missing consent, inaccessible choice, material cost, or another critical fact.
+- Never design, run, or declare an experiment, causal result, price change, public campaign, or external effect without the owning capability and explicit approval.
+- Never import a tactic from a different culture, sector, country, channel, population, or risk level as a universal default.
 
-1. Identify which mental models apply to their situation
-2. Explain the psychology behind the model
-3. Provide specific marketing applications
-4. Suggest how to implement ethically
+## START WITH THE DECISION, NOT THE BIAS
 
----
+1. Identify the real user decision, audience/context, channel, commitment, available evidence, and desired informed action.
+2. Identify the problem type: confusing language, missing proof, too many choices, onboarding/task friction, unclear comparison, trust concern, product/value uncertainty, or a request for manipulation.
+3. Read applicable `AGENTS.md` files and relevant active project truth under `.agents/contexts/` when it exists. Separate verified facts, reported claims, interpretations, hypotheses, and unknowns.
+4. Load [Meaning and Evidence Foundation](../../reference/meaning-and-evidence-foundation.md) when a material claim, proof, audience, promise, or narrative decision is unclear. Load [Customer, Market, and Demand Evidence](../../reference/customer-market-demand-evidence.md) only for material customer, market, offer, willingness-to-pay, or demand uncertainty.
+5. Choose the smallest owner. Explain a concept directly only when that answers the task; otherwise hand off the actual decision.
 
-## Foundational Thinking Models
+## ROUTE BY THE ACTUAL JOB
 
-These models sharpen your strategy and help you solve the right problems.
+| Problem | Primary owner | This skill contributes |
+| --- | --- | --- |
+| Unclear product value, prioritisation, offer, or trade-off | `product-thinking` | A question about decision friction or comprehension, never a substitute for product value. |
+| New message or public-facing copy | `copywriting` | Evidence/claim caution and a user-comprehension hypothesis. |
+| Existing copy polish | `copy-editing` | A check for ambiguity, cognitive load, and misleading pressure. |
+| Service posture, qualification, or sales process | `expert-positioning` | A buyer-understanding and dignity check. |
+| Interface, onboarding, accessibility, or task completion | `ui-ux` | A hypothesis about confusion, choice, feedback, or trust; UI/UX owns the design. |
+| Page friction or measured conversion question | `page-cro` | A context-limited mechanism to investigate; no causal conclusion. |
+| Test or comparison design | `testing` | Candidate hypothesis only; Testing owns design, metrics, validity, and interpretation. |
+| Prospect research or sales collateral | `prospect-research` or `sales-enablement` | Truthful evidence and communication limits; never contact or persuasion pressure. |
 
-### First Principles
-Break problems down to basic truths and build solutions from there. Instead of copying competitors, ask "why" repeatedly to find root causes. Use the 5 Whys technique to tunnel down to what really matters.
+## FORM A PROPORTIONATE HYPOTHESIS
 
-**Marketing application**: Don't assume you need content marketing because competitors do. Ask why you need it, what problem it solves, and whether there's a better solution.
+Use this only when a behaviour-related change is genuinely useful:
 
-### Jobs to Be Done
-People don't buy products—they "hire" them to get a job done. Focus on the outcome customers want, not features.
+1. **Observed problem:** state the actual evidence, such as a confusing task, feedback, or measured drop-off. Do not infer intent from a label.
+2. **Candidate mechanism:** name the limited explanation, such as comprehension burden, unclear comparison, choice overload, lack of proof, or uncertainty about the next step.
+3. **Proposed change:** make the smallest reversible, accessible, and truthful change that could address the problem.
+4. **Expected signal:** define what would be observed and what competing explanation could produce the same signal.
+5. **Evidence limit:** state what the result could and could not establish, especially with sparse traffic or a changed audience/channel.
+6. **Owner and approval:** route implementation, testing, public release, data collection, pricing, or external contact to the right owner and approval gate.
 
-**Marketing application**: A drill buyer doesn't want a drill—they want a hole. Frame your product around the job it accomplishes, not its specifications.
+For low traffic, prefer qualitative comprehension checks, accessibility review, error/task observation, support themes, or a reversible local improvement over an underpowered experiment. Do not claim a causal effect from anecdote, a single test, an AI persona, or a borrowed tactic.
 
-### Circle of Competence
-Know what you're good at and stay within it. Venture outside only with proper learning or expert help.
+## ETHICAL BOUNDARY
 
-**Marketing application**: Don't chase every channel. Double down where you have genuine expertise and competitive advantage.
+Prefer clear language, authentic proof, accessible choices, transparent terms, truthful constraints, and friction reduction that serves the person making the decision. A default is defensible only when it is visible, easy to change, aligned with the user’s likely interest, and not used to obtain an unchosen commitment. Urgency is defensible only when a real, relevant constraint exists and is stated plainly.
 
-### Inversion
-Instead of asking "How do I succeed?", ask "What would guarantee failure?" Then avoid those things.
+Stop and flag work involving vulnerable audiences, material financial/health/legal decisions, sensitive personal data, minors, addictive/compulsive patterns, major public claims, synthetic material that could be mistaken for documentary evidence, or an external effect. This skill prepares analysis; it never authorises the action.
 
-**Marketing application**: List everything that would make your campaign fail—confusing messaging, wrong audience, slow landing page—then systematically prevent each.
+## CURRENT EVIDENCE STATUS
 
-### Occam's Razor
-The simplest explanation is usually correct. Avoid overcomplicating strategies or attributing results to complex causes when simple ones suffice.
+The earlier named-model catalogue is retained as a **candidate reference**, not a default instruction set. Many mechanisms are context-dependent, and some examples in it are unsuitable for portable use. Until the focused evidence study is assessed:
 
-**Marketing application**: If conversions dropped, check the obvious first (broken form, page speed) before assuming complex attribution issues.
+- use it only to explain a specific concept the user asks about;
+- keep the concept’s evidence, limitations, and ethical risk visible;
+- do not turn it into a tactic, pricing rule, pressure device, or claimed outcome; and
+- prefer direct, accessible explanation and authentic proof over influence mechanics.
 
-### Pareto Principle (80/20 Rule)
-Roughly 80% of results come from 20% of efforts. Identify and focus on the vital few.
-
-**Marketing application**: Find the 20% of channels, customers, or content driving 80% of results. Cut or reduce the rest.
-
-### Local vs. Global Optima
-A local optimum is the best solution nearby, but a global optimum is the best overall. Don't get stuck optimizing the wrong thing.
-
-**Marketing application**: Optimizing email subject lines (local) won't help if email isn't the right channel (global). Zoom out before zooming in.
-
-### Theory of Constraints
-Every system has one bottleneck limiting throughput. Find and fix that constraint before optimizing elsewhere.
-
-**Marketing application**: If your funnel converts well but traffic is low, more conversion optimization won't help. Fix the traffic bottleneck first.
-
-### Opportunity Cost
-Every choice has a cost—what you give up by not choosing alternatives. Consider what you're saying no to.
-
-**Marketing application**: Time spent on a low-ROI channel is time not spent on high-ROI activities. Always compare against alternatives.
-
-### Law of Diminishing Returns
-After a point, additional investment yields progressively smaller gains.
-
-**Marketing application**: The 10th blog post won't have the same impact as the first. Know when to diversify rather than double down.
-
-### Second-Order Thinking
-Consider not just immediate effects, but the effects of those effects.
-
-**Marketing application**: A flash sale boosts revenue (first order) but may train customers to wait for discounts (second order).
-
-### Map ≠ Territory
-Models and data represent reality but aren't reality itself. Don't confuse your analytics dashboard with actual customer experience.
-
-**Marketing application**: Your customer persona is a useful model, but real customers are more complex. Stay in touch with actual users.
-
-### Probabilistic Thinking
-Think in probabilities, not certainties. Estimate likelihoods and plan for multiple outcomes.
-
-**Marketing application**: Don't bet everything on one campaign. Spread risk and plan for scenarios where your primary strategy underperforms.
-
-### Barbell Strategy
-Combine extreme safety with small high-risk/high-reward bets. Avoid the mediocre middle.
-
-**Marketing application**: Put 80% of budget into proven channels, 20% into experimental bets. Avoid moderate-risk, moderate-reward middle.
-
----
-
-## Understanding Buyers & Human Psychology
-
-These models explain how customers think, decide, and behave.
-
-### Fundamental Attribution Error
-People attribute others' behavior to character, not circumstances. "They didn't buy because they're not serious" vs. "The checkout was confusing."
-
-**Marketing application**: When customers don't convert, examine your process before blaming them. The problem is usually situational, not personal.
-
-### Mere Exposure Effect
-People prefer things they've seen before. Familiarity breeds liking.
-
-**Marketing application**: Consistent brand presence builds preference over time. Repetition across channels creates comfort and trust.
-
-### Availability Heuristic
-People judge likelihood by how easily examples come to mind. Recent or vivid events seem more common.
-
-**Marketing application**: Case studies and testimonials make success feel more achievable. Make positive outcomes easy to imagine.
-
-### Confirmation Bias
-People seek information confirming existing beliefs and ignore contradictory evidence.
-
-**Marketing application**: Understand what your audience already believes and align messaging accordingly. Fighting beliefs head-on rarely works.
-
-### The Lindy Effect
-The longer something has survived, the longer it's likely to continue. Old ideas often outlast new ones.
-
-**Marketing application**: Proven marketing principles (clear value props, social proof) outlast trendy tactics. Don't abandon fundamentals for fads.
-
-### Mimetic Desire
-People want things because others want them. Desire is socially contagious.
-
-**Marketing application**: Show that desirable people want your product. Waitlists, exclusivity, and social proof trigger mimetic desire.
-
-### Sunk Cost Fallacy
-People continue investing in something because of past investment, even when it's no longer rational.
-
-**Marketing application**: Know when to kill underperforming campaigns. Past spend shouldn't justify future spend if results aren't there.
-
-### Endowment Effect
-People value things more once they own them.
-
-**Marketing application**: Free trials, samples, and freemium models let customers "own" the product, making them reluctant to give it up.
-
-### IKEA Effect
-People value things more when they've put effort into creating them.
-
-**Marketing application**: Let customers customize, configure, or build something. Their investment increases perceived value and commitment.
-
-### Zero-Price Effect
-Free isn't just a low price—it's psychologically different. "Free" triggers irrational preference.
-
-**Marketing application**: Free tiers, free trials, and free shipping have disproportionate appeal. The jump from $1 to $0 is bigger than $2 to $1.
-
-### Hyperbolic Discounting / Present Bias
-People strongly prefer immediate rewards over future ones, even when waiting is more rational.
-
-**Marketing application**: Emphasize immediate benefits ("Start saving time today") over future ones ("You'll see ROI in 6 months").
-
-### Status-Quo Bias
-People prefer the current state of affairs. Change requires effort and feels risky.
-
-**Marketing application**: Reduce friction to switch. Make the transition feel safe and easy. "Import your data in one click."
-
-### Default Effect
-People tend to accept pre-selected options. Defaults are powerful.
-
-**Marketing application**: Pre-select the plan you want customers to choose. Opt-out beats opt-in for subscriptions (ethically applied).
-
-### Paradox of Choice
-Too many options overwhelm and paralyze. Fewer choices often lead to more decisions.
-
-**Marketing application**: Limit options. Three pricing tiers beat seven. Recommend a single "best for most" option.
-
-### Goal-Gradient Effect
-People accelerate effort as they approach a goal. Progress visualization motivates action.
-
-**Marketing application**: Show progress bars, completion percentages, and "almost there" messaging to drive completion.
-
-### Peak-End Rule
-People judge experiences by the peak (best or worst moment) and the end, not the average.
-
-**Marketing application**: Design memorable peaks (surprise upgrades, delightful moments) and strong endings (thank you pages, follow-up emails).
-
-### Zeigarnik Effect
-Unfinished tasks occupy the mind more than completed ones. Open loops create tension.
-
-**Marketing application**: "You're 80% done" creates pull to finish. Incomplete profiles, abandoned carts, and cliffhangers leverage this.
-
-### Pratfall Effect
-Competent people become more likable when they show a small flaw. Perfection is less relatable.
-
-**Marketing application**: Admitting a weakness ("We're not the cheapest, but...") can increase trust and differentiation.
-
-### Curse of Knowledge
-Once you know something, you can't imagine not knowing it. Experts struggle to explain simply.
-
-**Marketing application**: Your product seems obvious to you but confusing to newcomers. Test copy with people unfamiliar with your space.
-
-### Mental Accounting
-People treat money differently based on its source or intended use, even though money is fungible.
-
-**Marketing application**: Frame costs in favorable mental accounts. "$3/day" feels different than "$90/month" even though it's the same.
-
-### Regret Aversion
-People avoid actions that might cause regret, even if the expected outcome is positive.
-
-**Marketing application**: Address regret directly. Money-back guarantees, free trials, and "no commitment" messaging reduce regret fear.
-
-### Bandwagon Effect / Social Proof
-People follow what others are doing. Popularity signals quality and safety.
-
-**Marketing application**: Show customer counts, testimonials, logos, reviews, and "trending" indicators. Numbers create confidence.
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [references/extended-guidance.md](references/extended-guidance.md) only when a user explicitly asks about a named model or when a defined hypothesis needs conceptual vocabulary. Treat its contents as candidates pending evidence review; this skill’s ethical boundary overrides every example in that file.
+- Load [references/resource-index.md](references/resource-index.md) first when the needed supporting material is unclear. Do not load the package wholesale.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+For an explanation: define the concept, give its relevant limit, state the ethical boundary, and name the owning capability if action is needed.
+
+For an assessment:
+
+1. **Decision and evidence:** the actual problem, facts, assumptions, and unknowns.
+2. **Candidate mechanisms:** no more than the few relevant hypotheses, with alternate explanations.
+3. **Proportionate next step:** direct clarification, a local reversible change, a routed design/CRO/test task, or a stop.
+4. **Limits and approval:** what cannot be claimed and what requires explicit approval before an external effect.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Start with the person’s decision and observed context, not a famous bias.
+2. Keep behavioural concepts context-limited and falsifiable.
+3. Protect clarity, accessibility, consent, truthful proof, and informed choice.
+4. Route product, UI, CRO, testing, sales, and external actions to their owners.
+5. Do not claim improved conversion or causal impact without appropriate evidence.

@@ -1,201 +1,200 @@
 ---
 name: research-analysis
-description: 'Use this skill when comparing tools, technologies, frameworks, or approaches, or when conducting technical feasibility analysis. Activated when the user asks "Should I use X or Y?", requests pros and cons, needs a build vs. buy evaluation, asks "What is the best way to..." where the answer depends on context, or needs research into industry norms, standards, or technical alternatives. Examples: "compare Redis and Memcached", "should we build this or use a SaaS?", "what are the tradeoffs of GraphQL vs REST for our case?", "research options for background job processing".'
+description: >
+  Use for decision-relevant research, technical feasibility, tool or approach
+  comparison, standards or industry-practice questions, capability-gap study,
+  or synthesis of multiple reports. Trigger phrases include "research this",
+  "compare", "should we use", "what are we missing", "is this enough", and
+  "synthesise these reports". Do not load for simple factual lookup, ordinary
+  summarising, routine brainstorming, or a question whose answer does not
+  change a decision.
 ---
 
-# RESEARCH & TECHNICAL ANALYSIS
+# Research Analysis
 
 ## WHEN TO USE THIS
 
-- User asks to compare two or more tools, technologies, frameworks, or approaches
-- "Should I use X or Y?" or "pros and cons" requests
-- Build vs. buy evaluations
-- Feasibility analysis for a feature, platform, service, or integration
-- Research into industry norms, common practice, or technical standards
+- Name a decision, design choice, capability gap, or uncertainty that evidence may change.
+- Compare at least two viable paths, including the current/boring baseline when it remains viable.
+- Use for technical, product, operational, market, standards, host-capability, or multi-report research.
 
 ## NEVER DO
 
-- Present one option as the obvious winner without defining evaluation criteria first
-- Compare tools using marketing claims instead of mechanics, costs, and failure modes
-- Ignore the user's actual stack, team size, timeline, or scale constraints
-- List features without identifying which ones actually matter for this decision
-- Dump research facts without synthesizing a recommendation
-- Force a strong recommendation when key uncertainties remain unresolved
-- Treat preferences as facts
+- Do not treat a source, report, model, vendor, or tool output as authority merely because it sounds confident.
+- Do not blend observation, source-reported claim, inference, hypothesis, recommendation, and unknown.
+- Do not use marketing language or benchmark scores as proof of general capability.
+- Do not recommend a permanent skill, workflow, agent, tool, or dependency without a concrete failure mode and a test.
+- Do not continue researching after the decision is sufficiently supported unless a named unresolved risk justifies the cost.
+- Do not convert research into implementation, publication, purchase, contact, or deployment authority.
+- Do not store raw external content as durable project truth.
 
----
+## FRAME THE DECISION
 
-## MINDSET
+1. State the decision the research must change, the owner, the audience, and the consequence of being wrong.
+2. Record current state, desired state, constraints, non-goals, reversibility, time/cost budget, and known project truth.
+3. Define 3–5 decision criteria before collecting evidence. Include fit, maintenance burden, risk, reversibility, and evidence quality when relevant.
+4. List the baseline: keep the current approach, do less, delay, or use existing capability.
+5. Write the smallest useful research question and split it into bounded sub-questions.
 
-You are a neutral evaluator, not an advocate. Your job is not to win a technology argument or push a preferred stack. Your job is to make the decision space so clear that the right choice becomes obvious *for this specific context*.
+## PLAN BEFORE SEARCHING
 
-"Which is better?" is usually the wrong question. The better question: **Which set of tradeoffs best fits the current constraints, goals, team, and risk profile?**
+Before deep research, produce a short plan containing:
 
-Treat certainty as suspicious. Flag unknowns, assumptions, and black boxes explicitly. Look for disconfirming evidence as aggressively as confirming evidence. Raw facts without synthesis are noise. Recommendations without criteria are opinions disguised as analysis.
+- sub-questions and their decision impact;
+- source families and required freshness;
+- claims that could change the recommendation;
+- counterclaims, failure modes, and abandonment evidence to seek;
+- stopping conditions and the evidence needed to satisfy them.
 
-The "boring" option is often stronger than the fashionable one. "Do nothing," "stay with the current stack," "delay the decision," or "use the standard default" must always be considered as valid baselines unless clearly disqualified. And sometimes the right answer is simply: do less.
+If the host supports plan editing, present the plan for human adjustment. If it
+does not, include the plan in the report and record any change made during
+research.
 
----
+## GRADE AND LABEL EVIDENCE
 
-## DECISION FRAMEWORK — EVALUATION DIMENSIONS
+Use the strongest available source for each claim:
 
-Evaluate options across all relevant dimensions:
-
-| Dimension | What to Look For | Why It Matters |
+| Grade | Prefer | Use |
 | --- | --- | --- |
-| **Technical Fit** | Does this structurally solve the real problem? | A reputable tool is still wrong if it doesn't fit the actual constraint. |
-| **Operational Burden** | How hard is it to run, monitor, debug, maintain, and upgrade? | Most cost appears after adoption, not during the decision meeting. |
-| **Team Fit / Learning Curve** | How fast can the team use this effectively? | "Best" technology becomes bad if the team cannot operate it confidently. |
-| **Ecosystem & Maturity** | Good support, documentation, libraries, production evidence? | Avoids fragile dependence on abandoned, niche, or immature solutions. |
-| **Reversibility** | If this choice is wrong, how painful is it to unwind? | Low reversibility demands much stronger evidence before committing. |
-| **Performance / Scale Fit** | Does it match realistic throughput, latency, or scale expectations? | Overkill and under-capacity are both forms of bad fit. |
-| **Security / Compliance Fit** | Does it respect trust boundaries, compliance rules, or risk posture? | Some options fail not technically, but legally or operationally. |
-| **Cost / Opportunity Cost** | What does this choice cost directly and what does it prevent doing elsewhere? | Every "yes" displaces something else. |
+| A | Official specification, primary documentation, standard, regulation, original paper, measured benchmark, direct observation | Establish narrow facts, current host behaviour, controls, or measured results |
+| B | Independent study, systematic review, named institution, transparent case study, reproducible practitioner evidence | Support mechanisms and bounded generalisation |
+| C | Named practitioner synthesis, vendor engineering account, implementation guide | Generate patterns or hypotheses; do not treat as causal proof |
+| D | Unsourced post, marketing page, copied list, anonymous claim, model assertion | Lead only; never support a material recommendation without corroboration |
 
----
+Label every material item as exactly one of:
 
-## RESEARCH HEURISTICS
+- `observed` — directly inspected behaviour or supplied artifact;
+- `source_reported_claim` — what a source says;
+- `inference` — reasoned interpretation from evidence;
+- `hypothesis` — plausible but unverified explanation or opportunity;
+- `recommendation` — proposed action tied to criteria;
+- `unknown` — not established, inaccessible, stale, or contradictory.
 
-Prefer:
+Record source, URL/path, access or publication date, scope, claim supported,
+limitation, confidence, and freshness for every material claim. Do not upgrade
+an inference because several sources repeat the same unsupported statement.
 
-- Focused questions over broad wandering
-- Decision-useful synthesis over encyclopedic summaries
-- Explicit evaluation criteria over vague comparison
-- Context-aware recommendations over generic rankings
-- Structured uncertainty over fake certainty
-- Frameworks and matrices when they improve clarity
-- Naming assumptions rather than hiding them
-- Recommendation with conditions instead of "it depends" without structure
-- The boring baseline over the fashionable option when context is thin
-- Delaying commitment when reversibility is low and evidence is weak
+## RESEARCH AND FALSIFICATION LOOP
 
----
+For each decision-sensitive claim:
 
-## BEHAVIORAL WORKFLOW
+1. Gather the strongest confirming evidence.
+2. Search specifically for failure reports, post-mortems, abandonment reasons, negative evaluations, boundary conditions, and contrary data.
+3. Check whether the evidence measures the outcome that matters, or only a proxy.
+4. Compare scope: model, host, version, population, jurisdiction, task, date, and environment.
+5. Search for transfer failure: ask what would make this evidence not apply to the active project.
+6. Record the strongest argument against the leading option before recommending it.
 
-### Step 1 — Clarify the Problem and Context
+Treat self-review, repeated model agreement, and vendor-reported success as
+non-independent evidence unless their evidence path, data, test, model, or
+authority differs materially.
 
-- What exact problem is being solved?
-- What constraints matter? (team size, stack, timeline, budget, traffic, compliance, ownership model)
-- What would success look like?
-- Never compare options in a vacuum.
+## SYNTHESISE OPTIONS
 
-### Step 2 — Establish the Evaluation Criteria
+Build a decision matrix only from criteria that matter. For each option state:
 
-- Define the 3–5 dimensions that actually matter *for this specific decision*.
-- State them before comparing options.
-- Example: "For this startup, speed of delivery and ecosystem maturity matter more than extreme-scale optimization."
+- mechanism and fit;
+- strongest case for it;
+- hidden cost, failure mode, and maintenance burden;
+- evidence grade and uncertainty;
+- reversibility and migration path;
+- smallest test that could disconfirm it;
+- recommendation strength and accepted trade-offs.
 
-### Step 3 — Generate the Viable Options
+When comparing reports, first normalise their question, scope, evidence grade,
+and date. Then identify common bedrock, useful disagreement, unsupported
+claims, and model-specific language. Do not average scores from reports that
+used different criteria or evidence.
 
-- Identify at least two viable options, preferably three.
-- Always include boring baseline options: stay with the current system, use the standard default, delay the decision, solve it with existing tooling, or do less.
+## STOPPING RULE
 
-### Step 4 — Conduct the Comparison
+Stop when all are true:
 
-- Evaluate each option against the chosen criteria.
-- Look for hidden costs, operational friction, migration pain, and failure modes.
-- Avoid feature-matrix obsession unless the feature list is directly tied to the evaluation criteria.
+1. The decision owner and decision statement are explicit.
+2. The leading option and the strongest viable baseline have been compared.
+3. Each material claim has adequate evidence or is marked unknown.
+4. At least one adversarial search has tested the leading recommendation.
+5. Remaining uncertainty is bounded by a named test, approval, or risk tolerance.
+6. Further research is unlikely to change the decision enough to justify its cost.
 
-### Step 5 — Synthesize and Recommend
+Continue only for a named unresolved high-impact uncertainty, a material source
+conflict, a safety/legal/rights boundary, or evidence with a freshness deadline.
+For low-stakes reversible decisions, use a short scan and move to the cheapest
+credible experiment. Never use “more research” as a substitute for a decision.
 
-- Do not just list pros and cons.
-- Explain **why Option A is better than Option B for this case**.
-- Make the recommendation explicit and tie it directly to the user's context.
-- If the right answer is "do less" or "stay where you are," say so clearly.
+## RESEARCH MODES
 
-### Step 6 — Identify Invalidating Conditions
+| Mode | Use | Minimum result |
+| --- | --- | --- |
+| `quick_scan` | Low-stakes, reversible, familiar decision | Criteria, baseline, a few graded sources, recommendation, unknowns |
+| `decision_study` | Material option, product, architecture, or capability choice | Plan, evidence ledger, alternatives, falsification, trade-offs, stop rule |
+| `capability_audit` | Ask whether the OS lacks a skill, workflow, agent, reference, or tool boundary | Failure mode, current owner, smallest asset, rejection condition, pilot |
+| `multi_report_synthesis` | Compare reports from one or more researchers/models | Provenance, common bedrock, disagreements, source quality, adopted decisions |
+| `host_probe` | Verify current host, tool, plugin, adapter, or model behaviour | Direct observation, version/date, supported surface, limitation, fallback |
 
-- State what would need to change for the recommendation to flip.
-- Example: "I recommend PostgreSQL now; if your write volume or tenant isolation needs change drastically, this recommendation may flip toward DynamoDB or sharded storage."
-
-### Step 7 — Before Finalizing, Re-check
-
-- Is the comparison tied to the actual problem?
-- Were enough options considered, including the boring baseline?
-- Are tradeoffs visible and the cost of the winning option stated?
-- Is uncertainty hidden anywhere?
-- Is recommendation strength calibrated to the evidence — not overstated, not understated?
-
----
-
-## KEY DIAGNOSTIC QUESTIONS
-
-- **Context Check:** Would my recommendation change if the team were smaller, less experienced, or under tighter deadline pressure?
-- **Baseline Check:** Does the user truly need a new tool, or can the current stack solve the problem with less migration cost?
-- **Bias Check:** Am I evaluating the rejected option fairly, or subconsciously advocating for my preferred answer?
-- **Cost Check:** What is the worst thing about my recommended option, and have I stated it clearly?
-- **Reversibility Check:** If we are wrong, how painful is recovery?
-- **Evidence Check:** What do I actually know versus what am I inferring?
-- **Scope Check:** Am I solving the real decision, or a smaller/adjacent one that feels easier to answer?
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Looks Like | Why It's Harmful | Fix |
-| --- | --- | --- | --- |
-| **Feature-Matrix Fallacy** | Giant checklist of features, count the boxes, declare the tool with most checks the winner | Treats all features as equally important; ignores business constraints, operational burden, architectural fit | Compare only on the dimensions that matter for this specific decision |
-| **Advocacy Disguised as Analysis** | Glowing language for one option, presenting the other only through its flaws | Destroys trust; turns analysis into a sales pitch | Steel-man the rejected option first. Present the strongest case for it before explaining why it still loses in this context. |
-| **Vacuum Evaluation** | "Kafka is better" or "GraphQL is best" without asking about team capacity, workload shape, or client needs | The best tool in a vacuum is often the wrong tool in reality | Anchor every comparison to the user's real environment and constraints |
-| **Data Dump Without Synthesis** | Many facts, pros, blog links, and caveats — but no recommendation | User asked for judgment, not an unsorted evidence pile | Synthesize the evidence into a recommendation with explicit tradeoffs |
-| **Trend Bias** | Favoring whatever is fashionable or widely discussed over what fits the user's team, scale, and constraints | Trendy choices carry adoption overhead, immature ecosystems, and operational unknowns | Evaluate fitness to context, not fitness to the current hype cycle |
-| **Single-Option Tunnel Vision** | First visible option treated as the only serious candidate | Prevents real tradeoff analysis; creates false confidence in a choice never truly evaluated | Always generate at least two viable alternatives, including the boring baseline |
-| **Recommendation Overreach** | Strong, confident recommendation when evidence is still incomplete or key uncertainties remain | Overconfident recommendations erode trust; may push users into poor decisions | Calibrate recommendation strength to the evidence. When uncertainty dominates, name it and recommend the most reversible path. |
-
----
+Choose the lightest mode that protects the decision. A mode changes depth, not
+authority.
 
 ## OUTPUT SHAPE
 
 ```markdown
+## Decision and Context
+- Decision owner:
+- Decision statement:
+- Consequence of being wrong:
+- Constraints, non-goals, and reversibility:
 
-## The Objective & Context
+## Research Plan
+- Sub-questions:
+- Source families and freshness:
+- Claims to test:
+- Counter-evidence sought:
+- Stopping condition:
 
-What we are deciding, and under which constraints.
+## Evidence Ledger
+| ID | Label | Claim/observation | Source/date | Grade | Confidence | Limitation |
 
-## Evaluation Criteria
+## Options and Baseline
+| Option | Fit | Evidence | Cost/risk | Reversibility | Test |
 
-The dimensions that matter for this decision.
-
-## Option A: [Name]
-
-- How it works
-- Strengths
-- Weaknesses / hidden costs
-
-## Option B: [Name]
-
-- How it works
-- Strengths
-- Weaknesses / hidden costs
+## Falsification and Disagreement
+- Strongest contrary evidence:
+- Transfer limits:
+- Report/source conflicts:
+- Unknowns:
 
 ## Recommendation
-
-I recommend [Option] because [reason tied to this specific context].
-
-## Tradeoffs Accepted
-
-What cost we are explicitly accepting by choosing this option.
-
-## When to Re-evaluate
-
-What future condition would invalidate or weaken this recommendation.
+- Recommended path and why:
+- Trade-offs accepted:
+- Smallest next action:
+- Approval or authority needed:
+- Invalidating condition / re-evaluation date:
 ```
 
----
+Use `unknown` instead of filling a gap with plausible language. Say when the
+research produced no new capability, when a report is not independent, and when
+the correct recommendation is to keep the current system or run a pilot.
+
+## ANTI-PATTERNS
+
+| Anti-Pattern | What It Is | Fix |
+| --- | --- | --- |
+| Data dump | Many links with no decision, criteria, or owner | State the decision first and connect each claim to it |
+| Source counting | More sources treated as stronger evidence | Grade source quality, independence, scope, and outcome fit |
+| Vendor proof | A vendor case or benchmark treated as universal performance | Mark it as bounded evidence and seek independent or local validation |
+| Consensus illusion | Several reports or agents repeat one unsupported claim | Check provenance and require a materially different evidence path |
+| Research theatre | Broad searching continues after the recommendation is stable | Apply the stopping rule and run the smallest next test |
+| Capability inflation | Every finding becomes a skill, workflow, or agent | Name the failure mode, smallest asset, and rejection condition |
+| False precision | Scores imply certainty that criteria or data do not support | Explain scoring, confidence, ranges, and unknowns |
+| Authority leakage | Research text grants permission to act | Keep recommendations separate from approval and execution |
 
 ## NON-NEGOTIABLE CHECKLIST
 
-- [ ] Problem and context explicitly stated
-- [ ] Evaluation criteria defined before the comparison
-- [ ] At least two viable options compared
-- [ ] Boring / standard / "do nothing" / "delay" baseline was considered
-- [ ] Recommendation tied to the user's actual constraints
-- [ ] Both strengths and weaknesses of the recommended option are visible
-- [ ] Unknowns and assumptions explicitly flagged
-- [ ] Recommendation includes invalidating conditions or re-evaluation triggers
-- [ ] Recommendation strength calibrated to the evidence — not forced when uncertainty dominates
-
----
-
-**Final Rule:** Research is only valuable if it improves judgment. A strong research result clarifies the real decision, reduces ambiguity, exposes tradeoffs, fits the actual context, and helps the user move forward with stronger reasoning than they had before.
+1. Name the decision, owner, consequence, criteria, baseline, and reversibility.
+2. Produce a research plan before deep searching.
+3. Grade sources and label every material claim.
+4. Search for disconfirming evidence and failure modes.
+5. Compare reports by provenance and scope, not by repeated language or score.
+6. Apply a practical stopping rule and state remaining unknowns.
+7. Recommend the smallest reversible next action.
+8. Never turn research into permission for mutation or external effect.

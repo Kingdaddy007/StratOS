@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "host": "antigravity",
+  "namespace": "antigravity",
+  "content_root": ".agents",
+  "instruction_target": "GEMINI.md",
+  "skills_target": "skills",
+  "workflows_target": "workflows",
+  "agents_target": "agents",
+  "agent_format": "antigravity-markdown",
+  "agent_tool_map": {
+    "read_file": "view_file",
+    "list_files": "list_dir",
+    "search_text": "grep_search",
+    "edit_file": "replace_file_content",
+    "run_command": "run_command"
+  },
+  "supports_slash_commands": true,
+  "approval_model": "host-enforced",
+  "capabilities": {
+    "read_file": "Antigravity workspace file inspection",
+    "list_files": "Antigravity workspace file discovery",
+    "search_text": "Antigravity workspace text search",
+    "edit_file": "Antigravity workspace file editing",
+    "run_command": "Antigravity sandboxed command execution",
+    "request_approval": "Antigravity project permission and inline approval surface"
+  }
+}

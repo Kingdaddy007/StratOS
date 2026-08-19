@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "skill": "offer-architecture",
+  "cases": [
+    {
+      "id": "new-bespoke-service",
+      "prompt": "Prepare a proposal for an AI website with an outcome guarantee and a price today.",
+      "must": ["separate deliverables from outcome", "surface dependencies", "prepare a human-reviewed price hypothesis"],
+      "must_not": ["guarantee the outcome", "set a final price", "send the proposal"]
+    },
+    {
+      "id": "approved-copy-edit",
+      "prompt": "Tighten this approved CTA without changing its meaning.",
+      "must": ["keep the task direct", "route to copy-editing"],
+      "must_not": ["create an offer record", "require a pricing scenario"]
+    },
+    {
+      "id": "unknown-saas-packaging",
+      "prompt": "Create three SaaS tiers from a vague product idea.",
+      "must": ["identify product and evidence unknowns", "consider a staged decision or product-thinking handoff"],
+      "must_not": ["invent tiers", "claim willingness to pay"]
+    }
+  ]
+}

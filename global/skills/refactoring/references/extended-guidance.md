@@ -1,276 +1,96 @@
-# Extended Guidance
+# Refactoring Evidence and Migration Guidance
 
 ## Contents
 
-- [REFACTORING LENSES](#refactoring-lenses)
-- [BEHAVIORAL WORKFLOW](#behavioral-workflow)
-  - [Phase 1 — Understand](#phase-1-understand)
-  - [Phase 2 — Contextualize](#phase-2-contextualize)
-  - [Phase 3 — Analyze](#phase-3-analyze)
-  - [Phase 4 — Plan](#phase-4-plan)
-  - [Phase 5A — Write Characterization Tests (first)](#phase-5a-write-characterization-tests-first)
-  - [Phase 5B — Incremental Refactoring (one safe transformation at a time)](#phase-5b-incremental-refactoring-one-safe-transformation-at-a-time)
-  - [Phase 5C — Strangler Fig Migration](#phase-5c-strangler-fig-migration)
-  - [Phase 5D — Handling Scope Creep](#phase-5d-handling-scope-creep)
-  - [Phase 5E — Handling Discovered Bugs](#phase-5e-handling-discovered-bugs)
-  - [Phase 6 — Verify](#phase-6-verify)
-  - [Phase 7 — Critique](#phase-7-critique)
-  - [Phase 8 — Communicate](#phase-8-communicate)
-  - [Pre-Finalization Re-Check](#pre-finalization-re-check)
-- [KEY DIAGNOSTIC QUESTIONS](#key-diagnostic-questions)
-- [ANTI-PATTERNS](#anti-patterns)
-- [OUTPUT SHAPE](#output-shape)
-- [Debt Assessment](#debt-assessment)
-- [Refactoring Plan](#refactoring-plan)
-- [Post-Refactor Summary](#post-refactor-summary)
-- [NON-NEGOTIABLE CHECKLIST](#non-negotiable-checklist)
-  - [Before Starting](#before-starting)
-  - [Test Coverage](#test-coverage)
-  - [During Execution](#during-execution)
-  - [After Completion](#after-completion)
-  - [For Strangler Fig Migrations](#for-strangler-fig-migrations)
+- [Assess a structural problem](#assess-a-structural-problem)
+- [Preserve behaviour under weak observability](#preserve-behaviour-under-weak-observability)
+- [Keep repair and refactor distinct](#keep-repair-and-refactor-distinct)
+- [Replace a legacy path safely](#replace-a-legacy-path-safely)
+- [Decide on rewrite versus incremental change](#decide-on-rewrite-versus-incremental-change)
+- [Review the result](#review-the-result)
 
-## REFACTORING LENSES
+## Assess a structural problem
 
-| Lens | What to Inspect |
+Name a concrete cost before changing structure. Use evidence that exists: repeated incident classes, blocked feature work, fragile ownership, duplicated business decisions, change frequency, support burden, or a known inability to test a boundary. Do not convert aesthetic dislike into fabricated economics.
+
+Inspect these lenses only when relevant:
+
+| Lens | Decision it informs |
 | --- | --- |
-| **Seam** | Where are the natural boundaries where new interfaces can be drawn? Can a subsystem be isolated behind a clean interface without modifying its internals? |
-| **Change Frequency** | Which modules change most frequently? Which have the highest defect density? Where do developers spend the most time when building new features? Which areas generate the most merge conflicts? |
-| **Friction** | Where does this code slow down future changes? What repeated complaints, regressions, or incidents point at hidden debt? What specific cost is this structure imposing, and how often does that cost recur? |
-| **Boundary** | Are responsibilities mixed that should be separated? Is logic in the wrong layer? Are seams for extraction or modularization visible? |
-| **Duplication** | Is knowledge duplicated, or just syntax duplicated? Are there multiple places that must change together for the same reason? Will the duplicated instances always change for the same reasons — or may they diverge? |
-| **Behavior Safety** | What behavior must remain unchanged? What tests or checks prove that behavior is preserved? Are tests verifying behavior or implementation? (Implementation-coupled tests break on refactoring even when behavior is preserved.) |
-| **Reversibility** | Can this be done in small, independently reversible steps? Can we pause or revert midway if a problem is discovered? What is the blast radius if a step introduces a bug? |
-| **Debt Classification** | Is this deliberate debt or accidental (accumulated through neglect)? Is it prudent or reckless (shortcuts taken without understanding the cost)? Is it localized (one module) or systemic (spread across the codebase)? |
-| **Deletion** | Can complexity be removed entirely, rather than rearranged? Is any code, configuration, or path still serving a real purpose? |
-| **Business Value** | How does this refactoring enable future work? What features become possible or faster? Is the timing right — or would this block higher-priority work? |
-| **Pattern** | Are there code smells (long parameter lists, primitive obsession, inappropriate intimacy, god functions)? Is a new pattern solving a concrete problem or being introduced for its own sake? |
-| **Migration** | Can the Strangler Fig be applied? Are there seams where new functionality can be introduced alongside the old? Can traffic be gradually routed from old to new? Is there a clear decommissioning plan? |
-| **ROI** | What will become cheaper, faster, or safer after this refactoring? What is the ongoing monthly cost of the debt vs the one-time cost to pay it down? |
-| **Legacy** | Is this legacy area actually bad, or just unfamiliar to the current team? What undocumented business rules might be hiding inside it? What would be lost in a rewrite that would not be obvious until months later? |
-| **Dependency** | What depends on this code? What does this code depend on? Are dependencies explicit and injectable, or implicit and global? Can the code be refactored in isolation, or must changes propagate to dependent systems? |
+| Behaviour and consumers | What must remain unchanged, and who can observe a regression? |
+| Ownership and seams | Can one bounded responsibility move without changing unrelated authority? |
+| Duplication | Is the same concept changing for the same reason, or are similar lines about to diverge? |
+| Lifecycle and state | Would extraction alter initialization, ordering, retries, disposal, or concurrency? |
+| Source of truth | Is a file generated, mirrored, cached, or governed by a schema/migration? |
+| Reversibility | Can a bad step be safely reversed, and does reversal recover data as well as code? |
 
----
+Prefer the smallest change that removes the named cost. Avoid a generalized architecture until the concept, variation, and ownership boundary are stable enough to make the code clearer.
 
-## BEHAVIORAL WORKFLOW
+## Preserve behaviour under weak observability
 
-### Phase 1 — Understand
+First distinguish what is known from what is merely untested.
 
-Identify what is being refactored and why. Distinguish: pure refactoring (structure only), feature work, or defect correction — do not mix them. Is this driven by measurable pain (production bugs, delivery velocity, difficult onboarding) or by aesthetic preference? Define explicit completion criteria and time box before starting.
+1. Inspect callers, outputs, stored state, telemetry, fixtures, and user-visible paths.
+2. Capture current observable behaviour with a focused regression or characterization check where it can credibly observe the relevant mechanism.
+3. Label a characterization check as **current behaviour**, not as a statement that the behaviour is correct or desirable.
+4. Combine static/type evidence, narrow diff inspection, and focused manual observation when automation is incomplete.
+5. Escalate rather than proceed autonomously when an unobservable path is security-sensitive, destructive, persistent, externally visible, or business-critical.
 
-### Phase 2 — Contextualize
+Do not demand a full harness for an isolated mechanical correction. Do not use the absence of a full harness as permission to alter an important unknown behaviour blindly.
 
-Map the code: what does it do, what depends on it, what does it depend on? Assess current test coverage. Identify the seams — where can changes be introduced with minimal blast radius? Identify change frequency and defect density to confirm this area is worth refactoring.
+## Keep repair and refactor distinct
 
-### Phase 3 — Analyze
+Separate a behaviour-preserving structural change from a repair by default. This makes review, rollback, and diagnosis clearer.
 
-*For Debt Assessment:*
+Combine them only when the repair cannot be made safely without the structural change. In that case, record:
 
-1. Identify the specific code smells and structural problems.
-2. Classify the debt: deliberate vs accidental, prudent vs reckless, localized vs systemic, accruing vs stable.
-3. Quantify the cost: defect rate attributable to this module, velocity impact, onboarding time, incident frequency.
-4. Estimate the compound cost if the debt is not addressed in 6 months.
-5. Estimate refactoring effort and compare to the ongoing cost of the debt.
-6. Determine whether the debt should be: paid now / scheduled soon / consciously tolerated.
-
-*For Refactor vs Rewrite Decision:*
-
-1. Evaluate whether the business logic is sound but the structure is poor (→ incremental refactor).
-2. Evaluate whether the system has identifiable seams and is too large to clean in place (→ Strangler Fig).
-3. Evaluate whether the architecture is fundamentally incompatible with current requirements (→ consider rewrite as last resort).
-4. For rewrite proposals: explicitly identify what undocumented business rules exist in the legacy code that would be lost.
-5. For rewrite proposals: estimate the true duration (multiply the initial estimate by 2–3×).
-6. Ask: "Am I advocating for a rewrite because the architecture is truly incompatible — or because I do not understand the code and want to start fresh?"
-
-*For Scope Definition:*
-
-1. Identify the minimum refactoring scope that addresses the core pain point.
-2. Define clear boundaries: what is in scope and what is explicitly out of scope.
-3. Plan the sequence: which refactorings should happen first to enable later ones?
-4. Define checkpoints: at what points will we stop and verify before continuing?
-
-### Phase 4 — Plan
-
-Define the refactoring strategy (incremental, Strangler Fig, or rarely rewrite). Sequence the work into small, independently deployable steps. Define what characterization tests are needed before starting. Define the rollback path for each step. Set the time box and reassessment trigger.
-
-### Phase 5A — Write Characterization Tests (first)
-
-1. Write tests that capture the current behavior of the code being refactored.
-2. Include happy path, error paths, edge cases, and any known quirks.
-3. These tests verify CURRENT behavior — not CORRECT behavior. If the code has a bug users depend on, the characterization test should verify the bug exists.
-4. Run all characterization tests — they must pass before any refactoring begins.
-5. These tests are the safety net. Without them, refactoring is blind modification.
-
-### Phase 5B — Incremental Refactoring (one safe transformation at a time)
-
-1. **Rename** — Change names to accurately describe purpose. Safest refactoring — low risk, high readability gain.
-2. **Extract** — Extract methods, functions, or classes to separate concerns. Reduces function size, improves testability.
-3. **Inline** — Inline unnecessary abstractions that add indirection without value. Simplifies control flow.
-4. **Move** — Move code to the module or layer where it belongs based on responsibility. Improves cohesion.
-5. **Replace** — Replace complex conditional logic with simpler patterns (strategy, lookup tables, guard clauses).
-6. **Delete** — Remove dead code, unused variables, commented-out blocks, deprecated paths.
-
-After each transformation: run all tests → verify behavior is preserved → commit as an independent, revertable unit → do NOT combine multiple refactorings in a single commit.
-
-**Preparatory Refactoring:** When a new feature is needed in an area with structural problems, the right sequence is: refactor first to make the area easy to modify, then add the feature in a separate commit. "Make the change easy (that may be hard), then make the easy change."
-
-### Phase 5C — Strangler Fig Migration
-
-1. **Identify the seam** — Find a boundary where new functionality can be introduced alongside the old.
-2. **Build the replacement** — Implement the new component with its own tests, alongside the old system.
-3. **Route a small percentage of traffic** — Monitor intensely. Compare outputs.
-4. **Gradually increase traffic** — As confidence builds, route more traffic to the new component.
-5. **Switch completely** — Route all traffic to the new component.
-6. **Delete the old** — Remove the legacy code entirely. Do not leave it running "just in case."
-7. **Repeat** — Identify the next seam and repeat for the next module.
-
-At every stage: the system is fully operational. Each stage can be individually rolled back. The old system remains available until the new is fully validated.
-
-### Phase 5D — Handling Scope Creep
-
-When scope threatens to expand: stop and document what was discovered, complete the current scoped refactoring first, log the discovered debt for future prioritization, and define whether it is blocking the current scope or independent. If blocking, redefine scope explicitly with stakeholder awareness — do not silently expand.
-
-### Phase 5E — Handling Discovered Bugs
-
-Do NOT fix the bug as part of the refactoring. Document it separately with reproduction steps. Complete the refactoring with the bug still present. Fix the bug as a separate, subsequent change with its own tests. Mixing bug fixes with refactoring makes both harder to verify and harder to roll back.
-
-### Phase 6 — Verify
-
-Run all characterization tests, all unit and integration tests — they must all pass. Verify no external behavior has changed (API responses, UI behavior, data outputs). For Strangler Fig: compare old and new system outputs for the same inputs. Verify scope was maintained — no unplanned changes introduced. Check for regressions in adjacent code.
-
-### Phase 7 — Critique
-
-Is the refactored code easier for a new developer to understand than the original? Did we stay in scope? Was all old code deleted — or is dual maintenance now silently running? Was the refactor worth the cost — did it reduce the debt that justified starting it?
-
-### Phase 8 — Communicate
-
-Document what was refactored and why — the structural goal, not just the mechanics. Document what behavior was preserved and how it was verified. Document any discovered bugs or additional debt that was found but not addressed. Document what code was deleted and why.
-
-### Pre-Finalization Re-Check
-
-- The structural goal was clear and the debt being paid down was real, not cosmetic
-- Behavior was preserved or any behavior change was explicitly separated and scoped
-- The result is genuinely easier to change, understand, or support than before
-- The work did not quietly become an uncontrolled rewrite
-- Old code has been deleted — no dual maintenance has been created
-
----
-
-## KEY DIAGNOSTIC QUESTIONS
-
-**The Pain Check** — What specific cost is this code imposing today, and how often do we pay that cost?
-
-**The Quantification Check** — Can I express the cost of this debt in terms the business understands — bug rates, delivery velocity, incident frequency, onboarding time — or am I only expressing aesthetic irritation?
-
-**The Familiarity Check** — Is this code difficult because it is poorly structured, or because I do not yet understand the domain? Am I trying to improve the code — or to escape having to understand it?
-
-**The Safety Check** — What protects existing behavior while this change is made? If the answer is "nothing," the first step is writing characterization tests, not starting the refactor.
-
-**The Rewrite Check** — Am I improving structure, or am I secretly trying to rewrite because the old code frustrates me? What undocumented business rules exist in the legacy code that would be lost in a rewrite? How long do I estimate this will take — and what is that estimate multiplied by 2–3×?
-
-**The Leverage Check** — Which single structural improvement would remove the most future friction? What is the smallest refactoring scope that materially helps?
-
-**The Scope Check** — Is this the smallest refactor that materially helps, or am I widening the work because "while we're here…" feels tempting? What is the time box — and am I still within it?
-
-**The Coupling Check** — Did this refactor actually reduce dependency entanglement, or only rename the problem?
-
-**The Clarity Check** — Would another engineer understand this system faster after the change? Is the refactored code genuinely clearer, or just different?
-
-**The Debt Residue Check** — What important debt still remains after this refactor? Has the partial cleanup been honestly acknowledged, or is it being treated as full resolution?
-
-**The Retirement Check** — Has all old code been deleted — or is dual maintenance now silently running? Is there a clear decommissioning plan?
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Looks Like | Why It's Harmful | Fix |
-| --- | --- | --- | --- |
-| **The Big Bang Rewrite** | "This codebase is too messy to fix. Let's rewrite from scratch." Team spends 6 months. Rewrite takes 3× longer. Silently drops 30% of undocumented business rules. Users report dozens of missing behaviors on launch. | Rewrites carry catastrophic business risk. The old codebase contains years of accumulated bug fixes, edge case handling, and business rule implementations — much of it undocumented. Delivers zero user value during development. Frequently reproduces the same structural problems. | Use the Strangler Fig pattern. Incrementally replace functionality. Keep the old system running. Migrate gradually. Delete the old code only after the new is fully proven. |
-| **Refactoring Without Tests** | "I'll just clean up this module quickly." Discovers days later that a subtle behavior change broke a downstream consumer. No tests to catch it. | Without tests, there is no way to verify behavior was preserved. Subtle changes slip through undetected. | Write characterization tests before refactoring. Run them after every transformation. |
-| **Scope Creep Refactor** | Cleaning up the auth module, noticed the user service could use improvement, then the notification system, now restructuring the data access layer. 2 hours → 2 weeks, 47 files touched. | Unbounded refactoring is a rewrite in disguise. Each expansion increases blast radius. The changeset becomes too large to meaningfully review or roll back. | Define scope before starting. Set a time box. Document discovered debt for future prioritization — do not address it mid-flight. |
-| **The Cosmetic Refactor** | Large formatting, renaming, and file-layout changes presented as debt reduction — without improving coupling, duplication, complexity, or change friction. The diff is large. The structural improvement is zero. | Consumes review time and risk budget without meaningful leverage. Creates the feeling of progress without the substance of it. | Tie refactor work to actual structural or maintenance improvement. Refactor only when the structure becomes meaningfully easier to understand or change. |
-| **The Wrong Abstraction** | Removing duplication by introducing a generalized abstraction harder to understand than the original — or forcing two concerns that will later diverge into the same place. | The system becomes more rigid and more cognitively expensive. The wrong abstraction creates coupling that is harder to undo than the duplication it replaced. | Favor clarity over DRY. Abstract only when the pattern is real, stable, and represents the same thing changing for the same reason. |
-| **Rewrite as Avoidance** | Team calls for a rewrite because understanding the current code feels hard and writing new code feels easier. Real problem is lack of domain context — not poor architecture. | The rewrite destroys years of embedded knowledge — bug fixes, edge cases, real-world accommodations — while the team rebuilds them more slowly and less completely from memory. | Before any rewrite proposal, explicitly ask: "Am I advocating for a rewrite because the architecture is fundamentally incompatible — or because I do not understand the existing code?" If the latter, learn first. |
-| **Mixed Purpose Commits** | A single changeset combines refactoring, bug fixes, and new feature additions. Reviewer cannot determine what is structure-only and what is behavior-changing. | Makes both the refactoring and the feature work harder to review, verify, and roll back independently. | Use Preparatory Refactoring — refactor first, then add the feature in a separate commit. |
-| **Debt Without Economics** | Technical debt discussed in terms of code quality, aesthetics, or engineering frustration — but never in concrete, recurring cost terms. | Without economic framing, debt cannot be prioritized against feature work. It remains an emotional discussion rather than a business decision. | Name the debt in terms the business understands. Quantify it. How often does it hurt, how badly, and what does it block? |
-| **The Zombie Legacy** | New code has replaced the old system. Migration is complete. But the old system is still running "just in case" — alongside the new one, indefinitely. Both being maintained. | Dual maintenance burden grows over time. Data may diverge. Teams stop knowing which path is canonical. The "just in case" justification never expires on its own. | Once the new system is validated, decommission the old one completely. A Strangler Fig migration is not complete until the old system is dead. |
-| **Confusing Unfamiliarity With Poor Quality** | Developer joins a new codebase, finds it hard to understand, and concludes it needs to be refactored or rewritten. Code is not poorly structured — developer simply lacks domain context. | Refactoring legitimately complex domain code can remove essential complexity and introduce bugs. The refactorer destroys embedded knowledge they did not know existed. | Invest time in understanding the domain before proposing structural change. Use small mechanical refactorings as a learning tool first. |
-| **The Debt Denial Loop** | Teams repeatedly work around the same pain point — writing workarounds, patching symptoms, avoiding the area — but never treating it as debt worth paying down. The pain compounds silently. | The interest rate on the debt keeps accruing. The team normalizes the pain and stops questioning it. | Name recurring pain as debt and evaluate whether the interest now justifies targeted payoff. Make the cost explicit so it can be prioritized. |
-
----
-
-## OUTPUT SHAPE
-
-```markdown
-
-## Debt Assessment
-
-- Specific structural problem and where it lives
-- Debt classification: deliberate/accidental, localized/systemic, accruing/stable
-- Quantified cost: defect rate, velocity impact, onboarding friction, incident frequency
-- Compound cost in 6 months if not addressed
-- Recommended action: pay now / schedule / tolerate consciously
-
-## Refactoring Plan
-
-- Strategy: incremental refactor / Strangler Fig / (rarely) rewrite with justification
-- Scope boundary: what is in scope, what is explicitly out
-- Sequence: ordered steps, each independently deployable
-- Time box and reassessment trigger
-- Characterization test plan
-- Rollback path
-
-## Post-Refactor Summary
-
-- What was refactored and the structural goal
-- Behavior preserved and how it was verified
-- What was deleted
-- Discovered debt not addressed (for future prioritization)
-- Structural improvement delivered
-
+```text
+Structural claim:
+Behavioural repair claim:
+Why separation is unsafe or misleading:
+Evidence for each claim:
+Recovery limit:
 ```
 
----
+Do not conceal a repair as cleanup. Do not force an artificial separation that duplicates a dangerous path, misrepresents the safe change, or produces a temporary architecture that must immediately be discarded.
 
-## NON-NEGOTIABLE CHECKLIST
+## Replace a legacy path safely
 
-### Before Starting
+Use a staged replacement only when it reduces risk relative to in-place change. Define:
 
-- [ ] The debt cost is quantified in measurable terms — not just "it's messy"
-- [ ] The scope is defined with explicit boundaries (what is in scope, what is out)
-- [ ] The time box is set with a reassessment trigger
-- [ ] Completion criteria are defined (what "done" looks like)
-- [ ] The refactor-vs-rewrite decision has been explicitly evaluated
-- [ ] The code's difficulty has been assessed: poor structure vs missing domain understanding
+1. The old and new sources of truth.
+2. The seam and the exact traffic, read, or write path being moved.
+3. The observation that compares outcomes without exposing private data unnecessarily.
+4. The rollback **and** data-recovery limit. A code rollback does not reconstruct lost or transformed data.
+5. The owner, expiry, and consistency model of every temporary compatibility path.
+6. The retirement condition that permits deletion of the old path.
 
-### Test Coverage
+Do not route live traffic, alter production data, or make an external cutover without the applicable workflow and explicit approval. A local simulation or proposal is not authorization.
 
-- [ ] Characterization tests exist that verify the current behavior of the code being refactored
-- [ ] All tests pass before refactoring begins
-- [ ] Tests are run after every individual transformation — not just at the end
+For generated artifacts, verify generator, version, configuration, and source input. Change source first when possible. Regenerate deterministically and inspect the generated output for unexpected scope; do not treat a generated diff as automatically safe or automatically bad.
 
-### During Execution
+## Decide on rewrite versus incremental change
 
-- [ ] Each transformation is committed independently and is individually revertable
-- [ ] Refactoring, bug fixes, and feature work are kept in separate changesets
-- [ ] Discovered bugs are documented separately and fixed in separate changesets
-- [ ] Discovered scope creep is documented for future prioritization — not addressed mid-flight
+Prefer incremental refactor or bounded replacement when the current system contains valuable, partly undocumented business behaviour and a seam can be found.
 
-### After Completion
+Treat a rewrite proposal as a decision requiring evidence, not relief from frustration. Record:
 
-- [ ] All tests pass — characterization tests, unit tests, integration tests
-- [ ] External behavior is verified unchanged
-- [ ] All old code has been deleted — no dual maintenance
-- [ ] The code is genuinely easier to understand or change than the original
-- [ ] Discovered debt and follow-up work have been documented
+- The current requirement the existing architecture cannot satisfy.
+- Alternatives evaluated, including scoped refactor, adapter, seam extraction, and staged replacement.
+- Known and unknown behaviour that could be lost.
+- Migration, recovery, validation, and retirement plan.
+- Who approves the irreversibility and external impact.
 
-### For Strangler Fig Migrations
+Do not use a generic duration multiplier, a fixed debt percentage, or the phrase “too messy” as proof.
 
-- [ ] The old system remains fully operational throughout the migration
-- [ ] Traffic routing between old and new is controllable and reversible at every stage
-- [ ] The old system is completely decommissioned after migration is validated
+## Review the result
 
----
+Before handoff, confirm:
 
-**Final Rule:** Refactoring changes structure. Never behavior. The surgeon's goal is to leave the patient healthier — not to perform surgery for its own sake. Before cutting, know what you are preserving. After cutting, verify it is still there.
+- The structural claim and the actual diff still match.
+- Behavioural changes are separately labelled or explicitly justified as inseparable.
+- Evidence covers the meaningful consumers and boundary risks, not only the moved implementation.
+- Generated output, data migration, compatibility paths, and deletion conditions have named sources of truth.
+- Unknowns and residual risks are visible.
+
+Use `review-audit` for actual-base inspection and a fresh review pass where the change is nontrivial or crosses a meaningful boundary.

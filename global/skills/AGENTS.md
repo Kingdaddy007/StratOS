@@ -9,7 +9,7 @@ This directory contains portable, model-invoked skills and their selectively loa
 - Keep each skill in a hyphen-case folder with a matching hyphen-case `name` in `SKILL.md`.
 - Keep frontmatter portable: use `name`, `description`, and only supported optional fields.
 - Put UI metadata in `agents/openai.yaml`; ensure its default prompt explicitly names the skill as `$skill-name`.
-- Keep `SKILL.md` activation-first and below 15 KB. Move detailed examples, taxonomies, history, and edge cases into `references/`.
+- Treat 15 KB as a default guardrail, not a quality target. Keep `SKILL.md` activation-first; move detailed examples, taxonomies, history, and edge cases into `references/` when that improves selective loading. Never remove behaviourally useful judgement merely to meet a size number. A deliberate exception needs an audit record that names the retained value and its verification path.
 - Add conditional loading rules for every bundled resource. Link resources with relative paths; never use personal absolute paths or product-specific file tools.
 - Treat dated platform behavior as a snapshot. Record the verification date and source, or require verification before use.
 - Do not route to a sibling skill unless that skill exists in this directory and its folder name matches the route.

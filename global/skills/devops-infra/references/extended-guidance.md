@@ -1,162 +1,99 @@
-# Extended Guidance
+# Operations, Delivery, and Recovery Guide
 
 ## Contents
 
-- [KEY DIAGNOSTIC QUESTIONS](#key-diagnostic-questions)
-  - [Before Designing](#before-designing)
-  - [During Design](#during-design)
-  - [Before Deploying](#before-deploying)
-  - [During Incident Response](#during-incident-response)
-  - [After Incident](#after-incident)
-- [BEHAVIORAL WORKFLOW](#behavioral-workflow)
-  - [Phase 1 — Understand](#phase-1-understand)
-  - [Phase 2 — Contextualize](#phase-2-contextualize)
-  - [Phase 3 — Analyze](#phase-3-analyze)
-  - [Phase 4 — Plan](#phase-4-plan)
-  - [Phase 5 — Execute](#phase-5-execute)
-  - [Phase 6 — Verify](#phase-6-verify)
-  - [Phase 7 — Critique](#phase-7-critique)
-  - [Phase 8 — Communicate](#phase-8-communicate)
-- [NON-NEGOTIABLE CHECKLIST](#non-negotiable-checklist)
-  - [Infrastructure as Code](#infrastructure-as-code)
-  - [Deployment Pipeline](#deployment-pipeline)
-  - [Observability](#observability)
-  - [Alerting](#alerting)
-  - [Security](#security)
-  - [Reliability](#reliability)
+- [Choose proportional controls](#choose-proportional-controls)
+- [Select operational signals](#select-operational-signals)
+- [Design actionable alerts](#design-actionable-alerts)
+- [Assess delivery and recovery](#assess-delivery-and-recovery)
+- [Run an incident safely](#run-an-incident-safely)
+- [Anti-patterns](#anti-patterns)
+- [Operational record](#operational-record)
 
-## KEY DIAGNOSTIC QUESTIONS
+## Choose proportional controls
 
-### Before Designing
+Choose controls from the failure mode, not an infrastructure maturity checklist.
 
-- What are the reliability and availability requirements? (SLOs)
-- What is the team's current operational maturity? What tooling already exists?
-- What is the deployment frequency requirement?
-- Who will be on call? What is their experience level?
-- Are we solving a current problem, or a prestige future problem?
+| Situation | Add when needed | Do not assume |
+| --- | --- | --- |
+| Repeated/shared environments or manual drift | Declarative/reproducible environment definition and reviewable change records | Every prototype needs a complete IaC stack |
+| Cross-process request path cannot be attributed | Correlation and tracing suited to the request path | All services need distributed traces from day one |
+| Logs need machine aggregation or multi-service diagnosis | Structured fields and a searchable format | JSON itself makes logs useful or safe |
+| Multiple environments, rotation, access audit, or high-consequence credentials | A dedicated secret-management service and audited access | A dedicated manager alone prevents secret exposure |
+| Frequent, risky, or repeated releases | Versioned artifacts, automation, limited exposure, and verified recovery | Automation makes a bad state model safe |
+| Material user/business impact | Actionable paging plus diagnostic and early-warning signals | Only user symptoms or only infrastructure causes matter |
 
-### During Design
+## Select operational signals
 
-- Is this configuration captured in code, or am I configuring something manually that should be codified?
-- If this instance dies right now, will it be automatically replaced? How long until recovery?
-- Can I trace a single request across all services using the telemetry I am implementing?
-- Is every alert I am creating actionable? What is the runbook for each alert?
-- Am I storing any secrets outside a dedicated secret management system?
-- What is the blast radius if this change fails?
+Start with the question:
 
-### Before Deploying
+- **Did users or the business succeed?** Use a black-box or user-facing signal.
+- **Where did the request, job, or dependency fail or slow?** Add diagnostic evidence at the relevant boundary.
+- **Is failure imminent but not yet visible to users?** Add an internal early-warning signal only if it leads to a defined action.
+- **Can an operator attribute the failure across components?** Add correlation or tracing if logs and metrics are insufficient.
 
-- Has this change been tested in staging with production-like configuration?
-- What is the rollback plan if this change causes problems?
-- Are health checks configured to detect if this change causes degradation?
-- Have I reviewed the plan/dry-run output for unexpected changes?
+Choose the minimum. An internal tool may need a smoke check, outcome count, and relevant logs. A production API usually needs user-facing success/error, latency or duration, request volume, deploy marker, resource/dependency evidence, and enough correlation to distinguish the failure mode. A batch job needs work-unit and deadline signals, not only HTTP-style metrics.
 
-### During Incident Response
+## Design actionable alerts
 
-- What changed recently? (Deployments, configuration changes, traffic patterns)
-- What is the blast radius? Which services, users, and functionality are affected?
-- Can the issue be mitigated immediately by rollback, traffic rerouting, or scaling?
-- What do the logs and traces show? Can we reconstruct the failing request path?
+For each alert, record:
 
-### After Incident
+```text
+Signal and user/business consequence:
+Threshold or anomaly rule and rationale:
+Owner and expected response:
+Immediate containment or diagnosis action:
+Known blind spots and noise risk:
+Escalation and review cadence:
+```
 
-- What was the root cause? (Not the trigger — the structural reason the system was vulnerable)
-- What monitoring or alerting would have detected this earlier?
-- What structural change would prevent this class of failure from recurring?
-- Has the post-mortem been documented and shared?
+Page for current or imminent impact with a clear action. Use lower-urgency views for diagnosis, trends, or capacity planning. A CPU or queue signal can be useful when it gives time to avert impact; it must not be treated as an automatic pager merely because a percentage was crossed.
 
----
+## Assess delivery and recovery
 
-## BEHAVIORAL WORKFLOW
+Before exposure, determine the change profile:
 
-### Phase 1 — Understand
+| Change | Delivery evidence | Containment or recovery |
+| --- | --- | --- |
+| Local, reversible, no external effect | Reproduction and focused check | Revert or recreate the local environment |
+| Shared internal | Recorded artifact/configuration, smoke check, key path, logs/health | Re-deploy prior version or restore configuration |
+| External, moderate blast radius | Baseline, focused regression, deploy marker, key signals, release window/flag/cohort where useful | Disable flag, revert compatible artifact, restore configuration |
+| Stateful job or migration | Work-unit/output evidence, checkpoint/replay analysis, partial/duplicate-work check | Pause, quarantine, compensate, forward-fix, or restore only when proved safe |
+| High consequence | Representative/domain-specific evidence, independent review, formal human authorization | Domain-specific containment; generic rollback may be inadequate |
 
-Clarify the task (IaC, observability, incident, scaling, security hardening, environment consistency). Clarify scope: which services, environments, and systems. Identify what already exists. Identify risks or constraints.
+Treat a rollback plan as a hypothesis. Check the artifact, configuration, durable data, external side effects, and dependency compatibility. A migration, message, transaction, user-visible mutation, or credential effect may require containment or a forward fix instead of rollback.
 
-### Phase 2 — Contextualize
+## Run an incident safely
 
-Identify existing IaC tooling, CI/CD pipelines, cloud provider, and hosting model. Identify the current observability stack. Understand the secret management approach. Identify the environments and how much they drift. Check whether hidden manual state, snowflake configurations, or undocumented dependencies exist.
+1. State current impact, affected users/systems, severity, and time boundary.
+2. Inspect recent changes, dependencies, telemetry, and safe containment options.
+3. Separate facts, hypotheses, and unknowns. Preserve evidence needed for recovery and diagnosis.
+4. Propose the narrowest mitigation. Obtain human approval before an external, production, destructive, or financially consequential effect.
+5. Verify mitigation at the harm boundary. Record residual risk and recovery limits.
+6. After stability, identify the smallest prevention candidate. Do not claim root cause or complete prevention without evidence.
 
-### Phase 3 — Analyze
+## Anti-patterns
 
-- *For IaC/Delivery:* Map path from code change to production. Identify failures, delays, manual interventions. Evaluate declarativeness and version-control. Design failure domains.
-- *For Observability:* Map critical paths. Identify what signals exist at each step. Determine what failures would be invisible. Check whether alerts are symptom-oriented and SLO-linked.
-- *For Incident/Audit:* Identify what the team needs to diagnose a bad release. Identify missing evidence or undocumented recovery paths.
+| Anti-pattern | What it is | Fix |
+| --- | --- | --- |
+| Maturity checklist import | IaC, traces, JSON logs, canaries, and automation are imposed on a small local task | Select controls from failure mode, consequence, and operating need |
+| Alert without action | A page fires but no one can do anything useful | Add an owner/action or demote it to a lower-urgency signal |
+| Recovery fiction | Binary rollback is assumed to undo stateful or external effects | Check state and compatibility; choose forward fix, disablement, compensation, pause, or quarantine |
+| Secret-tool substitution | A secret manager is installed but secrets leak into logs or prompts | Enforce non-exposure and least privilege regardless of mechanism |
+| Telemetry hoarding | Every signal is collected without a diagnosis use | Specify the question, retention/cost, and sensitive-data boundary |
+| Unsafe incident reflex | An agent executes an external action before evidence and approval | Propose, gate, then act only with just-in-time approval |
 
-### Phase 4 — Plan
+## Operational record
 
-Define components to create or modify. Define IaC structure, deployment pipeline stages, observability instrumentation, rollback procedures. Estimate blast radius. Confirm recommendation matches team's operational maturity.
+```markdown
+## Operational record
 
-### Phase 5 — Execute
-
-- *5A IaC:* Define all infrastructure as version-controlled code. Organize into reusable modules. Use environment-specific variable files. Apply changes through the pipeline only.
-- *5B Deployment Pipeline:* Automate full pipeline (source → build → test → security scan → staging → verify → production → verify). Build immutable artifacts. Implement health checks at each stage. Configure auto-rollback on health check failure. Implement rolling/blue-green/canary strategies. Separate schema migrations from code deployments.
-- *5C Structured Logging:* Emit JSON logs with consistent schema (timestamp, level, service, traceId, spanId, message, userId, durationMs). Include trace IDs in every entry. Use canonical log lines. Scrub PII before ingestion.
-- *5D Distributed Tracing:* Inject unique trace ID at entry point. Propagate through every downstream service, DB query, and external API call. Include trace ID in all log entries and error responses.
-- *5E Metrics & Alerting:* Define core metrics: error rate, latency (p50/p95/p99), throughput, availability, saturation. Define SLOs. Alert on SLO violations only. Require runbook for every alert. Review and prune alerts quarterly.
-- *5F Secret Management:* Store all secrets in dedicated secret management system. Never commit to repos. Configure apps to retrieve secrets at runtime. Implement 90-day max rotation. Audit access. Implement least-privilege.
-- *5G Disaster Recovery:* Configure automated backups. Test restoration on a quarterly schedule. Define RTO and RPO. Document DR as step-by-step runbook. Practice DR drills.
-- *5H Incident Readiness:* Create runbooks for common critical failures. Ensure releases and incidents can be traced to code/infra/config/dependency changes. Document blameless postmortems.
-
-### Phase 6 — Verify
-
-IaC applies cleanly (plan/dry-run). Pipeline completes end-to-end. Health checks correctly distinguish healthy from unhealthy. Rollback works (intentionally deploy failing version, confirm auto-rollback). Logs are structured and searchable. Alerts fire when SLOs are violated. Secrets not exposed in logs or config files. Environment parity confirmed. Backups restore successfully.
-
-### Phase 7 — Critique
-
-Is any infrastructure component only manual config? If primary AZ went down, how long until recovery — tested? Are all alerts actionable? Is the pipeline fast enough? Are there unaddressed single points of failure? Is the on-call experience sustainable? Is rollback real and tested, or just imagined?
-
-### Phase 8 — Communicate
-
-Lead with operational reality. Explain the recommended delivery/observability/runtime design. Make tradeoffs explicit. Document rollout, rollback, and monitoring implications. Identify known gaps. Define next steps.
-
----
-
-## NON-NEGOTIABLE CHECKLIST
-
-### Infrastructure as Code
-
-- [ ] All infrastructure configuration defined in version-controlled code
-- [ ] No manual configuration that is not captured in code
-- [ ] IaC code reviewed with the same rigor as application code
-- [ ] Changes applied through the pipeline — not from local machines
-- [ ] State management (remote state, locking) configured to prevent concurrent conflicts
-- [ ] Environment differences managed through parameterization, not separate codebases
-
-### Deployment Pipeline
-
-- [ ] Pipeline fully automated from commit to production
-- [ ] Build artifacts are immutable — same artifact promoted through all environments
-- [ ] Automated tests run on every commit and block merges on failure
-- [ ] Health checks gate promotion between deployment stages
-- [ ] Rollback automated or executable in under 5 minutes
-- [ ] Schema migrations and code deployments decoupled
-
-### Observability
-
-- [ ] Logs structured (JSON) with consistent field schemas across all services
-- [ ] Trace IDs injected at entry point and propagated through all downstream services
-- [ ] Metrics capture error rate, p95/p99 latency, throughput, and resource utilization
-- [ ] PII scrubbed from all log output before ingestion
-- [ ] Dashboards exist for core service-level metrics
-
-### Alerting
-
-- [ ] Alerts defined on user-facing symptoms — not system-level causes
-- [ ] Every alert has a documented runbook with response steps
-- [ ] No alerts routinely ignored (alert fatigue addressed)
-- [ ] Alert thresholds based on SLO definitions, not arbitrary round numbers
-
-### Security
-
-- [ ] All secrets in a dedicated secret management system — not in code, env files, or chat
-- [ ] Secret rotation configured on a defined schedule
-- [ ] Production access restricted to minimum necessary set of people
-- [ ] SSH access to production disabled or audited
-
-### Reliability
-
-- [ ] Health checks and readiness probes configured and verified
-- [ ] Circuit breakers implemented between services to prevent cascading failure
-- [ ] Disaster recovery tested in the last 90 days
-- [ ] Backups restoration tested successfully
+- Service/environment and consequence:
+- Change or incident scope:
+- Existing controls and evidence:
+- Selected signals and alert actions:
+- Release/containment plan:
+- Recovery assumptions and limits:
+- Approval boundary:
+- Harm-boundary verification and decision:
+```

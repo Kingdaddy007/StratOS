@@ -3,8 +3,7 @@
 Security Scanner — Antigravity Gold Verification System
 ========================================================
 
-Scans project files for common security issues relevant to web development
-and trading tool codebases.
+Scans project files for common security issues relevant to web development.
 
 Usage:
     python scripts/checks/security_scan.py <project_path>
@@ -58,8 +57,6 @@ SECRET_PATTERNS = [
     ("Private Key Block", r"""-----BEGIN (?:RSA |EC |DSA )?PRIVATE KEY-----""",
      "CRITICAL", "Private key embedded in source file"),
 
-    ("Deriv/Binary API Token", r"""(?:deriv|binary).*(?:token|app_id)\s*[:=]\s*['"][A-Za-z0-9]{8,}['"]""",
-     "HIGH", "Trading platform API token detected — use environment variables"),
 ]
 
 DANGEROUS_CODE_PATTERNS = [

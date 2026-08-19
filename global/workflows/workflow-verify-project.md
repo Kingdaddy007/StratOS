@@ -1,106 +1,76 @@
 ---
-description: The systematic sequence for running automated project verification checks — security scan, code quality, accessibility, and performance profiling before deployment.
 id: verify-project
-version: 1
+version: 2
 status: active
-intent: Execute verify project with explicit authority, state, outputs, and evidence.
-use_when: [the task matches verify project]
-do_not_use_when: [another workflow more precisely matches the requested outcome]
-inputs: [user objective, workspace context, constraints, requested authority mode]
-required_resources: [applicable AGENTS.md files, referenced skills and contexts]
+intent: Gather and interpret evidence for a stated project or release claim, reporting verified scope and residual uncertainty without converting passing commands into release authorization.
+use_when: [a completed or material change needs independent verification, a user asks what was actually verified, a project/release candidate needs evidence interpretation, or existing checks need an honest scope conclusion]
+do_not_use_when: [a new test strategy has not been selected for a material change, a failing result needs root-cause diagnosis, a production release must be executed, or a security decision needs a specialist audit]
+inputs: [target revision or change scope, intended claims and acceptance conditions, risk/reversibility, existing test strategy or evidence plan, project instructions, available environments, requested authority]
+required_resources: [applicable AGENTS.md files, testing skill, project build/test/CI configuration, change diff and relevant contexts, security-audit/test-strategy/debug-issue/ship-to-production only when the evidence requires them]
 mutation_class: read_only
-approval_gates: [confirm scope expansion or destructive action before mutation]
-states: [intake, assess, propose, approve-if-needed, execute-if-authorized, verify, deliver]
-outputs: [task result, changed-artifact list when applicable, evidence, residual risks]
-verification: [run proportionate checks, record raw evidence, label anything unverified]
-failure_paths: [stop on authority or contract conflict, preserve state, report blocker and safe next action]
-resume_contract: task-scoped .agents/workflows/verify-project.json using the workflows directory contract
-next_workflows: [none]
+approval_gates: [remain read-only unless a separately requested local change is routed to its owning workflow, require security-audit before security assurance claims, require ship-to-production just-in-time approval before any deployment or production action]
+states: [received, scoped, inventory, executing, interpreting, blocked, verified, residual-risk, closed, stopped]
+outputs: [verification record, executed evidence, environment and artifact context, failure classification, verified claims, unverified claims, residual risks, handoff or release recommendation]
+verification: [record actual commands/checks and results, distinguish product failure from harness/infrastructure/flaky/blocked evidence, check claims against acceptance conditions and relevant boundaries, label evidence scope and untested risks]
+failure_paths: [stop or route on absent scope, unsafe/live dependency, missing environment, failed required check, security boundary, unexplained flakiness, inconsistent artifact/revision, or a request to deploy without ship-to-production approval]
+resume_contract: task-scoped .agents/workflows/<task-id>.json following the workflows directory contract
+next_workflows: [debug-issue, test-strategy, security-audit, database-migration, ship-to-production, none]
 profiles: [general]
 ---
 
-# WORKFLOW: VERIFY PROJECT (MASTER)
+# Verify Project
 
-> **[CONTEXT AMNESIA FAILSAFE]**
-> YOU MUST USE TOOL CALLS TO READ THE FULL SOURCE FILE AND THE REQUIRED SKILLS/CONTEXTS BEFORE EXECUTING THIS.
-> Verify silently in your internal reasoning that you have done this.
+## Purpose and authority
 
-> **IMPORTANT [REQUIRED]:** Resolve `ANTIGRAVITY_HOME` through the installed-tool registry or environment, verify the selected Python interpreter and script exist, then run the baseline scanners. If discovery fails, report the check as unavailable rather than guessing a path.
+This is a read-only evidence-gathering and interpretation route. It verifies a stated scope against actual project evidence; it does not create a new test strategy after a green result, silently edit tests, deploy, approve a release, or claim security assurance.
 
-## WHAT THIS WORKFLOW DOES
+Start with the target revision/artifact and claim. A generic scan, type check, test suite, build, or browser run is useful only to the extent it exercises that claim in a credible environment.
 
-Runs automated quality checks against the project to catch security issues, code quality problems, accessibility violations, and performance concerns BEFORE deployment. This adds executable teeth to our rubric-based quality bar.
+## Collect evidence proportionately
 
----
+1. **Scope the candidate.** Identify the revision/artifact, included change surface, acceptance conditions, relevant risk, reversibility, and known evidence plan. Keep unrelated pending changes out of the conclusion.
+2. **Inventory the available proof.** Read project instructions, test/build/CI configuration, relevant contexts, existing strategy record, test selection, fixture/dependency setup, and environment limits. If a material test strategy is absent, route to `test-strategy` rather than inventing one after results arrive.
+3. **Run or inspect applicable checks.** Use the project-native commands and configured checks that map to the claim. Inexpensive checks often go first, but a high-risk boundary may be the fastest meaningful blocker. Record the actual command/check, revision, environment, configuration/dependency context, fixture/substitute, and result.
+4. **Classify results.** Distinguish product failures from test/harness defects, infrastructure/environment failures, blocked checks, skipped/quarantined checks, and flaky/nondeterministic outcomes. Do not retry until green and call the result stable.
+5. **Interpret the evidence.** Compare executed evidence to the stated claim, acceptance condition, boundaries, and risk. State what was exercised, what was not, and what a passing check cannot establish.
+6. **Route the next action.** Send an unexplained failure to `debug-issue`, an evidence gap to `test-strategy`, a security-sensitive conclusion to `security-audit`, a migration concern to `database-migration`, and an explicitly requested production release to `ship-to-production`.
 
-## WHEN TO USE
+## Status language
 
-- Before any deployment or push to production
-- After completing a major feature build
-- During Phase 6 (Verify) of the execution workflow
-- When the user says "verify", "check", or "is this ready to ship?"
-- Anti-Gravity should SUGGEST (not force) running this before deployments
+| Status | Use when |
+| --- | --- |
+| `verified for scope` | Credible evidence exercised the stated claim and relevant known boundaries at the declared risk. It is not release approval. |
+| `verified with residual risk` | Evidence is meaningful but a material production-only, external, representative-data, or otherwise untested uncertainty remains. |
+| `blocked` | A required check failed, cannot run, is unsafe, or an ownership/approval gate remains unresolved. |
+| `unverified` | The evidence is absent, inconclusive, non-representative, flaky, or insufficient. |
 
-## WHEN NOT TO USE
+Do not use an unqualified “passed” or “ready” conclusion. Name the scope and limitation, for example: “verified for the stated serialization compatibility cases in the local integration environment; unverified for unobserved consumers and production traffic.”
 
-- During active development (too noisy — wait for a natural checkpoint)
-- For tiny changes (single line fix, comment update)
+## Release and progressive evidence boundary
 
----
+For a high-impact release, describe the relevant pre-release evidence and remaining operational needs. A canary or staged rollout can add evidence only if the project has relevant signals, a comparison/baseline where possible, an observation window, pause/rollback criteria, an owner, and the required production approval. It cannot substitute for missing tests or authorize deployment.
 
-## EXECUTION
+External or production actions belong only to `ship-to-production`, which requires an explicit just-in-time gate naming the target, action, expected effect, rollback/containment path, monitoring owner, and evidence plan.
 
-### Quick Check (Most Common)
+## Verification record and state
 
-```bash
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path>
+When resumable state tracking is authorized, use `.agents/workflows/<task-id>.json`; never overwrite another task's record. Return:
+
+```text
+Target revision/artifact and claimed scope:
+Risk and acceptance conditions:
+Evidence executed: command/check, environment, fixture/substitute, result, covered claim
+Failures and classification: product | harness | infrastructure | flaky | blocked
+Evidence not run and why:
+Verified claims and false-confidence limits:
+Status: verified for scope | verified with residual risk | blocked | unverified
+Residual risk and recommended next route:
 ```
 
-This runs all 4 checks in priority order:
+## Completion checklist
 
-1. **Order 1: Security Scan** — Hardcoded secrets, dangerous code, env exposure
-2. **Order 2: Code Quality** — Console.log, empty catch, unhandled fetch
-3. **Order 3: Accessibility** — WCAG basics on HTML files
-4. **Order 4: Performance** — File sizes, bundle analysis
-
-### Targeted Check
-
-```bash
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path> --only security
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path> --only quality
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path> --only accessibility
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path> --only performance
-```
-
-### Skip Specific Checks
-
-```bash
-python "$ANTIGRAVITY_HOME/scripts/verify.py" <project_path> --skip performance
-```
-
----
-
-## INTERPRETING RESULTS
-
-| Exit Code | Meaning | Action |
-| :--- | :--- | :--- |
-| 0 | Configured baseline scans passed | Continue with project-native tests, typecheck, build, CI, and the production-readiness workflow |
-| 1 | Issues found | Review output, fix critical/high issues before deployment |
-
-### Severity Levels
-
-| Severity | Meaning | Must Fix Before Deploy? |
-| :--- | :--- | :--- |
-| CRITICAL | Security vulnerability or data exposure | ✅ YES — stop everything |
-| HIGH | Significant issue that could cause problems | ✅ YES |
-| MEDIUM | Quality issue worth addressing | ⚠️ Recommended |
-| LOW | Minor issue or style concern | ❌ Optional |
-| INFO | Observation, no action needed | ❌ No |
-
----
-
-## QUALITY GATES
-
-- **G1 (Security):** CRITICAL security findings = deployment blocked
-- **G2 (Quality):** More than 10 MEDIUM code quality issues = review before deployment
-- **G3 (Accessibility):** More than 5 HIGH accessibility issues = fix before deployment
+- Every claimed check was actually run or inspected, with its environment and scope recorded.
+- Passing checks are interpreted against the claim rather than counted as a generic quality score.
+- Skipped, flaky, blocked, non-representative, and production-only gaps remain visible.
+- Security, migration, diagnosis, and release work stays with its correct workflow.
+- No deployment, production mutation, or release approval occurred in this read-only route.

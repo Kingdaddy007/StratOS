@@ -1,669 +1,117 @@
 ---
 id: debug-issue
-version: 1
+version: 2
 status: active
-intent: Execute debug issue with explicit authority, state, outputs, and evidence.
-use_when: [the task matches debug issue]
-do_not_use_when: [another workflow more precisely matches the requested outcome]
-inputs: [user objective, workspace context, constraints, requested authority mode]
-required_resources: [applicable AGENTS.md files, referenced skills and contexts]
+intent: Coordinate evidence-led diagnosis, bounded repair proposals, authorized local fixes, and incident handoffs without confusing containment with root-cause confirmation.
+use_when: [a failure, regression, crash, failing test, unexpected behavior, flaky result, integration fault, state inconsistency, or suspected incident needs diagnosis]
+do_not_use_when: [a request is clear new implementation with no observed failure, an intentional code-structure improvement, a performance question without an observed degradation, or a production incident that needs immediate incident command]
+inputs: [observed and expected behavior, affected scope and environment, available evidence, impact and urgency, known changes, requested mode and authority]
+required_resources: [applicable AGENTS.md files, debugging skill, relevant project contexts and runbooks, incident-response/security-audit/test-strategy only when the evidence or risk requires them]
 mutation_class: local_edit
-approval_gates: [confirm diagnose or propose versus implement, require explicit approval for external mutation]
-states: [intake, assess, propose, approve-if-needed, execute-if-authorized, verify, deliver]
-outputs: [task result, changed-artifact list when applicable, evidence, residual risks]
-verification: [run proportionate checks, record raw evidence, label anything unverified]
-failure_paths: [stop on authority or contract conflict, preserve state, report blocker and safe next action]
-resume_contract: task-scoped .agents/workflows/debug-issue.json using the workflows directory contract
-next_workflows: [none]
+approval_gates: [diagnose and propose remain read-only, require explicit implement authority before any local repair, require incident-response just-in-time approval before production or external containment, require explicit human approval before data repair, security-sensitive mutation, credentials, deployment, traffic, or irreversible action]
+states: [received, triaged, stabilized, diagnosing, proposed, approval-gated, implementing, verified, mitigated, closed, stopped]
+outputs: [symptom record, evidence ledger, hypothesis status, proposed or applied change, verification evidence, residual risks, incident handoff or next owner]
+verification: [make executed versus unexecuted checks explicit, validate the original symptom and relevant contract or invariant, inspect sibling paths when the mechanism can recur, record environment gaps and residual uncertainty]
+failure_paths: [stop on absent authority, unsafe experiment, contradictory evidence, invalid oracle, scope expansion, data/security boundary, or unresolved production impact; preserve evidence and name the next safe action]
+resume_contract: task-scoped .agents/workflows/<task-id>.json following the workflows directory contract
+next_workflows: [incident-response, security-audit, test-strategy, verify-project, plan-architecture, none]
 profiles: [general]
 ---
 
-# WORKFLOW: DEBUG ISSUE (FULL SOURCE)
+# Debug Issue
 
-**Version:** Gold v1.1 (Master Merge)
-**Layer:** 8 — Execution Workflow
-**Tier:** 2 — Loaded by task
-**Primary Mode:** Debugger
-**Secondary Modes:** Reviewer, Builder, Security, Testing
-**Purpose:** The systematic sequence for diagnosing and fixing bugs — from symptom observation through root cause identification to verified fix with regression prevention. Prevents the most common debugging mistake: guessing at the cause and changing code before understanding the problem.
-**Loaded When:** Something is broken, unexpected behavior is observed, error reports received, production incidents occur, regressions detected, or flaky behavior investigated.
-**Inherits From:** execution-workflow.md (universal process)
+## Purpose and boundary
 
----
+This route coordinates the work around a failure; the `debugging` skill owns the detailed investigation method. It is not a universal linear checklist, a license to rewrite a module, or a promise that every report has one code-level root cause.
 
-## WHAT THIS WORKFLOW DOES
+Default to `diagnose`. A task can stop with a confirmed cause, a strongly supported or likely explanation, an insufficient-evidence report, a no-code conclusion, a repair proposal, or an incident handoff. Those are different outcomes and must not be blurred together.
 
-This workflow enforces evidence-based diagnosis, root cause analysis, and verified fixes with regression prevention.
+## Mode and authority contract
 
-Without this workflow, debugging degenerates into shotgun debugging — random changes, print statements everywhere, and symptom-masking fixes that create new bugs while leaving the real cause intact.
+| Mode | Allowed work | Required exit |
+| --- | --- | --- |
+| `diagnose` | Read workspace evidence, inspect existing logs/test output/history, perform only safe observation or isolated checks. | Diagnosis record with evidence labels, unknowns, and next safe action. No source/test edit. |
+| `propose` | Do `diagnose` work and prepare a minimal repair, non-code action, or escalation plan. | Scope, mechanism, validation, reversal path, owner, and exact approval needed. No applied edit. |
+| `implement` | Apply the approved smallest local repair and proportionate checks. | Evidence that the original issue and relevant contract were checked; residual risk/reversal. |
+| `incident-mitigate` | Hand off to `incident-response` for impact restoration and evidence preservation. | Mitigation status distinct from root-cause status; later `diagnose` work if still needed. |
 
----
+`mutation_class: local_edit` permits only the authorized `implement` path. It never permits data repair, credential changes, deployment, traffic shifts, external communication, or production mutation. Urgency is a routing signal, not an approval.
 
-## ACTIVATION
+## Triage
 
-### Authority Mode (Required)
+1. Record observed versus expected behavior, scope, environment, first-seen time, frequency, impact, and the evidence provided.
+2. Identify whether the risk is local, intermittent, data/security-sensitive, or customer-impacting. Use canonical severity (`critical`, `high`, `medium`, `low`, or `info`) only when the project has evidence to classify it; incident urgency belongs to `incident-response`.
+3. If active impact requires coordinated restoration, preserve evidence and route to `incident-response`. Do not delay safe containment for exhaustive diagnosis, and do not call containment a root-cause fix.
+4. If the request lacks a clear symptom, tighten the observable statement before searching for causes. A user-supplied theory is a hypothesis, not a fact.
 
-Classify the request before changing anything:
+## Diagnose
 
-- **diagnose** — gather evidence, isolate root cause, and stop with findings.
-- **propose** — diagnose and present fix or mitigation options without mutation.
-- **implement** — diagnose, edit the workspace, and verify because the user requested a fix.
-- **incident-mitigate** — coordinate production containment through `workflow-incident-response.md`; external mutation requires its just-in-time approval gate.
+Use the `debugging` skill's core loop: frame, observe, model, hypothesize, test, update, decide, repair or stop, verify, and record.
 
-Requests such as "Why is this happening?" default to **diagnose**. Never infer implement or incident-mitigate authority from urgency alone.
+- Start from existing evidence and the relevant boundary, not the first file named in an error.
+- Attempt a minimal or repeatable reproduction when safe and decision-useful. For non-reproducible, data/security, or incident cases, state why it is absent and choose the safest available evidence instead.
+- Maintain only distinguishable hypotheses. Each must identify a mechanism, support and contradiction, a predicted observation, and a safe discriminating check.
+- Use known-good/failing comparisons or bisection only when there is an ordered comparison and reliable oracle. A change point is evidence, not proof of mechanism.
+- Record negative evidence and unperformed checks. Do not invent tool results, logs, state, or successful test runs.
 
-### Use When
+The diagnosis exit is one of: `confirmed`, `strongly supported`, `likely`, `unverified`, `ruled out`, `no justified code change`, `mitigated without root cause`, or `insufficient evidence`. Read [the debugging skill's references](../skills/debugging/references/resource-index.md) only when their loading conditions apply.
 
-- "This is broken"
-- "I am getting an error"
-- "Why is this happening?"
-- "This started failing"
-- "We have a regression"
-- "This test is flaky"
-- "The service keeps timing out"
-- "Users are seeing inconsistent behavior"
-- Stack traces, error messages, or unexpected behavior
-- Production incident response
+## Propose and implement gate
 
-### Do NOT Use When
+Move to `propose` when a repair or non-code action is credible but editing is not authorized. The proposal names the mechanism, alternatives rejected, smallest scope, affected sibling paths, validation, reversal, residual risk, and required owner/approval.
 
-- Code works but needs improvement → use `workflow-refactor-module.md`
-- Code works but is slow → use `workflow-optimize-performance.md`
-- Building new functionality → use `workflow-build-feature.md`
-- Reviewing code for quality → use `workflow-review-code.md`
-- Feature planning without a failure symptom
-- Pure research or comparison questions
+Enter `implement` only when:
 
----
+1. the user has explicitly requested or approved a local repair;
+2. evidence supports the mechanism to the level the risk requires;
+3. the scope is the smallest credible repair rather than an unrelated cleanup or redesign; and
+4. a credible validation and reversal path exist.
 
-## REQUIRED FILES
+Stop implementation and return to diagnosis/proposal if the result contradicts the theory, testing exposes a new material failure, the patch grows beyond scope, the oracle is unreliable, or an authority boundary is encountered. Do not delete/skip tests, swallow the error, weaken authorization, or hard-code a result merely to remove the symptom.
 
-### Skills — Always Load
+## Verify and close
 
-| Priority | Skill | Why |
-| :--- | :--- | :--- |
-| Primary | `skill-debugging` | Systematic diagnosis methodology |
-| Secondary | `skill-review-audit` | Code quality assessment around the fix |
-| Secondary | `skill-testing` | Regression test for the fix |
+After an authorized local repair:
 
-### Skills — Load When Relevant
+1. Check the original symptom where a credible reproduction or equivalent observation exists.
+2. Check the contract, invariant, state transition, or boundary that the repair claims to protect.
+3. Check genuinely similar sibling paths if the same defect pattern could recur.
+4. Run proportionate project checks and state those not run, the reason, environment limits, and residual risk.
+5. Close only with a factual change list, evidence, status label, and next owner/action if uncertainty remains.
 
-| Condition | Skill |
-| :--- | :--- |
-| Bug has security implications | `skill-security` |
-| Bug is performance-related | `skill-performance` |
-| Bug reveals structural debt | `skill-refactoring` |
+Passing tests are evidence, not standalone proof. A complete result distinguishes `verified repair`, `mitigated`, `proposed`, `no justified code change`, and `unverified` rather than reporting all outcomes as fixed.
 
-### Contexts — Always Load
+## State and resume contract
 
-- `stack-context.md`
-- `architecture-context.md`
-- `domain-rules.md`
+Use one record at `.agents/workflows/<task-id>.json`. It records the workflow ID, requested mode, current state, completed states, artifacts, evidence, approvals, blockers, next action, owner, timestamps, and archive state. Never overwrite another task's record.
 
-### Contexts — Load When Relevant
+| State | Required result | Next result |
+| --- | --- | --- |
+| `received` | Request and source are normalized. | `triaged` or `stopped`. |
+| `triaged` | Symptom, impact, risk, mode, authority, and evidence availability are clear enough to select a path. | `stabilized`, `diagnosing`, or `stopped`. |
+| `stabilized` | Incident route has recorded containment status and preserved evidence. | `mitigated` or `diagnosing`. |
+| `diagnosing` | Evidence ledger, causal model, and hypothesis labels are current. | `proposed`, `approval-gated`, `mitigated`, `stopped`, or `closed`. |
+| `proposed` | A minimal change/non-code action and validation plan exist. | `approval-gated` or `closed`. |
+| `approval-gated` | Exact local or external approval required is visible. | `implementing`, incident handoff, or `stopped`. |
+| `implementing` | Authorized patch remains within scope. | `verified` or return to `diagnosing`. |
+| `verified` | Original symptom and claimed protection evidence are recorded. | `closed`. |
+| `mitigated` | Impact is controlled but causal status is explicit. | `diagnosing` or `closed` with follow-up owner. |
+| `closed` | Result, evidence, residual risks, and next owner are clear. | Reopen only on new evidence or a changed request. |
+| `stopped` | Safe stop, evidence gap, authority block, or no-change conclusion is explicit. | Reopen only when the blocker changes. |
 
-| Condition | Context |
-| :--- | :--- |
-| Data-related bug | `database-context.md` |
-| Business logic bug | `domain-rules.md` |
-| Deployment or infrastructure bug | `infra-context.md` |
-| Auth or trust boundary involved | `security-baselines.md` |
-| API contract suspected | `api-conventions.md` |
+## Handoffs
 
----
+- Route active external/customer-impacting work to `incident-response`.
+- Route authorization, exposure, or sensitive-data concerns to `security-audit` before any mutation.
+- Route regression or coverage design to `test-strategy`; do not redesign the test system inside this workflow.
+- Route a structural boundary decision exposed by the fault to `plan-architecture`; use direct `refactoring` for behavior-preserving cleanup only after the current diagnosis is clear.
+- Route a finished material change to `verify-project` when broader independent checks are appropriate.
 
-## REQUIRED INPUTS
+## Completion checklist
 
-At minimum, Anti-Gravity should have or establish before proceeding:
-
-- a described symptom or observed failure
-- expected versus actual behavior, even if incomplete
-- enough surrounding context to identify the likely system area
-- environment where the issue occurs
-- urgency and severity classification
-
-### Strongly preferred inputs
-
-- reproduction steps or known triggering conditions
-- logs, traces, metrics, screenshots, stack traces, or test output
-- recent changes in code, config, infra, dependencies, or data
-- impact information: who is affected and how broadly
-
-### If inputs are incomplete
-
-Do NOT jump straight to a fix. Instead:
-
-1. Restate the symptom as precisely as possible
-2. Separate the symptom from guessed causes
-3. Gather the strongest available evidence before code changes
-4. Ask clarification only if missing information would materially change the diagnosis path
-
----
-
-## SEVERITY-BASED PROCESS ADJUSTMENT
-
-| Severity | Definition | Process Modification |
-| :--- | :--- | :--- |
-| SEV-1 — Critical | Service down or data integrity at risk | Compress evidence intake, route to `workflow-incident-response.md`, and execute mitigation only after its authority gate. Apply full diagnosis after stabilization. |
-| SEV-2 — Major | Major feature broken, many users affected | Full process but expedited. Skip extensive hypothesis ranking if cause is already obvious from evidence. |
-| SEV-3 — Minor | Minor bug, workaround exists | Full process. No shortcuts. |
-| SEV-4 — Cosmetic | Visual issue, no functional impact | Simplified: identify → fix → verify. Full hypothesis formation not required. |
-
----
-
-## EXECUTION SEQUENCE
-
----
-
-### MANDATORY STOP-AND-VERIFY GATE
-
->
-> **[CONTEXT AMNESIA FAILSAFE]**
-> Do NOT proceed to Step 1 until you have SILENTLY verified that all required context files and skill files have been read using tool calls.
-
-### STEP 1 — UNDERSTAND THE SYMPTOM
-
-**Mode:** Debugger
-**Goal:** Establish exactly what is broken — not what you think is broken.
-
-**CRITICAL RULE:** Do NOT touch any code until Step 1 is complete. The symptom is NOT the cause. Resist the urge to jump to a fix.
-
-#### Actions (Step 1)
-
-1. **Restate the symptom precisely:**
-   - What is the exact observed behavior?
-   - What is the expected behavior?
-   - What is the difference between them?
-
-2. **Gather basic context:**
-   - When did this start? What changed recently?
-   - Does it happen consistently or intermittently?
-   - Who is affected — all users, some users, specific conditions?
-   - What environment: local, staging, production?
-
-3. **Reproduce the issue:**
-   - Can it be reproduced locally?
-   - What is the minimum set of steps to trigger it?
-   - If not reproducible: what evidence exists — logs, error tracking, user reports?
-
-4. **Classify severity and blast radius:**
-   - Determine user impact, operational impact, data integrity risk
-   - Decide whether rollback, feature flag disable, or traffic mitigation is needed immediately
-   - Distinguish emergency containment from root-cause resolution
-
-5. **CHECK MEMORY (MANDATORY — workspace first, then global):**
-   - Scan `.agents/memory/mistakes-to-avoid.md` then `antigravity/memory/mistakes-to-avoid.md` — has this bug type been seen before?
-   - Scan `.agents/memory/common-patterns.md` then `antigravity/memory/common-patterns.md` — does a proven fix pattern exist?
-   - Scan `.agents/memory/postmortems.md` then `antigravity/memory/postmortems.md` — is this related to a past incident?
-
-#### Output (Step 1)
-
-```text
-Symptom: [observed behavior] when [conditions]
-Expected: [correct behavior]
-Reproducible: [yes / no / intermittent]
-Severity: [SEV-1 / SEV-2 / SEV-3 / SEV-4]
-Immediate mitigation needed: [yes / no]
-```
-
-#### Gate (Step 1)
-
-If the symptom is still vague, tighten the definition before proceeding. Do not move to evidence gathering against an unclear symptom statement.
-
----
-
-### STEP 2 — GATHER EVIDENCE
-
-**Mode:** Debugger
-**Goal:** Collect the data that will point to the cause. Never compensate for weak evidence with stronger guessing.
-
-#### Actions (Step 2)
-
-1. **Read the actual error completely:**
-   - Full error message, not just the first line
-   - Full stack trace, read from the TOP
-   - Error codes and HTTP status codes
-
-2. **Check logs:**
-   - Application logs around the time of failure
-   - Database logs for slow queries or connection errors
-   - External service logs for API responses or webhook deliveries
-
-3. **Check recent changes:**
-   - What code was deployed recently?
-   - Were any configuration changes made?
-   - Were any dependencies updated?
-   - Were any infrastructure changes made?
-
-4. **Check the data:**
-   - Is the data in the state we expect?
-   - Is there corrupted, missing, or unexpected data?
-   - Is the data different between environments?
-
-5. **Check the environment:**
-   - Is this environment-specific?
-   - Are external dependencies healthy — APIs, databases, services?
-   - Are there resource constraints — memory, connections, CPU?
-
-6. **Identify what evidence is strong, weak, missing, or misleading**
-7. **Note any contradictions between evidence sources**
-
-#### Output (Step 2)
-
-```text
-Evidence gathered:
-
-- [item]
-- [item]
-
-Evidence still missing:
-
-- [item]
-
-What the evidence suggests:
-
-- [summary]
-
-```
-
-#### Gate (Step 2)
-
-If the issue is not reproducible, evidence quality matters even more. Do not compensate for weak evidence with stronger guessing.
-
----
-
-### STEP 3 — FORM HYPOTHESES
-
-**Mode:** Debugger
-**Goal:** Generate plausible explanations ranked by likelihood. Avoid emotionally attaching to the first story that sounds right.
-
-**CRITICAL RULE:** Do NOT assume your first hypothesis is correct. The goal is to ELIMINATE hypotheses through evidence, not to confirm your favorite guess.
-
-#### Actions (Step 3)
-
-1. Generate at least three plausible root-cause hypotheses when ambiguity exists
-2. Rank by probability — most likely first
-3. Rank by blast radius — which cause would be most severe if true
-4. Classify the type of issue:
-   - logic issue
-   - data issue
-   - contract mismatch
-   - config issue
-   - timing or race condition
-   - infrastructure issue
-   - security boundary issue
-5. For each hypothesis identify:
-   - What evidence supports it?
-   - What evidence contradicts it?
-   - How can it be tested — confirmed or eliminated?
-
-#### Output (Step 3)
-
-```text
-Hypothesis 1 (most likely): [description]
-  Evidence for: [...]
-  Evidence against: [...]
-  Test: [how to confirm or eliminate]
-
-Hypothesis 2: [description]
-  Evidence for: [...]
-  Evidence against: [...]
-  Test: [how to confirm or eliminate]
-
-Hypothesis 3: [description]
-  Evidence for: [...]
-  Evidence against: [...]
-  Test: [how to confirm or eliminate]
-```
-
-#### Gate (Step 3)
-
-If there is only one hypothesis, ask whether that is because the evidence is overwhelming or because alternatives were not considered seriously.
-
----
-
-### STEP 4 — ISOLATE AND CONFIRM ROOT CAUSE
-
-**Mode:** Debugger
-**Goal:** Narrow down to the actual root cause with evidence. Change one variable at a time.
-
-**Gate:** Do NOT write a fix until the root cause is confirmed with evidence.
-
-#### Actions (Step 4)
-
-1. Test the most likely hypothesis first
-
-2. **Isolate one variable at a time:**
-   - Change ONE thing, observe the result
-   - If behavior changes: contributing factor found
-   - If behavior does not change: eliminate this hypothesis
-
-3. **Use binary search when the problem area is large:**
-   - Isolate half the suspect code path
-   - If bug disappears: problem is in that half
-   - Repeat until isolated to specific lines
-
-4. **Apply the Five Whys once the failing point is found:**
-
-   ```text
-   Why did it fail?        → [immediate cause]
-   Why did that happen?    → [deeper cause]
-   Why did THAT happen?    → [structural cause]
-   Continue until reaching a systemic root cause
-   ```
-
-5. **Confirm root cause with evidence:**
-   - Can you explain ALL the observed symptoms from this root cause?
-   - Does the evidence unambiguously support this conclusion?
-   - Could there be multiple contributing causes?
-
-6. Separate root cause from contributing factors
-
-#### Output (Step 4)
-
-```text
-Root cause: [specific, evidence-backed explanation]
-Evidence: [what proves this]
-Contributing factors: [if any]
-```
-
-#### Gate (Step 4)
-
-Do not call a hypothesis confirmed because it sounds coherent. Tie confirmation to actual evidence. If confidence remains low and impact is high, do not overstate certainty.
-
----
-
-### STEP 5 — FIX (IMPLEMENT MODE ONLY)
-
-**Mode:** Builder
-**Goal:** Implement a targeted fix that addresses the root cause, not the symptom.
-
-**Authority gate:** In diagnose mode, stop after Step 4 and deliver the evidence-backed root cause. In propose mode, describe the smallest fix and verification plan, but do not edit. Proceed below only in implement mode.
-
-**CRITICAL RULE:** A fix without a regression test is a temporary patch, not a solution.
-
-#### Actions (Step 5)
-
-1. **DOX TRAVERSAL (MANDATORY):** Before writing code, traverse from the root to the target directory. Read all `AGENTS.md` files along the path to understand local boundaries, contracts, and testing rules. Do NOT break local architectural constraints for a quick fix.
-2. **Design the fix:**
-   - Does this fix the ROOT CAUSE or just mask the symptom?
-   - What is the MINIMUM change that fixes the issue?
-   - Could this fix introduce new problems?
-   - Does this fix match existing code patterns and conventions?
-   - Should the fix be immediate, staged, behind a flag, or paired with mitigation?
-
-2. **Implement the fix:**
-   - Follow `coding-standards.md` conventions
-   - Make the smallest effective change
-   - Preserve existing behavior everywhere else
-   - Avoid bundling unrelated cleanup into urgent fixes
-   - Add comments explaining WHY the fix works for future maintainers
-
-3. **Write a regression test:**
-   - The test MUST fail BEFORE the fix is applied
-   - The test MUST pass AFTER the fix is applied
-   - The test covers the exact conditions that triggered the original bug
-   - The test prevents this specific bug from returning
-
-#### Gate (Step 5)
-
-Code must pass the `skill-coding` Non-Negotiable Checklist before proceeding to verification.
-
----
-
-### STEP 6 — VERIFY
-
-**Mode:** Reviewer
-**Goal:** Confirm the fix works completely without side effects.
-
-**Gate:** ALL verification checks must pass before delivery.
-
-#### Actions (Step 6)
-
-1. **Verify the original symptom is resolved:**
-   - Re-run the exact reproduction steps from Step 1
-   - Confirm the expected behavior now occurs
-
-2. **Check for regressions:**
-   - Run the full test suite
-   - Manually verify adjacent functionality
-   - Check edge cases around the fix
-
-3. **Check for side effects:**
-   - Does this change affect other code paths?
-   - Are there other callers of the modified code?
-   - Could this change affect performance?
-
-4. **Verify in the appropriate environment:**
-   - If the bug was environment-specific, verify in that environment
-   - If a production bug: verify in staging with the same conditions
-
-5. **Confirm observability:**
-   - Do metrics, logs, and traces now reflect the intended outcome?
-   - Note what is verified versus not yet verified
-
-#### Output (Step 6)
-
-```text
-Verified:
-
-- [item]
-- [item]
-
-Not yet verified:
-
-- [item]
-
-```
-
-#### Gate (Step 6)
-
-Do not treat "it stopped happening once" as sufficient proof for meaningful issues. Do not call the feature done until adjacent behavior and failure paths are checked.
-
----
-
-### STEP 7 — ADD REGRESSION DEFENSE AND DELIVER
-
-**Mode:** Communicator
-**Goal:** Reduce recurrence risk and communicate the result clearly with full context.
-
-#### Actions (Step 7) — Regression Defense
-
-- Add or recommend a regression test, alert, validation rule, log improvement, or instrumentation
-- Note if broader structural debt still exists beyond the immediate fix
-- If the bug exposed a monitoring gap: flag it for observability improvement
-- If the bug exposed a missing test category: consider broader test coverage improvement
-
-#### Load Template (Step 7)
-
-- [REQUIRED] Load [debug-report.md](../global_templates/debug-report.md)
-- Follow the structure and guidance in the template exactly to record the bug investigation.
-
----
-
-### STEP 8 — POST-FIX & MEMORY CAPTURE (MANDATORY FOR SIGNIFICANT BUGS)
-
-1. If the bug was SEV-1 or SEV-2: conduct a post-mortem within 48 hours
-2. Post-mortem format: Timeline, Impact, Root Cause using Five Whys, Contributing Factors, Action Items with owners and deadlines
-3. Blameless culture — focus on systems, not individuals
-
-#### Memory Capture (write to workspace `.agents/memory/` first, global only for cross-project lessons)
-
-- [ ] **Mistakes:** Log to `.agents/memory/mistakes-to-avoid.md` if this bug class could recur
-- [ ] **Patterns:** Log to `.agents/memory/common-patterns.md` if the fix reveals a reusable pattern
-- [ ] **Postmortem:** Log to `.agents/memory/postmortems.md` if SEV-1/SEV-2 severity
-- [ ] **Contexts:** Update relevant context files if the bug reveals a gap in documented conventions
-- [ ] **Directory Contracts:** Did the fix require changing a directory's exported interface or adding a new external dependency? → Update the local `AGENTS.md` file.
-
-If workspace memory files do not exist, create them (copy format from global templates).
-
----
-
-## CHECKPOINTS AND QUALITY GATES
-
-| Gate | Condition | Action |
-| :--- | :--- | :--- |
-| Gate 1 — Symptom vague | Expected vs actual still ambiguous | Tighten symptom definition before evidence gathering |
-| Gate 2 — No evidence, only guesses | Diagnosis is mostly intuition | Gather stronger evidence before changing code |
-| Gate 3 — Structural issue, not local bug | Problem reveals architecture or ownership failure | Escalate to architecture or refactoring planning |
-| Gate 4 — Fix is only containment | Change reduces impact but does not address cause | Label it mitigation, keep diagnosis open |
-| Gate 5 — Low confidence, high impact | Certainty remains low for a severe issue | Do not overstate certainty, maintain mitigation, escalate verification |
-
----
-
-## QUALITY GATE CHECKLIST
-
-Before marking a bug fix as complete:
-
-- [ ] Symptom clearly documented with expected versus actual behavior
-- [ ] Severity classified and immediate mitigation assessed
-- [ ] Evidence gathered before code was changed
-- [ ] At least two to three hypotheses generated before fixing
-- [ ] Root cause identified with evidence, not guessed
-- [ ] Five Whys applied to reach structural cause
-- [ ] Fix addresses root cause, not just symptom
-- [ ] Minimum effective change implemented
-- [ ] Regression test written — fails before fix, passes after
-- [ ] Full test suite passes
-- [ ] Adjacent functionality checked for regressions
-- [ ] Fix follows `coding-standards.md`
-- [ ] No unnecessary changes beyond the fix
-- [ ] Delivery summary written with root cause explanation
-- [ ] Remaining uncertainty stated honestly
-
----
-
-## WORKFLOW ANTI-PATTERNS
-
-| Anti-Pattern | Why It Is Harmful | How This Workflow Prevents It |
-| :--- | :--- | :--- |
-| Shotgun debugging | Random changes produce accidental behavior changes and leave the true cause untouched | Step 1 forces understanding before touching code |
-| Assumption-based fixes | Guessing narrows the search space too early and produces false confidence | Steps 2 through 4 require evidence before fixing |
-| Symptom suppression | Reducing visible failure while leaving the real mechanism intact keeps recurrence risk high | Step 4 requires root cause via Five Whys |
-| Fix without regression test | The same problem returns and the team learns nothing durable | Step 5 requires regression test before completion |
-| Scope creep during debugging | Refactoring unrelated code during diagnosis creates new risk | Step 5 requires minimum effective change |
-| Incomplete verification | Fixing one thing while breaking another | Step 6 requires regression and side-effect checks |
-| First-coherent-story bias | Treating the first plausible explanation as truth | Step 3 requires multiple ranked hypotheses |
-| Declaring success too early | Treating one successful run as proof | Step 6 gate requires full verification before delivery |
-
----
-
-## FAILURE MODES AND ESCALATION PATHS
-
-| Failure Mode | What It Looks Like | Escalation |
-| :--- | :--- | :--- |
-| Monitoring Gap | Cannot diagnose because signals do not exist | Improve visibility before claiming diagnosis is complete |
-| Logic Conflict | Bug is actually a feature misunderstanding | Switch to product or feature-build reasoning |
-| Structural Debt | Local fix is unsafe or insufficient | Load `skill-refactoring.md`, decide whether to refactor first or isolate around the debt |
-| Trust Breach | Issue crosses security or data boundaries | Load security and database skills, strengthen investigation |
-| Multi-Incident | Multiple unrelated failures are bundled together | Split into separate investigations |
-
----
-
-## RECOVERY RECIPES
-
-> When debugging itself goes wrong, DO NOT spiral. Check this section first.
-
-### Can't Reproduce the Bug
-
-```
-
-1. Check if the bug is environment-specific (prod vs local vs staging)
-2. Check if it's timing-dependent (race condition, async order)
-3. Ask: "Under what conditions does this NEVER happen?" — the inverse helps isolate
-4. Add targeted logging at the suspect code path and wait for next occurrence
-5. If truly unreproducible after 3 attempts → classify as intermittent, add monitoring, document
-6. Do NOT guess-fix an unreproducible bug — you can't verify the fix
-```
-
-### All Hypotheses Eliminated
-
-```
-
-1. STOP — you're looking in the wrong area
-2. Widen the search: check infra, config, data, and external dependencies
-3. Check git log for recent changes in adjacent systems
-4. Ask: "What ELSE changed around the time this started?"
-5. Check memory/mistakes-to-avoid.md — a past pattern might match
-6. If still stuck → rubber-duck the problem statement aloud: restate symptom + evidence
-7. If still stuck after 30 min → take a break, come back fresh
-```
-
-### Fix Breaks Something Else
-
-```
-
-1. REVERT the fix immediately — don't layer fix-on-fix
-2. The fix addressed a symptom, not the root cause — go back to Step 4
-3. Check: who else calls the code you changed?
-4. Check: what assumptions did the adjacent code make about the old behavior?
-5. Design a fix that is compatible with ALL callers, not just the broken one
-6. If impossible → the fix requires a broader refactor, escalate scope
-```
-
-### Bug is Actually a Feature Misunderstanding
-
-```
-
-1. STOP debugging — this isn't a bug, it's a requirements gap
-2. Clarify: "Is this working as intended but not as expected?"
-3. If yes → switch to /workflow-build-feature to change the behavior
-4. If no → continue debugging with refined symptom definition
-5. Document the misunderstanding so it doesn't waste time again
-```
-
-### Session Interrupted Mid-Debug
-
-```
-
-1. Read .agents/workflows/<task-id>.json for current phase and completed steps
-2. Announce: "Resuming debug workflow from Phase [N]"
-3. Re-read the symptom statement and evidence gathered so far from .agents/workflows/<task-id>.json notes
-4. Check if new evidence appeared since last session (logs, user reports)
-5. Resume from current phase — do NOT restart from symptom observation
-```
-
-### Pressure to Ship Incomplete Fix
-
-```
-
-1. If SEV-1/SEV-2: route to `workflow-incident-response.md`, propose the smallest reversible mitigation, and obtain just-in-time external-mutation approval
-2. Label it clearly: "This is mitigation, not a fix"
-3. Keep the debug workflow OPEN — do not close the investigation
-4. Schedule the root-cause fix for the next available slot
-5. NEVER mark an incomplete fix as "done" — it will come back
-```
-
----
-
-## WORKFLOW STATE TRACKING
-
-This workflow integrates with `.agents/workflows/<task-id>.json`.
-
-**On activation:** Check `.agents/workflows/<task-id>.json` for existing state or create a new checklist.
-**After each step:** Update `.agents/workflows/<task-id>.json` with current phase, status, and notes.
-**On interruption:** .agents/workflows/<task-id>.json preserves progress for next session.
-
-Phase map for state tracking:
-
-```
-1_understand_symptom → 2_gather_evidence → 3_form_hypotheses → 4_isolate_root_cause →
-5_fix → 6_verify → 7_regression_defense → 8_post_fix_memory
-```
-
----
-
-## FINAL RULE
-
-Do not debug by trying random fixes until the symptom disappears.
-
-Debug by reducing uncertainty until the cause becomes explainable — then fix that cause precisely, verify it completely, and leave a regression test so it cannot return silently.
-
----
-
-## VERSION HISTORY
-
-| Version | Date | Changes |
-| :--- | :--- | :--- |
-| Gold v1.1 | Initial | Established the systematic sequence for diagnosing and fixing bugs |
-| Gold v1.2 | 2026-04-10 | Added Recovery Recipes and Workflow State Tracking integration |
+- The symptom is stated separately from its explanation.
+- Executed evidence, negative evidence, and unperformed checks are visible.
+- The authority and mode match the action taken.
+- A mitigation is not described as root-cause confirmation.
+- Any repair is narrow, reversible, and verified against the claimed mechanism.
+- Data, security, production, and external-effect boundaries are preserved.

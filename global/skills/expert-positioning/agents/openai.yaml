@@ -1,4 +1,4 @@
 interface:
   display_name: "Expert Positioning"
-  short_description: "Guidance for expert positioning tasks"
+  short_description: "Professional-service positioning, offer-fit, and inquiry-boundary guidance"
   default_prompt: "Use $expert-positioning to help complete this task with its domain workflow."

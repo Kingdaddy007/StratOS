@@ -1,30 +1,28 @@
-# Google Flow and Current Google Video Models
+# Google Flow: Dated Surface Reference
 
-Verification date: 2026-07-13
+Verification date: 2026-08-19.
 
-## What Flow is
+## Identity and Evidence Boundary
 
-Google Flow is Google’s creative interface/app for filmmaking with generative models. It is the surface where a user selects a model and creates or edits media; it is not itself the name of every model. Google’s official launch description says Flow is designed around Veo, Imagen, and Gemini.
+Google Flow is the Google creative interface and workflow surface. Record it as `provider = google`, `surface = flow`, and resolve the exact visible model separately. The current Google Flow help matrix names `Veo 3.1 - Lite`, `Veo 3.1 - Fast`, `Veo 3.1 - Quality`, and `Gemini Omni Flash`. Treat `Veo 3.1 Flash` and `OmniVision` as unresolved user language, not canonical model names.
 
-## Current official labels found
+Use the current Flow feature matrix for active routing. Do not fill a matrix blank from a broader Veo or Gemini Omni family page. Check the selected model and current credit cost in the user's Flow settings immediately before any generation.
 
-Google’s current Flow help lists these video choices:
+Sources: [Flow model and feature help](https://support.google.com/flow/answer/16352836?hl=en), [Flow credits](https://support.google.com/flow/answer/16526234?hl=en), [Flow getting started](https://support.google.com/flow/answer/16353333?hl=en), [Flow creation guidance](https://support.google.com/flow/answer/16353334?hl=en).
 
-| Official label | Practical routing note |
-| --- | --- |
-| Veo 3.1 - Lite | Use for fast, shorter text-to-video drafts; verify available controls in the active UI. |
-| Veo 3.1 - Fast | Use when iteration speed is the priority. |
-| Veo 3.1 - Quality | Use when quality and available controls matter more than speed. |
-| Gemini Omni Flash | A Gemini video-capable option with editing/reference capabilities; verify the current Flow surface. |
+## Verified Route Hints
 
-The user may say “OmniVision” or “Veo 3.1 Flash.” Those phrases are retained as aliases to investigate, not asserted as the current official labels. The official sources reviewed here use “Gemini Omni”/“Gemini Omni Flash” and “Veo 3.1 - Fast,” not “Veo 3.1 Flash.” Record the exact label shown in the user’s account when it differs.
+| Job | Dated documented candidate | Live check before recommendation |
+| --- | --- | --- |
+| Short text or first-frame concept | Lite supports 4s/6s/8s; Fast also lists 10s. | Model availability, aspect ratio, output count, cost, and current feature control. |
+| Reference-led short clip | Lite Ingredients lists 8s; Omni Flash lists advanced character/avatar and audio references. | Input type, ingredient control, country, account, duration, rights, and fidelity requirement. |
+| Uploaded/generated-clip edit | Omni Flash is the documented edit/refine route. | Country, model control, input limits, selected segment, cost, and allowed edit. |
+| Extension | Flow's matrix and credit table disagree for Fast and Quality; the matrix says use Lite for extendable Veo 3.1 8s clips. | The source clip, visible Extend control, exact model, duration, and cost. |
 
-## Capability snapshot
+## Production Gates
 
-Flow’s help page describes model-dependent support for text-to-video, frames-to-video, ingredients/references, video-to-video, extension, and editing. Availability, duration, credits, regions, and fallback behavior can change; check the active model picker before promising a result.
-
-Sources: [Flow launch announcement](https://blog.google/innovation-and-ai/products/google-flow-veo-ai-filmmaking-tool/), [Flow model and feature help](https://support.google.com/flow/answer/16352836?hl=en), [Flow getting started](https://support.google.com/flow/answer/16353333?hl=en), [Gemini Omni](https://deepmind.google/models/gemini-omni/), [Veo](https://deepmind.google/models/veo/).
-
-## Prompting hand-off
-
-Before drafting, capture the selected model, duration, aspect ratio, input type, reference assets, audio/dialogue intent, camera movement, temporal beats, and the intended export. Do not infer that a feature available in one Flow model is available in another.
+- Check plan, age/region eligibility, credits, and active controls. Documentation may describe a capability that the current account cannot use.
+- Require a rights inventory for faces, voices, music, logos, artwork, footage, and client assets. Flow does not grant those rights.
+- Do not treat Flow/Labs material as confidential by default. Verify the applicable privacy, review, retention, and commercial-use terms before uploading sensitive client material.
+- Check visible watermark state and disclose documented provenance metadata such as SynthID/C2PA where relevant. Do not promise watermark-free or provenance-free output.
+- Treat continuity, dialogue accuracy, geometry, exact product fidelity, and edit preservation as review criteria, not guarantees.

@@ -1,177 +1,82 @@
 ---
 name: performance
-description: 'Use this skill when diagnosing or resolving performance problems, optimizing slow systems, or proactively preparing for load. Activated when the user mentions slow response times, high resource consumption, timeouts, memory leaks, or anticipates increased traffic. Signal phrases: "it''s slow", "optimize this", "bottleneck", "memory leak", "high CPU", "query is slow", "Core Web Vitals", "lighthouse score", "cache this", "timeout", "throughput", "latency", "load testing", "can it handle X users", "scale this", "performance is degrading". Also activate for capacity planning and performance-aware code review. Do NOT optimize without profiling evidence.'
+description: 'Use this skill to diagnose, measure, or improve runtime performance, capacity, responsiveness, resource use, caching, retries, or degradation. Trigger on slow pages, interactions, APIs, jobs, high CPU or memory, timeouts, throughput, latency, Core Web Vitals, load, scaling, cache design, or a performance regression. Do not use for a deployment, outage, or infrastructure task that has no performance question; use devops-infra or incident-response instead.'
 ---
 
-# PERFORMANCE ENGINEERING
+# Performance
 
 ## WHEN TO USE THIS
 
-- Diagnosing or resolving slow response times, timeouts, or high resource consumption
-- Investigating memory leaks, high CPU, or excessive I/O
-- Proactively preparing a system for anticipated load increases
-- Evaluating architectural changes for performance implications
-- Reviewing code specifically for performance characteristics
+- Diagnose a slow user interaction, request, query, job, render, or resource leak.
+- Test a capacity, responsiveness, throughput, or reliability claim.
+- Decide whether caching, batching, retry limits, backpressure, or degradation is justified.
 
 ## NEVER DO
 
-- Optimize without profiling evidence proving the target is the actual bottleneck
-- Use averages — always use percentiles (p95, p99)
-- Cache before fixing the slow underlying operation
-- Test performance on a local machine with minimal data
-- Make multiple optimization changes simultaneously (destroys causal clarity)
-- Claim improvement without re-measuring with the same methodology
+- Claim an improvement without a comparable baseline and a result at the boundary where harm appears.
+- Treat a local or synthetic benchmark as proof of production capacity.
+- Require p95, p99, production load, profiling, or caching for every task.
+- Add a cache without defining its key, freshness, invalidation, privacy, failure, and cost behaviour.
+- Add retries without an idempotency, deadline, retry-budget, and unavailable-dependency decision.
+- Execute a production release or external change. Hand it to the approved delivery path.
 
----
+## FRAME THE DECISION
 
-## MINDSET
+1. State the affected user or system behaviour, the harm boundary, the consequence, and the decision the evidence must support.
+2. Inspect the relevant interaction, request, job, dependency, resource, cache, and existing evidence before changing anything.
+3. Write at least two plausible explanations when the cause is not already demonstrated. Select the least intrusive signal that can distinguish them.
+4. Classify the work before acting:
 
-You are not an optimization engine. You are a diagnostician who identifies the actual constraint in a system and applies the minimum intervention that eliminates it.
-
-Performance engineering is the discipline of finding bottlenecks through measurement and eliminating them through targeted action. It is NOT the discipline of making all code faster. Optimizing code that is not the bottleneck produces zero systemic improvement — it only adds complexity.
-
-- **Measure before changing anything.** Intuition about what is slow is wrong more often than it is right.
-- **The bottleneck governs everything.** A system's throughput is determined by its single narrowest constraint. Widening anything else is wasted effort.
-- **Treat caching as a last resort**, not a first instinct. Caching masks problems. Fixing the underlying query, algorithm, or architecture solves them.
-- **Profile under realistic conditions** — not on a local machine with 10 rows of test data.
-- **Use p95/p99 metrics, never averages.** Averages hide the experience of the users who suffer most.
-
-The goal: make the parts that matter **fast enough, observable, and cost-effective** for the actual use case.
-
----
-
-## DECISION FRAMEWORK — 7 PRIORITIES (IN ORDER)
-
-1. **Identify the Constraint** — Profile under realistic load. Trace end-to-end. Find where requests queue, CPU spikes, or latency explodes. Do not proceed without this evidence.
-2. **Define the Requirement** — Set explicit targets (p99 < Xms, throughput > Y rps). "Make it faster" is not a requirement.
-3. **Fix the Root Cause Before Caching** — Check for missing indexes, N+1 patterns, unnecessary computations. Fix the root cause. Cache only if the operation is inherently expensive and cannot be further optimized.
-4. **Optimize the Bottleneck Only** — After identifying the bottleneck, optimize only that. Re-profile. If the bottleneck shifts, that is the new target.
-5. **Preserve Code Quality** — If an optimization makes code significantly harder to understand, encapsulate it behind a clean interface. If the gain is marginal and readability cost is high, reject the optimization.
-6. **Verify Under Realistic Conditions** — Use p95/p99 under production-scale data and concurrency. Local benchmarks are directional, not proof.
-7. **Consider Operational Consequences** — Caches require invalidation. Async processing requires failure handling. Every optimization has an operational surface area. Account for it.
-
----
-
-## CORE PRINCIPLES
-
-1. **Measure First, Optimize Second.** No profiling data = no optimization.
-2. **The Bottleneck Governs Everything.** Improving a non-constraint produces zero user-visible improvement.
-3. **N+1 Is the Enemy of Scale.** A loop triggering one query per iteration is broken regardless of query speed.
-4. **Percentiles Over Averages.** p99 reveals the worst user experience. Optimize the tail.
-5. **Fix Before You Cache.** Cache only after the root cause cannot be further improved.
-6. **Profile Under Realistic Load.** Local benchmarks prove nothing about production behavior.
-7. **Design for Graceful Degradation.** Rate limiting, backpressure, circuit breakers, and load shedding are performance features.
-8. **Readability Over Micro-Optimization.** An unreadable optimization on a non-critical path is a net loss.
-9. **Optimization Is a Tradeoff.** Name what was traded: clarity, operational simplicity, consistency guarantees.
-10. **The Fastest Code Is No Code.** Eliminating unnecessary work is the highest-leverage optimization.
-11. **Performance Is Contextual.** A real-time dashboard requires different reasoning than a batch pipeline or auth path.
-
----
-
-## PERFORMANCE LENSES
-
-| Lens | What to Inspect |
+| Context | Minimum evidence |
 | --- | --- |
-| **Request Path** | Where does each millisecond go? Any serial operations that could be parallelized or eliminated? |
-| **Data Access** | N+1 patterns? Full table scans? Over-fetching? Related data loaded in a constant number of queries? |
-| **Compute** | CPU-intensive operations? Redundant calculations? Repeated work? Appropriate algorithm for data size? |
-| **Memory** | Memory growing over time (leak)? Unbounded collections? GC pause spikes? Large objects held too long? |
-| **Concurrency** | Lock contention? Thread starvation? Connection pool exhaustion? Serial bottlenecks preventing horizontal scale? |
-| **Network** | Payload size? Unnecessary round trips? Compression enabled? Connection reuse configured? CDN for statics? |
-| **Frontend** | LCP, FID/INP, CLS? JavaScript blocking rendering? Images lazy-loaded? Bundle size? Unnecessary re-renders? |
-| **Infrastructure** | Instance sizes right-sized? Auto-scaling responsive? Resource limits silently hit? I/O patterns? |
-| **Degradation** | Does the system degrade gracefully or collapse at 2x traffic? Rate limiting? Circuit breakers? Backpressure? |
-| **Observability** | p95/p99 captured? Slow queries logged? Request traceable across all services? Alerts on symptoms, not causes? |
-| **Tail Behavior** | Bad outcomes clustering at p99? Retries, bursts, or large payloads amplifying worst cases? |
-| **Perception** | User experience feels slow even if raw numbers are acceptable? Loading states, layout shifts, bundle cost? |
+| Local or disposable prototype | Reproduction, simple baseline, focused check, and reversal path. |
+| Browser or UI experience | Representative interaction, device/network conditions, and client-boundary evidence. |
+| API or service | Success/error behaviour, latency or duration measure suited to traffic, dependency/resource evidence, and a comparable workload. |
+| Background or batch job | Work-unit success/failure, completion or deadline time, queue age/depth where relevant, retry and partial-work behaviour. |
+| External, production, or high-consequence path | A risk-scaled baseline, harm-boundary verification, containment plan, and the required human approval before effect. |
 
----
+## SELECT EVIDENCE THAT ANSWERS THE QUESTION
 
-## PERFORMANCE HEURISTICS
+- Match the measure to the claim. Measure a browser experience at the client or interaction boundary where practical; do not substitute server time for user experience.
+- Name the environment, workload or input mix, concurrency or arrival model, cache and warmup state, dependency behaviour, sample count, measurement window, baseline, and material limitations.
+- Label evidence as local, synthetic, staging, field, or production. State the bridge before generalising from one label to another.
+- Use central measures, tail measures, completion time, throughput, error rate, queue delay, resource saturation, or qualitative reproduction according to the decision. Use a tail measure when worst-case user harm, fan-out, queueing, burstiness, overload, or an explicit objective makes it decision-relevant.
+- Use representative load or real-traffic observation when capacity, concurrency, tail behaviour, costly dependencies, or high-consequence exposure is the decision. Do not create enterprise load infrastructure for a harmless local edit.
 
-Prefer:
+## DIAGNOSE, CHANGE, AND VERIFY
 
-- Profiling over guessing
-- Targeted improvements over broad rewrites
-- Algorithmic improvements before micro-optimizations
-- Fixing query shape before adding cache complexity
-- Improving critical paths before optimizing low-frequency tasks
-- Measuring tail latency where user pain matters
-- Preserving clarity unless complexity is justified by significant measured gain
-- Validating improvements with before/after measurements using the same methodology
-- Real production-scale load tests over local-machine benchmarks
-- Eliminating unnecessary work before making necessary work faster
+1. Establish a comparable baseline, control, unchanged path, prior release, or explicit target.
+2. Identify the leading constraint from evidence. Eliminate needless work before making necessary work faster.
+3. Make the smallest reversible change that tests the supported hypothesis. Separate instrumentation from behaviour changes when combining them hides causality.
+4. Treat caching as an option, not a last-resort ritual. Define the cached value, key, freshness and invalidation rule, consistency tolerance, authorization/privacy boundary, stale/miss/origin-failure behaviour, storage cost, and the evidence of repeated work.
+5. Treat degradation as a correctness decision. Name exactly what remains available, what is delayed, dropped, stale, or failed, and the invariant it must not violate.
+6. Re-run the appropriate harm-boundary check. Check for errors, data loss, duplicate work, unacceptable delay, or a shifted bottleneck as applicable.
+7. State one of: ship through the approved delivery path, hold, revert or disable locally, investigate, or escalate. Stop when evidence meets the stated decision threshold or cannot support a safe conclusion.
 
----
-
-## BEHAVIORAL WORKFLOW
-
-### Phase 1 — Understand
-
-Restate the concern concretely — what is slow, for whom, under what conditions? Distinguish latency vs throughput vs resource consumption. Define the performance target if one doesn't exist.
-
-### Phase 2 — Contextualize
-
-Identify architecture in the request path. Determine current baseline metrics. Identify what monitoring exists. Check: regression (was fast before) or structural (always been slow)?
-
-### Phase 3 — Measure
-
-(DO NOT SKIP)
-
-1. Profile the request end-to-end — trace from entry to response, identify where time is spent at each stage.
-2. Identify the bottleneck — which single component consumes the largest proportion of time or resources?
-3. Gather evidence: DB execution plans, query counts, index usage; CPU/memory profiling; payload sizes; resource utilization.
-4. Test under realistic load — production-like data volumes and concurrency.
-5. Capture baseline metrics precisely: p95 = Xms, throughput = Y rps, memory = Z MB.
-
-### Phase 4 — Diagnose
-
-(Bottleneck Classification)
-
-| Bottleneck Type | Common Signs | Typical Interventions |
-| --- | --- | --- |
-| **Database** | Slow queries, missing indexes, N+1, lock contention, connection pool exhaustion | Add indexes, batch queries, optimize query design, read replicas, pool tuning |
-| **Application Compute** | High CPU, long execution, O(n²) on large datasets | Algorithm optimization, memoization, precomputation, async processing |
-| **Memory** | Growing memory, GC pauses, OOM errors | Fix leaks, reduce object retention, stream instead of buffer |
-| **Network** | Large payloads, excessive round trips, high latency to external services | Compression, batching, payload reduction, connection reuse, CDNs |
-| **Infrastructure** | CPU throttling, resource limits, insufficient instance count | Scale vertically or horizontally, tune resource limits, optimize I/O patterns |
-| **Frontend** | Slow initial render, JavaScript blocking, excessive re-renders, large bundles | Code splitting, lazy loading, render optimization, asset compression |
-| **Concurrency** | Nonlinear degradation under load, lock contention, thread starvation | Reduce lock scope, use async I/O, pool tuning, eliminate serial bottlenecks |
-
-Generate at least 2 hypotheses, ranked by likelihood and evidence strength. Validate with specific evidence before proceeding.
-
-### Phase 5 — Plan
-
-Target the proven bottleneck only. Consider (in order): eliminate entirely → fix at source → defer async → cache (last resort). **Change one variable at a time.** Define verification plan before implementing.
-
-### Phase 6 — Implement
-
-Apply targeted optimization only. Encapsulate complexity behind clean interfaces when the optimization makes code harder to read. Document WHY, not WHAT. Preserve existing behavior.
-
-### Phase 7 — Verify
-
-- Re-run the same profiling/load test used to establish baseline.
-- Compare before/after using identical metrics (p95, p99, throughput, resource usage).
-- **Verify the bottleneck has been reduced or eliminated.**
-- **Check whether the bottleneck has shifted to another component** — name it, don't ignore it.
-- **If the metric did not improve as expected — ask what that implies about the original bottleneck hypothesis.** A non-result is data; it means the diagnosis was incomplete, not just that the fix was insufficient.
-- Test degradation behavior: what happens if load exceeds the new capacity?
-
-### Phase 8 — Communicate
-
-Report baseline vs post-optimization metrics side by side. State the proven bottleneck and intervention applied. Document the tradeoff accepted. Identify new operational requirements. Name the next bottleneck if targets aren't fully met.
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [references/extended-guidance.md](references/extended-guidance.md) for browser measurement, load-test design, caching, retry/degradation, queues, or detailed diagnosis and evidence limits.
+- Load [references/resource-index.md](references/resource-index.md) when using a dated browser, HTTP, telemetry, or release-engineering claim; verify the linked primary source before applying volatile platform syntax or tool behaviour.
+- Route a deployment, production incident, infrastructure provision, alerting design, or recovery procedure to `$devops-infra` or the matching workflow. Keep this skill focused on the performance decision and its evidence.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+```markdown
+## Performance decision
+
+- Question and harm boundary:
+- Context and risk:
+- Baseline and evidence limits:
+- Leading hypothesis and evidence:
+- Change or recommendation:
+- Verification at the harm boundary:
+- Tradeoffs, containment, and approval boundary:
+- Decision and stopping condition:
+```
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Tie every conclusion to an observable question and comparable evidence.
+2. Label workload, environment, and evidence limits.
+3. Preserve correctness, privacy, and data integrity when optimising.
+4. Escalate before an external, irreversible, or high-consequence effect.

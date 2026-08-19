@@ -1,1236 +1,1141 @@
 {
-    "schema_version":  1,
-    "os_version":  "3.0.0",
-    "canonical":  {
-                      "root":  "global",
-                      "policy":  "global/GEMINI.md",
-                      "router":  "global/GLOBAL_MEMORY.md",
-                      "user_profile":  "global/USER_PROFILE.md",
-                      "skills":  "global/skills",
-                      "workflows":  "global/workflows",
-                      "baselines":  "global/baselines",
-                      "context_templates":  "global/context_templates",
-                      "adapters":  "global/adapters",
-                      "schemas":  "global/schemas",
-                      "design_audit":  "global/design-audit"
-                  },
-    "hosts":  [
-                  "gemini",
-                  "codex",
-                  "cursor",
-                  "windsurf",
-                  "opencode"
-              ],
-    "profiles":  [
-                     "general",
-                     "spatial"
-                 ],
-    "mutation_classes":  [
-                             "read_only",
-                             "local_edit",
-                             "dependency_or_network",
-                             "destructive",
-                             "external_or_production"
-                         ],
-    "skills":  [
-                   {
-                       "id":  "api-design",
-                       "path":  "global/skills/api-design",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "apply-transition",
-                       "path":  "global/skills/apply-transition",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "architecture",
-                       "path":  "global/skills/architecture",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "brand-strategy",
-                       "path":  "global/skills/brand-strategy",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "browser-test",
-                       "path":  "global/skills/browser-test",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "cinematic-motion",
-                       "path":  "global/skills/cinematic-motion",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "cinematic-showroom-strategy",
-                       "path":  "global/skills/cinematic-showroom-strategy",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "coding",
-                       "path":  "global/skills/coding",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "color-system",
-                       "path":  "global/skills/color-system",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "competitor-profiling",
-                       "path":  "global/skills/competitor-profiling",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "context-formatting",
-                       "path":  "global/skills/context-formatting",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "context-hygiene",
-                       "path":  "global/skills/context-hygiene",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "copy-editing",
-                       "path":  "global/skills/copy-editing",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "copywriting",
-                       "path":  "global/skills/copywriting",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "database",
-                       "path":  "global/skills/database",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "debugging",
-                       "path":  "global/skills/debugging",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "deep-think",
-                       "path":  "global/skills/deep-think",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "deriv-bot-engineering",
-                       "path":  "global/skills/deriv-bot-engineering",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "devops-infra",
-                       "path":  "global/skills/devops-infra",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "dox",
-                       "path":  "global/skills/dox",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "expert-positioning",
-                       "path":  "global/skills/expert-positioning",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "fallow",
-                       "path":  "global/skills/fallow",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "learn",
-                       "path":  "global/skills/learn",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "marketing-psychology",
-                       "path":  "global/skills/marketing-psychology",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "master-design-director",
-                       "path":  "global/skills/master-design-director",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                      {
-                          "id":  "motion-library",
-                          "path":  "global/skills/motion-library",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                   {
-                       "id":  "page-cro",
-                       "path":  "global/skills/page-cro",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "performance",
-                       "path":  "global/skills/performance",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "product-thinking",
-                       "path":  "global/skills/product-thinking",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "prompt-engineering",
-                       "path":  "global/skills/prompt-engineering",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "prospect-research",
-                       "path":  "global/skills/prospect-research",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "reference-intelligence",
-                       "path":  "global/skills/reference-intelligence",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "refactoring",
-                       "path":  "global/skills/refactoring",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "research-analysis",
-                       "path":  "global/skills/research-analysis",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "resolving-merge-conflicts",
-                       "path":  "global/skills/resolving-merge-conflicts",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "review-audit",
-                       "path":  "global/skills/review-audit",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "sales-enablement",
-                       "path":  "global/skills/sales-enablement",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "scroll-storyboard",
-                       "path":  "global/skills/scroll-storyboard",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "security",
-                       "path":  "global/skills/security",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance",
-                       "path":  "global/skills/seedance",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-antislop",
-                       "path":  "global/skills/seedance/skills/seedance-antislop",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-audio",
-                       "path":  "global/skills/seedance/skills/seedance-audio",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-camera",
-                       "path":  "global/skills/seedance/skills/seedance-camera",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-characters",
-                       "path":  "global/skills/seedance/skills/seedance-characters",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-copyright",
-                       "path":  "global/skills/seedance/skills/seedance-copyright",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-examples-zh",
-                       "path":  "global/skills/seedance/skills/seedance-examples-zh",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-filter",
-                       "path":  "global/skills/seedance/skills/seedance-filter",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-interview",
-                       "path":  "global/skills/seedance/skills/seedance-interview",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-interview-short",
-                       "path":  "global/skills/seedance/skills/seedance-interview-short",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-lighting",
-                       "path":  "global/skills/seedance/skills/seedance-lighting",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-motion",
-                       "path":  "global/skills/seedance/skills/seedance-motion",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-pipeline",
-                       "path":  "global/skills/seedance/skills/seedance-pipeline",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-prompt",
-                       "path":  "global/skills/seedance/skills/seedance-prompt",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-prompt-short",
-                       "path":  "global/skills/seedance/skills/seedance-prompt-short",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-recipes",
-                       "path":  "global/skills/seedance/skills/seedance-recipes",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-style",
-                       "path":  "global/skills/seedance/skills/seedance-style",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-troubleshoot",
-                       "path":  "global/skills/seedance/skills/seedance-troubleshoot",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vfx",
-                       "path":  "global/skills/seedance/skills/seedance-vfx",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vocab-es",
-                       "path":  "global/skills/seedance/skills/seedance-vocab-es",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vocab-ja",
-                       "path":  "global/skills/seedance/skills/seedance-vocab-ja",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vocab-ko",
-                       "path":  "global/skills/seedance/skills/seedance-vocab-ko",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vocab-ru",
-                       "path":  "global/skills/seedance/skills/seedance-vocab-ru",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "seedance-vocab-zh",
-                       "path":  "global/skills/seedance/skills/seedance-vocab-zh",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "setup-pre-commit",
-                       "path":  "global/skills/setup-pre-commit",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "skill-creator",
-                       "path":  "global/skills/skill-creator",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "spatial-experience-design",
-                       "path":  "global/skills/spatial-experience-design",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "storytelling",
-                       "path":  "global/skills/storytelling",
-                       "profiles":  [
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "testing",
-                       "path":  "global/skills/testing",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "to-tickets",
-                       "path":  "global/skills/to-tickets",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "ui-ux",
-                       "path":  "global/skills/ui-ux",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "wizard",
-                       "path":  "global/skills/wizard",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   },
-                   {
-                       "id":  "video-generation",
-                       "path":  "global/skills/video-generation",
-                       "profiles":  [
-                                        "general",
-                                        "spatial"
-                                    ]
-                   }
-               ],
-    "workflows":  [
-                      {
-                          "id":  "build-feature",
-                          "path":  "global/workflows/workflow-build-feature.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "context-hygiene",
-                          "path":  "global/workflows/workflow-context-hygiene.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "database-migration",
-                          "path":  "global/workflows/workflow-database-migration.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "debug-issue",
-                          "path":  "global/workflows/workflow-debug-issue.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "dependency-upgrade",
-                          "path":  "global/workflows/workflow-dependency-upgrade.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "design-api",
-                          "path":  "global/workflows/workflow-design-api.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "design-ui",
-                          "path":  "global/workflows/workflow-design-ui.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-adapt",
-                          "path":  "global/workflows/workflow-impeccable-adapt.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-animate",
-                          "path":  "global/workflows/workflow-impeccable-animate.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-audit",
-                          "path":  "global/workflows/workflow-impeccable-audit.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-bolder",
-                          "path":  "global/workflows/workflow-impeccable-bolder.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-clarify",
-                          "path":  "global/workflows/workflow-impeccable-clarify.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-colorize",
-                          "path":  "global/workflows/workflow-impeccable-colorize.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-craft",
-                          "path":  "global/workflows/workflow-impeccable-craft.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-critique",
-                          "path":  "global/workflows/workflow-impeccable-critique.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-delight",
-                          "path":  "global/workflows/workflow-impeccable-delight.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-distill",
-                          "path":  "global/workflows/workflow-impeccable-distill.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-document",
-                          "path":  "global/workflows/workflow-impeccable-document.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-extract",
-                          "path":  "global/workflows/workflow-impeccable-extract.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-harden",
-                          "path":  "global/workflows/workflow-impeccable-harden.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-layout",
-                          "path":  "global/workflows/workflow-impeccable-layout.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-live",
-                          "path":  "global/workflows/workflow-impeccable-live.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-onboard",
-                          "path":  "global/workflows/workflow-impeccable-onboard.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-optimize",
-                          "path":  "global/workflows/workflow-impeccable-optimize.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-overdrive",
-                          "path":  "global/workflows/workflow-impeccable-overdrive.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-polish",
-                          "path":  "global/workflows/workflow-impeccable-polish.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-quieter",
-                          "path":  "global/workflows/workflow-impeccable-quieter.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-shape",
-                          "path":  "global/workflows/workflow-impeccable-shape.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-teach",
-                          "path":  "global/workflows/workflow-impeccable-teach.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "impeccable-typeset",
-                          "path":  "global/workflows/workflow-impeccable-typeset.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "incident-response",
-                          "path":  "global/workflows/workflow-incident-response.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "marketing-copy",
-                          "path":  "global/workflows/workflow-marketing-copy.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "optimize-performance",
-                          "path":  "global/workflows/workflow-optimize-performance.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "os-maintenance",
-                          "path":  "global/workflows/workflow-os-maintenance.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "plan-architecture",
-                          "path":  "global/workflows/workflow-plan-architecture.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "project-inception",
-                          "path":  "global/workflows/workflow-project-inception.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "refactor-module",
-                          "path":  "global/workflows/workflow-refactor-module.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "review-code",
-                          "path":  "global/workflows/workflow-review-code.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "security-audit",
-                          "path":  "global/workflows/workflow-security-audit.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "ship-to-production",
-                          "path":  "global/workflows/workflow-ship-to-production.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "spatial-concept",
-                          "path":  "global/workflows/workflow-spatial-concept.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "spatial-design-ui",
-                          "path":  "global/workflows/workflow-spatial-design-ui.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "spatial-project-inception",
-                          "path":  "global/workflows/workflow-spatial-project-inception.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "storytelling",
-                          "path":  "global/workflows/workflow-storytelling.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "task-dispatch",
-                          "path":  "global/workflows/workflow-task-dispatch.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "test-strategy",
-                          "path":  "global/workflows/workflow-test-strategy.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "ui-animate",
-                          "path":  "global/workflows/workflow-ui-animate.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "ui-craft",
-                          "path":  "global/workflows/workflow-ui-craft.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "verify-project",
-                          "path":  "global/workflows/workflow-verify-project.md",
-                          "profiles":  [
-                                           "general"
-                                       ]
-                      },
-                      {
-                          "id":  "reference-intelligence",
-                          "path":  "global/workflows/workflow-reference-intelligence.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "video-generation",
-                          "path":  "global/workflows/workflow-video-generation.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "visual-brainstorm",
-                          "path":  "global/workflows/workflow-visual-brainstorm.md",
-                          "profiles":  [
-                                           "spatial"
-                                       ]
-                      }
-                  ],
-    "context_templates":  [
-                              {
-                                  "id":  "api-conventions",
-                                  "path":  "global/context_templates/api-conventions.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "app-flow",
-                                  "path":  "global/context_templates/app-flow.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "architecture-context",
-                                  "path":  "global/context_templates/architecture-context.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "business-priorities",
-                                  "path":  "global/context_templates/business-priorities.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "coding-standards",
-                                  "path":  "global/context_templates/coding-standards.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "concept-directions",
-                                  "path":  "global/context_templates/concept-directions.md",
-                                  "profiles":  [
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "creative-brief",
-                                  "path":  "global/context_templates/creative-brief.md",
-                                  "profiles":  [
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "database-context",
-                                  "path":  "global/context_templates/database-context.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "domain-rules",
-                                  "path":  "global/context_templates/domain-rules.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "evidence-dossier",
-                                  "path":  "global/context_templates/evidence-dossier.md",
-                                  "profiles":  [
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "experience-blueprint",
-                                  "path":  "global/context_templates/experience-blueprint.md",
-                                  "profiles":  [
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "infra-context",
-                                  "path":  "global/context_templates/infra-context.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "production-plan",
-                                  "path":  "global/context_templates/production-plan.md",
-                                  "profiles":  [
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "project-context",
-                                  "path":  "global/context_templates/project-context.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "research-brief",
-                                  "path":  "global/context_templates/research-brief.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "security-baselines",
-                                  "path":  "global/context_templates/security-baselines.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "stack-context",
-                                  "path":  "global/context_templates/stack-context.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              },
-                              {
-                                  "id":  "testing-standards",
-                                  "path":  "global/context_templates/testing-standards.md",
-                                  "profiles":  [
-                                                   "general",
-                                                   "spatial"
-                                               ]
-                              }
-                          ],
-    "baselines":  [
-                      {
-                          "id":  "authority-and-trust",
-                          "path":  "global/baselines/authority-and-trust.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "context-integrity",
-                          "path":  "global/baselines/context-integrity.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "engineering",
-                          "path":  "global/baselines/engineering.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "source-verification",
-                          "path":  "global/baselines/source-verification.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      }
-                  ],
-    "templates":  [
-                      {
-                          "id":  "architecture-decision-record",
-                          "path":  "global/global_templates/architecture-decision-record.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "code-review-report",
-                          "path":  "global/global_templates/code-review-report.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "coding-standards-template",
-                          "path":  "global/global_templates/coding-standards-template.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "debug-report",
-                          "path":  "global/global_templates/debug-report.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "feature-plan",
-                          "path":  "global/global_templates/feature-plan.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "prd-template",
-                          "path":  "global/global_templates/prd-template.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "product-marketing-context-template",
-                          "path":  "global/global_templates/product-marketing-context-template.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "project-brief",
-                          "path":  "global/global_templates/project-brief.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "project-context-template",
-                          "path":  "global/global_templates/project-context-template.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "risk-assessment",
-                          "path":  "global/global_templates/risk-assessment.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      },
-                      {
-                          "id":  "stack-context-template",
-                          "path":  "global/global_templates/stack-context-template.md",
-                          "profiles":  [
-                                           "general",
-                                           "spatial"
-                                       ]
-                      }
-                  ]
+  "schema_version": 2,
+  "os_version": "4.0.0",
+  "canonical": {
+    "root": "global",
+    "policy": "global/GEMINI.md",
+    "router": "global/GLOBAL_MEMORY.md",
+    "user_profile": "global/USER_PROFILE.md",
+    "skills": "global/skills",
+    "workflows": "global/workflows",
+    "baselines": "global/baselines",
+    "context_templates": "global/context_templates",
+    "adapters": "global/adapters",
+    "schemas": "global/schemas",
+    "design_audit": "global/design-audit",
+    "agents": "global/agents"
+  },
+  "hosts": [
+    "antigravity",
+    "gemini",
+    "codex",
+    "cursor",
+    "windsurf",
+    "opencode"
+  ],
+  "profiles": [
+    "general",
+    "spatial",
+    "media",
+    "growth"
+  ],
+  "mutation_classes": [
+    "read_only",
+    "local_edit",
+    "dependency_or_network",
+    "destructive",
+    "external_or_production"
+  ],
+  "skills": [
+    {
+      "id": "api-design",
+      "path": "global/skills/api-design",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "apply-transition",
+      "path": "global/skills/apply-transition",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "architecture",
+      "path": "global/skills/architecture",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "brand-strategy",
+      "path": "global/skills/brand-strategy",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "browser-test",
+      "path": "global/skills/browser-test",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "cinematic-motion",
+      "path": "global/skills/cinematic-motion",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "cinematic-showroom-strategy",
+      "path": "global/skills/cinematic-showroom-strategy",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "canvas-ui",
+      "path": "global/skills/canvas-ui",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "coding",
+      "path": "global/skills/coding",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "competitor-profiling",
+      "path": "global/skills/competitor-profiling",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "context-formatting",
+      "path": "global/skills/context-formatting",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "context-hygiene",
+      "path": "global/skills/context-hygiene",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "copy-editing",
+      "path": "global/skills/copy-editing",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "copywriting",
+      "path": "global/skills/copywriting",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "database",
+      "path": "global/skills/database",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "debugging",
+      "path": "global/skills/debugging",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "deep-think",
+      "path": "global/skills/deep-think",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "devops-infra",
+      "path": "global/skills/devops-infra",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "dox",
+      "path": "global/skills/dox",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "tool_adapter"
+    },
+    {
+      "id": "expert-positioning",
+      "path": "global/skills/expert-positioning",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "fallow",
+      "path": "global/skills/fallow",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "tool_adapter"
+    },
+    {
+      "id": "learn",
+      "path": "global/skills/learn",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "marketing-psychology",
+      "path": "global/skills/marketing-psychology",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "master-design-director",
+      "path": "global/skills/master-design-director",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "motion-library",
+      "path": "global/skills/motion-library",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "page-cro",
+      "path": "global/skills/page-cro",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "performance",
+      "path": "global/skills/performance",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "product-thinking",
+      "path": "global/skills/product-thinking",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "prompt-engineering",
+      "path": "global/skills/prompt-engineering",
+      "profiles": [
+        "media"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "prospect-research",
+      "path": "global/skills/prospect-research",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "reference-intelligence",
+      "path": "global/skills/reference-intelligence",
+      "profiles": [
+        "general",
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "refactoring",
+      "path": "global/skills/refactoring",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "research-analysis",
+      "path": "global/skills/research-analysis",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "resolving-merge-conflicts",
+      "path": "global/skills/resolving-merge-conflicts",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "review-audit",
+      "path": "global/skills/review-audit",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "sales-enablement",
+      "path": "global/skills/sales-enablement",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "offer-architecture",
+      "path": "global/skills/offer-architecture",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "scroll-storyboard",
+      "path": "global/skills/scroll-storyboard",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "security",
+      "path": "global/skills/security",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "setup-pre-commit",
+      "path": "global/skills/setup-pre-commit",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "skill-creator",
+      "path": "global/skills/skill-creator",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "spatial-experience-design",
+      "path": "global/skills/spatial-experience-design",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "storytelling",
+      "path": "global/skills/storytelling",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "testing",
+      "path": "global/skills/testing",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "to-tickets",
+      "path": "global/skills/to-tickets",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "ui-ux",
+      "path": "global/skills/ui-ux",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "wizard",
+      "path": "global/skills/wizard",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "video-generation",
+      "path": "global/skills/video-generation",
+      "profiles": [
+        "media"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "build-feature",
+      "path": "global/workflows/workflow-build-feature.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "route"
+    },
+    {
+      "id": "commercial-decision-record",
+      "path": "global/workflows/workflow-commercial-decision-record.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "hard_gate"
+    },
+    {
+      "id": "database-migration",
+      "path": "global/workflows/workflow-database-migration.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "hard_gate"
+    },
+    {
+      "id": "debug-issue",
+      "path": "global/workflows/workflow-debug-issue.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "route"
+    },
+    {
+      "id": "dependency-upgrade",
+      "path": "global/workflows/workflow-dependency-upgrade.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "design-ui",
+      "path": "global/workflows/workflow-design-ui.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "route"
+    },
+    {
+      "id": "incident-response",
+      "path": "global/workflows/workflow-incident-response.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "live-learning-loop",
+      "path": "global/workflows/workflow-live-learning-loop.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "hard_gate"
+    },
+    {
+      "id": "os-maintenance",
+      "path": "global/workflows/workflow-os-maintenance.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "route"
+    },
+    {
+      "id": "plan-architecture",
+      "path": "global/workflows/workflow-plan-architecture.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "route"
+    },
+    {
+      "id": "project-inception",
+      "path": "global/workflows/workflow-project-inception.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "route"
+    },
+    {
+      "id": "security-audit",
+      "path": "global/workflows/workflow-security-audit.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "hard_gate"
+    },
+    {
+      "id": "ship-to-production",
+      "path": "global/workflows/workflow-ship-to-production.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "hard_gate"
+    },
+    {
+      "id": "spatial-project-inception",
+      "path": "global/workflows/workflow-spatial-project-inception.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "route"
+    },
+    {
+      "id": "task-dispatch",
+      "path": "global/workflows/workflow-task-dispatch.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "route"
+    },
+    {
+      "id": "test-strategy",
+      "path": "global/workflows/workflow-test-strategy.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "verify-project",
+      "path": "global/workflows/workflow-verify-project.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "procedure"
+    }
+  ],
+  "context_templates": [
+    {
+      "id": "api-conventions",
+      "path": "global/context_templates/api-conventions.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    },
+    {
+      "id": "app-flow",
+      "path": "global/context_templates/app-flow.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
+      "id": "architecture-context",
+      "path": "global/context_templates/architecture-context.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    },
+    {
+      "id": "business-priorities",
+      "path": "global/context_templates/business-priorities.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "coding-standards",
+      "path": "global/context_templates/coding-standards.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "template"
+    },
+    {
+      "id": "concept-directions",
+      "path": "global/context_templates/concept-directions.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
+      "id": "creative-brief",
+      "path": "global/context_templates/creative-brief.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
+      "id": "database-context",
+      "path": "global/context_templates/database-context.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    },
+    {
+      "id": "domain-rules",
+      "path": "global/context_templates/domain-rules.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "evidence-dossier",
+      "path": "global/context_templates/evidence-dossier.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "experience-blueprint",
+      "path": "global/context_templates/experience-blueprint.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
+      "id": "infra-context",
+      "path": "global/context_templates/infra-context.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    },
+    {
+      "id": "production-plan",
+      "path": "global/context_templates/production-plan.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
+      "id": "project-context",
+      "path": "global/context_templates/project-context.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "template"
+    },
+    {
+      "id": "research-brief",
+      "path": "global/context_templates/research-brief.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "security-baselines",
+      "path": "global/context_templates/security-baselines.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "template"
+    },
+    {
+      "id": "stack-context",
+      "path": "global/context_templates/stack-context.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "template"
+    },
+    {
+      "id": "testing-standards",
+      "path": "global/context_templates/testing-standards.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "template"
+    }
+  ],
+  "baselines": [
+    {
+      "id": "authority-and-trust",
+      "path": "global/baselines/authority-and-trust.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "baseline"
+    },
+    {
+      "id": "context-integrity",
+      "path": "global/baselines/context-integrity.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "baseline"
+    },
+    {
+      "id": "engineering",
+      "path": "global/baselines/engineering.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "baseline"
+    },
+    {
+      "id": "source-verification",
+      "path": "global/baselines/source-verification.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "baseline"
+    }
+  ],
+  "templates": [
+    {
+      "id": "architecture-decision-record",
+      "path": "global/global_templates/architecture-decision-record.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    },
+    {
+      "id": "claim-and-decision-ledger",
+      "path": "global/global_templates/claim-and-decision-ledger.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "commercial-handoff-packet",
+      "path": "global/global_templates/commercial-handoff-packet.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "code-review-report",
+      "path": "global/global_templates/code-review-report.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "template"
+    },
+    {
+      "id": "coding-standards-template",
+      "path": "global/global_templates/coding-standards-template.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "template"
+    },
+    {
+      "id": "debug-report",
+      "path": "global/global_templates/debug-report.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "template"
+    },
+    {
+      "id": "decision-evidence-record",
+      "path": "global/global_templates/decision-evidence-record.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "template"
+    },
+    {
+      "id": "feature-plan",
+      "path": "global/global_templates/feature-plan.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "template"
+    },
+    {
+      "id": "live-learning-record",
+      "path": "global/global_templates/live-learning-record.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "offer-decision-record",
+      "path": "global/global_templates/offer-decision-record.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "prd-template",
+      "path": "global/global_templates/prd-template.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "product-marketing-context-template",
+      "path": "global/global_templates/product-marketing-context-template.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "project-brief",
+      "path": "global/global_templates/project-brief.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "template"
+    },
+    {
+      "id": "project-context-template",
+      "path": "global/global_templates/project-context-template.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "template"
+    },
+    {
+      "id": "risk-assessment",
+      "path": "global/global_templates/risk-assessment.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "template"
+    },
+    {
+      "id": "stack-context-template",
+      "path": "global/global_templates/stack-context-template.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "template"
+    }
+  ],
+  "profile_definitions": {
+    "general": {
+      "kind": "base",
+      "extends": []
+    },
+    "spatial": {
+      "kind": "pack",
+      "extends": [
+        "general"
+      ]
+    },
+    "media": {
+      "kind": "pack",
+      "extends": [
+        "general"
+      ]
+    },
+    "growth": {
+      "kind": "pack",
+      "extends": [
+        "general"
+      ]
+    }
+  },
+  "resources": [
+    {
+      "id": "growth-direct-selection",
+      "path": "global/reference/growth-direct-selection.md",
+      "destination": "reference/growth-direct-selection.md",
+      "profiles": [
+        "growth"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "customer-market-demand-evidence",
+      "path": "global/reference/customer-market-demand-evidence.md",
+      "destination": "reference/customer-market-demand-evidence.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "meaning-and-evidence-foundation",
+      "path": "global/reference/meaning-and-evidence-foundation.md",
+      "destination": "reference/meaning-and-evidence-foundation.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "hero-layout-blueprints",
+      "path": "global/reference/hero-layout-blueprints.md",
+      "destination": "reference/hero-layout-blueprints.md",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "spatial-reference-library",
+      "path": "global/reference",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "spatial-design-audit-library",
+      "path": "global/design-audit",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "reference"
+    }
+  ],
+  "agents": [
+    {
+      "id": "studio-director",
+      "path": "global/agents/studio-director",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "orchestrator",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    },
+    {
+      "id": "product-strategy-lead",
+      "path": "global/agents/product-strategy-lead",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "product_strategy",
+      "delivery_role": "functional_lead",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    },
+    {
+      "id": "systems-architect",
+      "path": "global/agents/systems-architect",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "systems_architecture",
+      "delivery_role": "functional_lead",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    },
+    {
+      "id": "design-director",
+      "path": "global/agents/design-director",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "functional_lead",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    },
+    {
+      "id": "staff-engineer",
+      "path": "global/agents/staff-engineer",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "functional_lead",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    },
+    {
+      "id": "assurance-quality-lead",
+      "path": "global/agents/assurance-quality-lead",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "independent_assurance",
+      "host_compatibility": [
+        "antigravity",
+        "codex"
+      ]
+    }
+  ]
 }

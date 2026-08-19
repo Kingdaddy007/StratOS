@@ -11,6 +11,10 @@ description: 'Use this skill when finding, scoring, or profiling prospects for t
 - Scoring and ranking a list of interior designers by ICP fit.
 - Auditing a specific designer's Instagram and website to decide on action.
 
+## AUTHORITY AND EXTERNAL-ACTION BOUNDARY
+
+This skill researches and scores prospects, then prepares a dossier or a proposed next action. It does not contact a prospect, send a message, publish a concept, update a CRM, upload data, or make a purchase. Any external action remains subject to the host's just-in-time approval gate.
+
 ## REFERENCE LOADING RULES
 
 - Load `references/prospect-dossier-template.md` whenever creating, reviewing, or handing off a prospect dossier.
@@ -88,8 +92,8 @@ Instagram · Google Search · Google Maps · Houzz · LinkedIn · Pinterest · `
 | Contact Accessibility | /20 | Direct founder email/WhatsApp, active founder presence, direct DM access |
 | Personalization Potential | /10 | Obvious gap + strong imagery + clear concept angle |
 
-**Elite Tier (80–100):** Create concept immediately. Record 90s walkthrough. Send high-personalization outreach.
-**Growth Tier (50–79):** Send light personalized message first. Build concept only after interest.
+**Elite Tier (80–100):** Prepare a proposed concept and high-personalisation outreach draft for human review. Do not send, publish, or record anything externally without approval.
+**Growth Tier (50–79):** Prepare a light personalised draft for human review; consider a concept only after evidence of interest. Do not send it without approval.
 **Low Tier (below 50):** Do not target.
 
 ---
@@ -110,7 +114,7 @@ Strong personalization hooks: broken website element · no site despite strong I
 | --- | --- | --- |
 | Galaxy-brain ICP stretch | Targeting hospitality or commercial firms first because they "feel premium" | Lock to luxury residential and boutique studios as primary ICPs |
 | Generic gap messaging | Saying "your website looks outdated" without naming a specific failure | Name one concrete gap: broken counter, no case studies, Instagram-vs-website mismatch |
-| Concept before contact | Building a full hero concept for a Growth Tier prospect with no prior response | Send light DM first, build concept only after interest |
+| Concept before contact | Building a full hero concept for a Growth Tier prospect with no prior response | Prepare a light outreach draft for human review; consider a concept only after evidence of interest |
 | Budget exception | Accepting a prospect that shows budget language because their visuals are good | Disqualify. Ability to pay matters as much as visual quality |
 
 ---
@@ -121,10 +125,10 @@ Strong personalization hooks: broken website element · no site despite strong I
 Search Scope → Executive Summary (totals by tier) → Structured Prospect Profiles → Market Observations → Recommended Next Actions
 
 **Single prospect audit:**
-Scores by category → Total ICP score + tier → Main website gap → Suggested hero concept angle → Suggested outreach hook → Recommended action
+Scores by category → Total ICP score + tier → Main website gap → Suggested hero concept angle → Suggested outreach hook → Proposed next action for human approval
 
 **Prospect profile fields (required):**
-Studio name · Country · City · Segment · Website URL · Instagram URL · Founder name · Contact method · Website status · All 6 category scores · Total score · Main gap · Hero concept angle · Outreach hook · Recommended action
+Studio name · Country · City · Segment · Website URL · Instagram URL · Founder name · Contact method · Website status · All 6 category scores · Total score · Main gap · Hero concept angle · Outreach hook · Proposed next action
 
 For repeatable work, store one JSON dossier per prospect using the template and run `python scripts/dossier_helper.py validate <dossier.json>` before delivery. Use `score` only after both Instagram and website evidence has been recorded.
 
@@ -137,6 +141,6 @@ For repeatable work, store one JSON dossier per prospect using the template and 
 3. Website Gap scored based on specific named failures, not general impressions.
 4. Personalization hook is concrete and specific, not generic ("your site looks old").
 5. Prospect tier (Elite / Growth / Low) stated explicitly.
-6. Recommended action is one of: Create concept immediately / Verify manually / Send light outreach / Add to nurture / Do not target.
+6. Proposed next action is one of: Prepare concept for review / Verify manually / Prepare light outreach draft for review / Add to a local nurture proposal / Do not target.
 7. No concept created for Growth Tier without prior prospect engagement.
 8. Confirm studio team size is under 20 staff and no dedicated marketing/PR department is evident before finalising score.

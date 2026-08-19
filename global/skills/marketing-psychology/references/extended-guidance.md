@@ -1,5 +1,11 @@
 # Extended Guidance
 
+## Candidate catalogue — evidence review in progress
+
+This file preserves concepts from the pre-V4 catalogue for explanation and later evidence review. It is **not** a tactics manual and it does not override `../SKILL.md`. Do not turn any model below into a default persuasion rule, a guaranteed result, a pricing prescription, a hidden default, a pressure device, or a substitute for product value, user research, accessibility, or approval.
+
+Until `v4-phase-7-behavioural-insight-research-brief.md` has a returned report and decision ledger, use this file only to define a concept specifically requested by the user and state its limits. Never use entries advocating artificial scarcity, escalating commitments, deceptive comparison, pre-selected commitments, or exploitative urgency as an implementation instruction.
+
 ## Contents
 
 - [Influencing Behavior & Persuasion](#influencing-behavior-persuasion)

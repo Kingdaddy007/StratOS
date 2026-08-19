@@ -1,167 +1,83 @@
-# Profile Templates
+# Competitor Profile Templates
 
-Ready-to-use templates for competitor profile sections and the summary document.
+Use only the sections supported by the declared scope. Write `unknown` or `not found in reviewed sources` instead of filling gaps.
 
-## Contents
-- Quick Scan Template
-- Summary Comparison Table
-- Positioning Map
-- Competitive SWOT
-- Profile Update Changelog
-
----
-
-## Quick Scan Template
-
-Abbreviated profile for when speed matters more than depth.
+## Individual Profile
 
 ```markdown
-# [Competitor Name] — Quick Profile
+# [Entity] - Competitor Profile
 
-**URL**: [website]
-**Generated**: [date]
+**Primary URL/entity:** [URL or identifier]
+**Research date:** [YYYY-MM-DD]
+**Access date(s):** [dates]
+**Scope/depth:** [quick_scan / focused_comparison / deep_profile]
+**Decision supported:** [decision]
+**Market/audience:** [scope]
 
-## At a Glance
+## Sources and Limits
+- [source, type, access method, publication/update date]
+- [failed or unavailable source]
+- [freshness, regional, tier, sample, permission, or method limit]
 
-| Metric | Value |
-|--------|-------|
-| Tagline | [from homepage] |
-| Target audience | [inferred from copy] |
-| Pricing starts at | [lowest paid tier] |
-| Free tier/trial | [yes/no + details] |
-| Domain rank | [from DataForSEO] |
-| Est. organic traffic | [monthly] |
-| Organic keywords (top 10) | [count] |
-| Referring domains | [count] |
+## Evidence Ledger
+| ID | Claim/observation | Class | Source/date | Scope/limit | Confidence | Permitted use |
+| --- | --- | --- | --- | --- | --- | --- |
 
-## Positioning
+## Positioning and Audience
+- Self-description: [source-reported claim]
+- Observed audience/problem: [observation]
+- Inference or hypothesis: [clearly labelled]
 
-**Headline**: "[exact homepage headline]"
-**Subheadline**: "[exact subheadline]"
-**Positioning angle**: [1-2 sentence summary of how they position]
+## Offer and Experience
+- Capabilities/offer: [observations]
+- User journey, interface, or service signals: [observations]
+- Availability, tier, or dependency limits: [evidence]
 
-## Pricing Summary
+## Pricing and Commercial Signals
+- Public prices/terms: [source-reported, date, region, tier]
+- Missing or unclear terms: [unknown]
 
-| Tier | Price | Notable Inclusions |
-|------|-------|-------------------|
-| [tier] | [price] | [key items] |
-| [tier] | [price] | [key items] |
+## Proof and Market Signals
+- Customers, reviews, claims, or case studies: [provenance and permission status]
+- Content/distribution/search signals: [method, date, limits]
 
-## Key Takeaway
+## Comparative Interpretation
+- Supported strengths: [evidence]
+- Supported weaknesses or gaps: [evidence, not absence claims]
+- Hypotheses to test: [not facts]
+- Unknowns and competing explanations: [list]
 
-[2-3 sentences: what makes this competitor notable, where they're strong, where they're weak]
+## Decision Handoff
+- Relevant implication for [user offer]: [bounded implication]
+- Evidence needed next: [list]
+- Approval state: [internal / review needed / approved external]
 ```
 
----
-
-## Summary Comparison Table
-
-Use after profiling all competitors to create a side-by-side view.
+## Cross-Competitor Summary
 
 ```markdown
-# Competitive Landscape Summary
+# Competitor Comparison Summary
 
-**Generated**: [date]
-**Your product**: [name]
-**Competitors profiled**: [count]
+**Decision:** [decision]
+**Entities and scope:** [list]
+**Research date/freshness:** [date and limits]
 
-## Side-by-Side Comparison
+## Comparability Notes
+[Regional, temporal, tier, device, audience, source, and denominator differences.]
 
-| Dimension | [Your Product] | [Competitor 1] | [Competitor 2] | [Competitor 3] |
-|-----------|---------------|----------------|----------------|----------------|
-| **Tagline** | [yours] | [theirs] | [theirs] | [theirs] |
-| **Target audience** | [yours] | [theirs] | [theirs] | [theirs] |
-| **Positioning** | [angle] | [angle] | [angle] | [angle] |
-| **Starting price** | $[X]/mo | $[X]/mo | $[X]/mo | $[X]/mo |
-| **Free tier** | [yes/no] | [yes/no] | [yes/no] | [yes/no] |
-| **Domain rank** | [score] | [score] | [score] | [score] |
-| **Est. organic traffic** | [number] | [number] | [number] | [number] |
-| **Referring domains** | [count] | [count] | [count] | [count] |
-| **G2 rating** | [score] | [score] | [score] | [score] |
-| **Key strength** | [one-liner] | [one-liner] | [one-liner] | [one-liner] |
-| **Key weakness** | [one-liner] | [one-liner] | [one-liner] | [one-liner] |
-```
+## Comparison Matrix
+| Dimension | Entity A | Entity B | Evidence/limits |
+| --- | --- | --- | --- |
 
----
+## Supported Patterns
+[Patterns directly supported by comparable evidence.]
 
-## Positioning Map
+## Hypotheses and Unknowns
+[Do not turn gaps or absence from a page into facts.]
 
-Visual representation of where competitors sit along two key dimensions. Choose the two axes most relevant to your market.
+## Decision Options
+[Options, trade-offs, reversibility, and recommendation conditions.]
 
-### Common Axis Pairs
-
-| Market Type | X-Axis | Y-Axis |
-|-------------|--------|--------|
-| SaaS tools | Simple → Complex | Cheap → Expensive |
-| Developer tools | Low-code → Code-first | Individual → Team |
-| B2B platforms | SMB-focused → Enterprise-focused | Point solution → Platform |
-| Content tools | Template-driven → Custom | Self-serve → Managed |
-
-### Format
-
-```markdown
-## Positioning Map
-
-**Axes**: [X-axis label] vs. [Y-axis label]
-
-                    [Y-axis high label]
-                           │
-                           │
-          [Competitor A]   │    [Competitor B]
-                           │
-    ───────────────────────┼───────────────────────
-    [X-axis low]           │           [X-axis high]
-                           │
-          [Your Product]   │    [Competitor C]
-                           │
-                    [Y-axis low label]
-
-### Interpretation
-- [1-2 sentences about what the map reveals]
-- [where the whitespace / opportunity is]
-```
-
----
-
-## Competitive SWOT
-
-Per-competitor SWOT relative to your product.
-
-```markdown
-## SWOT: [Competitor] vs. [Your Product]
-
-### Strengths (theirs vs. ours)
-- [Where they genuinely outperform us — be honest]
-
-### Weaknesses (theirs vs. ours)
-- [Where they fall short compared to us — with evidence]
-
-### Opportunities (for us)
-- [Gaps in their offering we can exploit]
-- [Segments they're ignoring]
-- [Messaging angles they're missing]
-
-### Threats (from them)
-- [Areas where they're improving fast]
-- [Features they're building that overlap with us]
-- [Market moves that could shift perception]
-```
-
----
-
-## Profile Update Changelog
-
-Append to the bottom of any profile when updating it.
-
-```markdown
----
-
-## Change Log
-
-| Date | What Changed | Source |
-|------|-------------|--------|
-| [date] | Pricing increased from $X to $Y | Pricing page re-scrape |
-| [date] | Launched [feature] | Changelog scrape |
-| [date] | Domain rank changed from X to Y | DataForSEO re-pull |
-| [date] | Added [integration] | Integrations page re-scrape |
+## Next Evidence and Approval
+[Specific next research, owner, date, and publication/approval status.]
 ```

@@ -1,6 +1,6 @@
 ---
 name: architecture
-description: 'Use this skill when designing system boundaries, data flows, component interfaces, or making structural technology decisions. Activated when the user is initializing a new project, service, or major feature; designing data flow between components; breaking apart a legacy system; defining folder structures or project organization; evaluating core technology or framework choices; or when the current system fails to scale. Examples: "how should I structure this?", "should this be a microservice?", "design the architecture for X", "what''s the best way to organize this codebase?", "how should data flow between these components?".'
+description: 'Use when making a structural software decision: system boundaries, state/data ownership, component interfaces, service topology, migration/recovery shape, major framework choice, or scaling failure. Trigger phrases include "design the architecture", "should this be a microservice?", "how should data flow?", "service boundaries", "how should I structure this?", or "this system does not scale". Do NOT use for a small local implementation with an existing contract; use coding. Do NOT use for a narrow bug diagnosis before its scope is understood; use debugging.'
 ---
 
 # SOFTWARE ARCHITECTURE & SYSTEM DESIGN
@@ -16,13 +16,13 @@ description: 'Use this skill when designing system boundaries, data flows, compo
 
 ## NEVER DO
 
-- Write code before data structures and boundaries are defined
+- Commit to a material structural change before the relevant data ownership, interfaces, and boundaries are understood
 - Create circular dependencies
 - Build abstractions for imagined future use cases without explicit scaling requirements
 - Let the database schema be dictated by the UI rather than the domain
 - Choose a technology simply because it is trendy, without a performance or maintenance justification
 - Let a single failure take down the entire application by design
-- Default to simple when the client's real requirements demand something more capable
+- Choose a topology because it is fashionable, or because it is "enterprise", rather than because real requirements and failure costs justify it
 - Make the final architecture decision without surfacing options and tradeoffs to the user first
 
 ---
@@ -48,15 +48,15 @@ Focus on John Ousterhout's concept of "deep modules" — interfaces that are exc
 | Architectural Axis | Evaluation Focus | Resolution Strategy |
 | :--- | :--- | :--- |
 | **Performance vs. Scalability** | CPU/memory efficiency vs. ability to handle massive concurrent loads | Optimize vertically for latency; scale horizontally for traffic spikes |
-| **Simplicity vs. Ambition** | Ease of understanding vs. building for real client scale and reliability | Present three tiers (Simple, Balanced, Enterprise). Recommend based on actual requirements. Let the user decide. |
-| **Consistency vs. Availability** | CAP theorem constraints during network partitions | Embrace eventual consistency for horizontal scale; enforce strict consistency for financial/critical ledgers |
+| **Simplicity vs. Ambition** | Ease of understanding versus capability needed for real scale, reliability, or compliance | Compare only viable options. Recommend the smallest option that meets the requirements and name the triggers that would justify more complexity. |
+| **Consistency vs. Availability** | Consistency/availability trade-offs when data is replicated or a network partition is plausible | Define the required correctness model and failure behaviour. Discuss eventual consistency only where asynchronous or distributed writes are real. |
 | **Build vs. Buy** | Custom control vs. speed of integration and maintenance offloading | Build core differentiators. Buy commodity capabilities (auth, email, generic search). |
 
 ---
 
 ## ARCHITECTURAL LENSES
 
-Apply all ten before and during design:
+Apply the relevant lenses before and during design. Use all ten for a consequential or irreversible architecture decision; do not pretend every local change needs a full-system review.
 
 ### 1. Purpose and Quality Attributes
 
@@ -119,7 +119,7 @@ Apply all ten before and during design:
 ### Step 1 — Define the Reality
 
 - Define exact business requirements and domain metrics.
-- Define expected scale (throughput, latency, payload size, data volume).
+- Define expected scale (throughput, latency, payload size, data volume) when it could change the architecture.
 - Apply the "What would have to be true?" test to force objective evaluation of prerequisites.
 
 ### Step 2 — Map the Data Flow
@@ -155,13 +155,9 @@ Apply all ten before and during design:
 
 ### Step 6 — Select Technology Stack
 
-Present three tiers and explain each honestly:
+Compare only the options that are credible for the actual project. For each, explain operational cost, maintenance burden, failure behaviour, reversibility, and the requirement it satisfies. Recommend the smallest sufficient option and name the concrete trigger that would justify a more complex one.
 
-- **Simple / Stable** — lowest operational overhead, fastest to ship, easiest to maintain solo.
-- **Balanced / Modern** — proven at medium scale, good ecosystem, manageable complexity.
-- **Enterprise / State-of-the-Art** — built for serious distribution, high availability, or heavy compliance requirements.
-
-Explain why a complex choice (like a distributed database or event stream) might be the right Premium move vs. a standard SQL setup. Make a clear recommendation. Let the user make the final decision.
+Explain why a complex choice such as a distributed database or event stream is justified only when evidence requires it. Make a clear recommendation and surface material trade-offs to the user before an irreversible commitment.
 
 ### Step 7 — Document Tradeoffs
 
@@ -185,7 +181,7 @@ Explain why a complex choice (like a distributed database or event stream) might
 - **2 AM Test:** Can a developer who did not build this debug it during an outage without calling the original creator?
 - **Fit Test:** What is the simplest architecture that *genuinely* meets the real requirements? Is there a case where a more capable architecture is actually the correct fit?
 - **Client Reality Test:** Who is this being built for? What does failure cost them? What are their actual scale, availability, and compliance requirements?
-- **Options Test:** Have we presented a Simple, Balanced, and Enterprise path so the user can make an informed decision?
+- **Options Test:** Have we presented the viable alternatives and their material trade-offs, without inventing a complex option for show?
 - **Replacement Test:** If we need to rewrite this specific component in two years, how many other components will we have to change?
 - **Degradation Test:** If the primary database (or third-party API) fails, how exactly does the application behave, and what is the user experience?
 - **State Test:** Is there a single source of truth for this data, or is it scattered and requiring complex synchronization?
@@ -247,13 +243,13 @@ Explicit recording of technology choices and accepted technical debt.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-- [ ] Business requirements and expected scale are quantified
+- [ ] Known business requirements and expected scale are stated where they change the decision
 - [ ] Client context established — who this is for and what failure costs them
-- [ ] Three architecture tiers presented (Simple, Balanced, Enterprise)
+- [ ] Relevant viable alternatives and trade-offs are presented for a consequential decision
 - [ ] Module boundaries strictly defined with zero cyclical dependencies
 - [ ] Data flow and state ownership explicitly mapped
 - [ ] Interface (API) is simpler than the implementation (Deep Module)
 - [ ] Failure modes and degradation paths defined
-- [ ] CAP theorem and performance tradeoffs explicitly documented
+- [ ] Distributed consistency, availability, and recovery trade-offs are documented when the architecture actually has replicated or partition-prone state
 - [ ] Rejected alternatives documented with reasons for rejection
 - [ ] the user has been given the final decision

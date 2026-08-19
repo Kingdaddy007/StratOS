@@ -1,185 +1,95 @@
 ---
 name: page-cro
-description: 'Use when diagnosing or improving conversion performance on marketing pages, signup flows, forms, onboarding steps, popups, or modals. Trigger on CRO, low conversion rate, high bounce or abandonment, unclear CTAs, signup friction, or a shared URL requesting conversion feedback. Use copywriting when the primary request is a fresh copy draft rather than conversion diagnosis.'
+description: >
+  Diagnose or improve a website or product journey when the request concerns
+  conversion, abandonment, findability, form completion, signup, checkout,
+  onboarding, pricing, CTA placement, page friction, funnel analysis, or an
+  experiment. Trigger on "CRO", "conversion rate", "not converting", "drop-off",
+  "reduce friction", "A/B test", "shorten the form", or "move the CTA". Do not
+  use for a fresh copy draft without diagnosis, a purely mechanical defect fix,
+  or as authority to deploy, change pricing/consent, collect personal data, or
+  make a conversion promise.
 ---
 
-# Page Conversion Rate Optimization (CRO)
+# Page CRO
 
-You are a conversion rate optimization expert. Your goal is to analyze marketing pages and provide actionable recommendations to improve conversion rates.
+## WHEN TO USE THIS
 
-## Initial Assessment
+- Diagnose a marketing page, signup, form, onboarding step, pricing journey, modal, popup, or checkout where a user task or business outcome may be failing.
+- Review proposed conversion changes for evidence quality, accessibility, privacy, autonomy, instrumentation, or experiment readiness.
+- Plan proportionate validation for a material behavioural hypothesis.
 
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+## NEVER DO
 
-0. **Check for `contexts/positioning-audit.md`** (if it exists) — ensure conversion goals and CTA structures conform to the diagnostic gates, MLE, and pricing boundaries defined by the positioning strategy.
+- Never promise that a design, copy, CTA, form, or experiment will improve conversion.
+- Never treat five seconds, above the fold, one CTA, no navigation, proof near a CTA, fewer fields, or any page pattern as a universal rule.
+- Never hide material costs, manufacture urgency, obstruct cancellation or exit, weaken privacy choices, or degrade accessibility to improve a metric.
+- Never turn an analytics correlation, benchmark, stakeholder assertion, persona, or hypothesis into a measured project result.
+- Never launch an experiment, deploy a change, alter pricing or consent, publish a result, or create another external effect without required human approval.
 
-Before providing recommendations, identify:
+## DECISION AND EVIDENCE TRIAGE
 
-1. **Page Type**: Homepage, landing page, pricing, feature, blog, about, other
-2. **Primary Conversion Goal**: Sign up, request demo, purchase, subscribe, download, contact sales
-3. **Traffic Context**: Where are visitors coming from? (organic, paid, email, social)
+1. Define the decision, user task, audience/context, desired outcome, and consequence of being wrong. "Increase conversion" alone is insufficient.
+2. Classify the work: mechanical correction, required accessibility/privacy/safety remediation, qualitative diagnosis, analytics diagnosis, staged change, controlled experiment, or no additional research.
+3. Create a compact evidence register for material claims. Label direct observation, measured project result, validated analytics data, qualitative finding, stakeholder assertion, research pattern, benchmark, hypothesis, illustration, or unknown.
+4. State known inputs, unknowns, and the strongest claim the evidence supports. Keep causal, associative, and qualitative findings distinct.
+5. Use an objective acceptance criterion directly for a mechanical defect or required conformance correction. Do not slow required remediation with conversion experimentation.
 
----
+## ACCESSIBILITY, AUTONOMY, AND PRIVACY GATE
 
-## CRO Analysis Framework
+Before discretionary optimisation, inspect the affected user task for relevant accessibility defects, unclear labels or errors, keyboard/focus problems, inaccessible escape routes, material hidden information, deceptive urgency, obstructed cancellation, consent issues, and unnecessary personal-data requests.
 
-Analyze the page across these dimensions, in order of impact:
+- Correct and verify known defect, conformance, privacy, or safety issues. Do not randomise them as CRO variants.
+- Treat proof, urgency, scarcity, defaults, badges, navigation, and field count as conditional design choices. Use them only when they are truthful, relevant, accessible, and support the user task.
+- Stop and escalate when jurisdiction, consent basis, sensitive data, children, profiling, price/contract terms, or material harm is unclear.
 
-### 1. Value Proposition Clarity (Highest Impact)
+## MEASUREMENT AND METHOD SELECTION
 
-**Check for:**
-- Can a visitor understand what this is and why they should care within 5 seconds?
-- Is the primary benefit clear, specific, and differentiated?
-- Is it written in the customer's language (not company jargon)?
+For an analytics-based claim, verify event structure and live firing before interpretation. Record exposure unit, denominator, primary outcome, supporting outcomes, guardrails, event definition, identity/deduplication rule, attribution window, scope, and missing-data policy.
 
-**Common issues:**
-- Feature-focused instead of benefit-focused
-- Too vague or too clever (sacrificing clarity)
-- Trying to say everything instead of the most important thing
+Choose the least costly valid method for the question:
 
-### 2. Headline Effectiveness
+| Need | Prefer | Not sufficient by itself |
+| --- | --- | --- |
+| Fix a defect or accessibility failure | Implement and verify against the requirement and task. | A/B testing. |
+| Understand comprehension or task failure | Content review, accessibility audit, interview, or usability observation. | Funnel numbers alone. |
+| Find a behavioural drop or measurement issue | Event audit, session/funnel analysis, and a baseline. | A plausible explanation. |
+| Estimate a safe causal effect | Controlled experiment or staged rollout with guardrails. | A dashboard uplift without valid exposure/outcome data. |
+| Evaluate a small reversible improvement | Proportionate review or staged change. | A large research process by default. |
 
-**Evaluate:**
-- Does it communicate the core value proposition?
-- Is it specific enough to be meaningful?
-- Does it match the traffic source's messaging?
+Record why the selected method can answer the decision and why a less costly method cannot.
 
-**Strong headline patterns:**
-- Outcome-focused: "Get [desired outcome] without [pain point]"
-- Specificity: Include numbers, timeframes, or concrete details
-- Social proof: "Join 10,000+ teams who..."
+## HYPOTHESIS, EXPERIMENT, AND RESULT DISCIPLINE
 
-### 3. CTA Placement, Copy, and Hierarchy
-
-**Primary CTA assessment:**
-- Is there one clear primary action?
-- Is it visible without scrolling?
-- Does the button copy communicate value, not just action?
-  - Weak: "Submit," "Sign Up," "Learn More"
-  - Strong: "Start Free Trial," "Get My Report," "See Pricing"
-
-**CTA hierarchy:**
-- Is there a logical primary vs. secondary CTA structure?
-- Are CTAs repeated at key decision points?
-
-### 4. Visual Hierarchy and Scannability
-
-**Check:**
-- Can someone scanning get the main message?
-- Are the most important elements visually prominent?
-- Is there enough white space?
-- Do images support or distract from the message?
-
-### 5. Trust Signals and Social Proof
-
-**Types to look for:**
-- Customer logos (especially recognizable ones)
-- Testimonials (specific, attributed, with photos)
-- Case study snippets with real numbers
-- Review scores and counts
-- Security badges (where relevant)
-
-**Placement:** Near CTAs and after benefit claims
-
-### 6. Objection Handling
-
-**Common objections to address:**
-- Price/value concerns
-- "Will this work for my situation?"
-- Implementation difficulty
-- "What if it doesn't work?"
-
-**Address through:** FAQ sections, guarantees, comparison content, process transparency
-
-### 7. Friction Points
-
-**Look for:**
-- Too many form fields
-- Unclear next steps
-- Confusing navigation
-- Required information that shouldn't be required
-- Mobile experience issues
-- Long load times
-
----
-
+- State a falsifiable hypothesis: mechanism, affected segment/context, proposed change, primary outcome, plausible adverse effects, and result that would weaken the hypothesis.
+- Before a controlled experiment, record control/treatment, population, assignment/exposure, primary outcome, guardrails, practical decision threshold, duration/information threshold, exclusions, segmentation plan, data checks, and stopping logic.
+- Do not stop or extend a test merely to find a preferred result. Distinguish uncertainty from practical importance. Report inconclusive when data cannot support the decision.
+- Interpret results within their population, time window, implementation state, evidence quality, and guardrails. A "winner" is not a universal truth.
 
 ## REFERENCE LOADING RULES
 
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
-## Output Format
+- Load [references/evidence-and-method-selection.md](references/evidence-and-method-selection.md) for material CRO diagnosis, analytics interpretation, accessibility/privacy/autonomy review, method selection, experiment design, or result handoff.
+- Load [references/experiments.md](references/experiments.md) only after a decision brief and hypothesis exist; select task-relevant candidates rather than treating the list as a backlog.
+- Load [references/resource-index.md](references/resource-index.md) to select a resource and verify source scope. Do not load the package wholesale.
+- Use `copywriting` when the primary task is writing or revising copy after CRO diagnosis. Use `testing` for implementation-level test strategy. Use `ui-ux` for interface design and accessibility detail. Use `security` when data/identity/authorisation boundaries become material.
 
-Structure your recommendations as:
+## OUTPUT SHAPE
 
-### Quick Wins (Implement Now)
-Easy changes with likely immediate impact.
+Return a decision document, not a generic list of conversion tips.
 
-### High-Impact Changes (Prioritize)
-Bigger changes that require more effort but will significantly improve conversions.
+1. **Decision and user task** - audience, context, desired outcome, and consequence.
+2. **Evidence status** - facts, assertions, hypotheses, missing data, and measurement quality.
+3. **Accessibility, autonomy, and privacy gate** - remediation, guardrails, or escalation.
+4. **Diagnosis or hypothesis** - mechanism, scope, alternatives, and confidence.
+5. **Recommended method** - why it is valid and proportionate.
+6. **Change or experiment plan** - only when justified; include primary outcome and guardrails.
+7. **Decision gate** - implement/verify, research, experiment, ship, reject, or inconclusive; state required approval.
 
-### Test Ideas
-Hypotheses worth A/B testing rather than assuming.
+## NON-NEGOTIABLE CHECKLIST
 
-### Copy Alternatives
-For key elements (headlines, CTAs), provide 2-3 alternatives with rationale.
-
----
-
-## Page-Specific Frameworks
-
-### Homepage CRO
-- Clear positioning for cold visitors
-- Quick path to most common conversion
-- Handle both "ready to buy" and "still researching"
-
-### Landing Page CRO
-- Message match with traffic source
-- Single CTA (remove navigation if possible)
-- Complete argument on one page
-
-### Pricing Page CRO
-- Clear plan comparison
-- Recommended plan indication
-- Address "which plan is right for me?" anxiety
-
-### Feature Page CRO
-- Connect feature to benefit
-- Use cases and examples
-- Clear path to try/buy
-
-### Blog Post CRO
-- Contextual CTAs matching content topic
-- Inline CTAs at natural stopping points
-
----
-
-## Experiment Ideas
-
-When recommending experiments, consider tests for:
-- Hero section (headline, visual, CTA)
-- Trust signals and social proof placement
-- Pricing presentation
-- Form optimization
-- Navigation and UX
-
-**For comprehensive experiment ideas by page type**: See [references/experiments.md](references/experiments.md)
-
----
-
-## Task-Specific Questions
-
-1. What's your current conversion rate and goal?
-2. Where is traffic coming from?
-3. What does your signup/purchase flow look like after this page?
-4. Do you have user research, heatmaps, or session recordings?
-5. What have you already tried?
-
----
-
-## Related Skills
-
-- Handle signup, form, onboarding, popup, and modal friction directly using the relevant stage of this CRO framework.
-- **copywriting**: If the page needs a complete copy rewrite
-- **testing**: To properly test recommended changes
-- **expert-positioning**: To ensure CTAs and inquiry flows act as diagnostic qualification gates instead of low-value commodities (WWP)
+1. Name the actual decision and user task.
+2. Keep evidence class, scope, and uncertainty visible.
+3. Fix required accessibility, privacy, safety, and defect issues instead of testing whether to fix them.
+4. Validate measurement before making quantitative claims.
+5. Choose the least costly valid method.
+6. Keep material or external changes behind human approval.

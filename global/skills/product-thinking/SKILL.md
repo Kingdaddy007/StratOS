@@ -1,141 +1,88 @@
 ---
 name: product-thinking
-description: 'Use this skill when evaluating whether a feature is worth building, scoping work against business goals, identifying assumptions behind a proposal, or connecting engineering decisions to measurable outcomes. Activated when the question of WHAT to build or WHY to build it is open. Signal phrases: "should we build this?", "is this worth building?", "what''s the MVP?", "scope this", "what should we prioritize?", "what problem does this solve?", "business impact", "success metric", "jobs to be done", "outcome", "assumption", "experiment", "why are we building this?", "requirements are unclear", "nobody is using this".'
+description: 'Use when deciding what, whether, when, or how much to build: clarifying a product problem, comparing opportunities, shaping a smallest credible test, choosing evidence, defining outcome checks, or assessing whether AI adds value. Do NOT use for a clear, low-risk approved implementation with an acceptance condition; use coding. Do NOT use to choose system boundaries or implementation architecture; use architecture.'
 ---
 
-# PRODUCT THINKING FOR ENGINEERS
+# PRODUCT THINKING
 
 ## WHEN TO USE THIS
 
-- Evaluating whether a feature is worth building
-- Scoping a feature, sprint, milestone, or release
-- Prioritizing technical work against business goals
-- Identifying assumptions behind a proposal
-- Designing MVPs, experiments, or smallest viable versions
-- Reviewing shipped work that failed to produce adoption or impact
-- Deciding what *not* to build
-- Connecting engineering work to measurable outcomes
-- Any engineering task that lacks a defined success metric
+- A request is feature-shaped but its user, outcome, or value is uncertain.
+- The decision is whether to build, defer, narrow, test, buy, simplify, or stop.
+- Several opportunities, scopes, or experiments compete for limited effort.
+- A product, service, website, internal tool, or AI feature needs a credible outcome and learning path.
+- A proposed change is consequential, difficult to reverse, or likely to create material operational burden.
 
 ## NEVER DO
 
-- Implement a ticket without articulating the user problem behind it
-- Treat stakeholder requests as validated user truth without questioning them
-- Treat an MVP as a "reduced quality" delivery — it is a strategic scope decision
-- Measure success by output volume (tickets closed, features shipped) rather than outcome change
-- Ship a feature without instrumentation built into the plan
-- Continue building because "it was already planned" without re-evaluating current leverage
-- Begin implementation when requirements lack a problem statement, success metric, or scope boundary
+- Turn a clear, reversible, low-consequence change into compulsory discovery work.
+- Treat a request, roadmap item, score, interview, analytics event, or stakeholder opinion as proof on its own.
+- Require named frameworks, customer interviews, analytics, A/B tests, MVPs, or personas when they cannot change the decision.
+- Equate an MVP with poor quality. The test must be credible for the question it is meant to answer.
+- Add AI because it is available. Compare the simplest non-AI, rule-based, or human-supported alternative first.
+- Use this skill to approve a release, production change, or external action. Preserve the host's approval and safety gates.
 
----
+## CORE OPERATING MODEL
 
-## MINDSET
+Product Thinking is a decision-quality reflex, not a mandatory discovery phase. Start by naming the decision, the consequence of being wrong, and what information could actually change the next action.
 
-You are not a ticket executor. You are a product-aware technical builder who operates with dual-track awareness — continuously evaluating *what* to build (discovery) alongside *how* to build it (delivery).
-
-Requirements are not pre-ordained mandates. They are hypotheses about what will create value, and hypotheses can be wrong.
-
-**A feature is not value. A feature is a bet.**
-
-The expert product-minded engineer:
-
-- Thinks in **Jobs-to-be-Done**: users hire features to accomplish specific jobs. A user does not want a "notification settings page." They want to stop being interrupted during focus time without missing critical alerts. The feature is a proposed solution; the job is the real target.
-- **Measures by outcomes** — not by code volume, tickets closed, or features delivered. Output is not impact.
-- **Counts the long-term liability**: every line of code must be maintained, tested, secured, and eventually deleted. The question is never only "can we build this?" — it is "should we build this, and is the value worth the permanent cost?"
-- **Identifies the riskiest assumption** that must be true for a feature to succeed and designs the fastest possible path to validate or invalidate it before investing significant engineering effort.
-- Understands that **saying no is a strategy**. Every "yes" consumes engineering capacity that cannot be used elsewhere.
-- Knows that **users lie — behavior doesn't.** What users say they want and what they actually do are frequently different. Validate with behavior, not opinion.
-- Believes that **the smallest correct solution is often the most valuable one.**
-
-This skill makes Anti-Gravity behave like a strategic builder who solves meaningful problems — not a passive implementation machine.
-
----
-
-## DECISION FRAMEWORK
-
-### Decision 1: Should This Be Built At All?
-
-Can you describe the user problem in plain language, without feature jargon? If not, the problem is not understood well enough to build for it. Is there evidence this problem exists? What is the opportunity cost of choosing this over everything else?
-
-### Decision 2: Build vs Buy vs Skip
-
-- **Build** only core differentiators or capabilities that cannot be adequately served by existing solutions
-- **Buy** commodity functions (auth, payments, monitoring, email) unless they are themselves the product
-- **Skip** features that do not have compelling evidence, regardless of who requested them or how long they have been on the roadmap — skipping is not failure, it is strategy
-
-### Decision 3: Now vs Later vs Never
-
-Distinguish genuine time constraints from organizational planning inertia. If an item has been "planned for next quarter" for more than two consecutive quarters, it is likely a "Never" disguised as a "Later." Force it to a decision: now / later with explicit trigger / never.
-
-### Decision 4: Full vs MVP vs Experiment
-
-| Confidence | Cost of Being Wrong | Recommended Approach |
+| Mode | Use when | Minimum useful response |
 | --- | --- | --- |
-| Low | High | Time-boxed experiment first. Do not invest significantly until the core assumption is validated. |
-| Low | Low | Ship an MVP and measure. Learn from real usage before committing to full scope. |
-| High | Low | Build the full solution. The risk is manageable and the need is validated. |
-| High | High | Build carefully with incremental checkpoints. Validate at each stage before proceeding. |
+| Direct change | Intent and acceptance are clear; reversal is cheap; consequence is low. | State the intended outcome and acceptance check, then implement. |
+| Product decision | The problem, scope, priority, value, or evidence is meaningfully uncertain. | Frame the problem, expose the dominant uncertainty, choose the smallest credible next action. |
+| High-stakes decision | Harm, privacy, safety, security, financial, legal, reputational, access, public-commitment, or lock-in risk is material. | Expand the record for affected parties, failure boundaries, evidence gaps, safeguards, ownership, and reversal path. |
 
-### Decision 5: Scope Boundary
+Escalate because consequence or uncertainty is high—not because a project is large or sounds important. A small change in a sensitive workflow can be high-stakes; a private, reversible prototype can stay lightweight.
 
-What is the absolute minimum version that tests the core assumption or delivers the core user outcome? Ask for every proposed element: "Is this essential to testing the core hypothesis, or is it a nice-to-have?" If not essential, Phase 2 list.
+## DECISION RULES
 
-**Core Rule:** Do not build the largest requested solution. Build the smallest high-leverage solution that solves or validates the real problem — and makes success or failure visible.
+1. **Name the decision.** Is the next action to frame, choose, build, test, measure, defer, or escalate? Do not collect research without a decision it could change.
+2. **Check consequence and reversibility.** Ask what happens if the choice is wrong, who absorbs the cost, and how easily it can be undone.
+3. **Frame the problem before defending a solution.** Identify the actor, situation, intended progress, current alternative or workaround, constraints, and value hypothesis. A requester, user, approver, payer, supporter, and blocker may be different people.
+4. **Match evidence to the claim.** Reports help with meaning, motivation, context, and constraints; observed behaviour helps with enacted behaviour in a defined context; domain expertise helps with feasibility and risk. Record important disagreement instead of declaring one type universally superior.
+5. **Resolve the dominant uncertainty.** Seek only evidence that could change the decision. Choose the cheapest credible source or test, considering the cost of delay and of learning too late.
+6. **Treat scores as assumptions.** RICE, ICE, impact-effort, and similar methods may expose assumptions, but they do not create truth. Show confidence, opportunity cost, dependencies, time sensitivity, and reversibility beside any score.
+7. **Use the smallest credible test.** A prototype, manual-backed pilot, code pilot, staged delivery, or direct implementation should fit the learning goal. Minimum scope never means untrustworthy, unusable, or unsafe quality.
+8. **Define the desired outcome before a metric.** Instrument only when the resulting signal is decision-relevant and worth its privacy, engineering, and interpretation cost. Observation, artefact review, short debriefs, support signals, manual logs, or an acceptance check can be stronger for small or low-frequency work.
+9. **Start from the available context.** Existing products have traces such as workflow evidence, support history, and known failure points. Greenfield ideas need evidence about the problem, alternatives, adoption conditions, and the smallest credible test.
+10. **Calibrate confidence to evidence.** Generic conventions and remembered patterns can support a starting hypothesis, not a high-confidence project conclusion. Use `low`, `medium`, or `high` confidence only when the evidence scope justifies it; state what would raise or lower confidence.
+11. **Resolve product unknowns before technical commitment.** If context, tenancy, lifecycle, stack, identity, persistence, or acceptance conditions are unknown, resolve the dominant product question first. Keep endpoint, schema, library, and migration examples explicitly provisional until the relevant technical decision is in scope.
 
----
+## AI PRODUCT FIT
 
-## CORE PRINCIPLES
+Before proposing AI, answer these questions:
 
-1. **Outcomes Over Outputs.** The value of engineering work is measured by changed user behavior, improved business metrics, reduced friction, or validated learning — not by feature count, PR volume, or tickets closed.
-2. **The Best Code Is No Code.** If the problem can be solved through configuration, copy change, process adjustment, default behavior, removal of a confusing feature, or better onboarding of an existing one — that is superior to building new functionality.
-3. **Validate Before You Invest.** High-cost, low-confidence initiatives must be preceded by low-cost experiments. Never spend three months building something a one-week prototype could have disproved. Test the riskiest assumption first, not last.
-4. **Scope Is the Primary Delivery Lever.** When pressure mounts, reduce scope — not quality, not test coverage, not engineering discipline. Tight deadlines should drive scope reduction before anything else.
-5. **Users Lie — Behavior Doesn't.** Feature requests describe symptoms. Observation reveals the underlying job. Rely on behavioral data and direct observation over self-reported preferences.
-6. **Solve Problems, Not Tickets.** A completed Jira ticket is not a solved problem. The work is done when the user's situation has measurably improved. If the ticket is "done" but the user pain persists, the work is not finished.
-7. **Think in Bets.** Every feature is a bet. Make the bet explicit: what assumption must be true, what value is expected, how success will be measured, what happens if it underperforms. Features that cannot be measured cannot be learned from.
-8. **Say No by Default.** The most impactful product teams are defined not by what they build, but by what they deliberately choose not to build. Every "yes" consumes engineering capacity that cannot be used elsewhere.
-9. **Instrument Before You Celebrate.** A shipped feature without measurement is not validated value — it is an unmeasured bet permanently embedded in the codebase. Analytics, logging, and observability are not follow-up work. They are part of the feature.
-10. **Opportunity Cost Is Real.** Every feature you build is a feature you are not building. This is not abstract — it is a concrete engineering tradeoff. Acknowledge it consciously, every time.
-11. **Reduced Scope Over Reduced Quality.** When facing delivery pressure, the correct lever is scope — not cutting corners on testing, engineering discipline, or code health.
-12. **Value and Maintainability Are Both Real.** Product thinking is not an excuse for hacks. Delivering user value and maintaining technical health are not in opposition — they are both required.
+1. What user outcome needs improvement, and can a deterministic rule, existing tool, process change, or human service serve it better?
+2. What unique value would AI add, and is augmentation preferable to full automation?
+3. What is the cost of a wrong, uncertain, delayed, or unexplainable result?
+4. What data is necessary, prohibited, or sensitive? Who can inspect, correct, override, or appeal the result?
+5. How will representative cases be evaluated, and what is the fallback if the feature underperforms or fails?
 
----
+For material risk, route the applicable implementation questions to Security, Architecture, Testing, and the relevant domain expertise. This skill identifies the product decision; it does not replace those disciplines.
 
-## PRODUCT THINKING LENSES
-
-Apply all ten when reasoning about any feature, work item, or engineering decision:
-
-**1. Problem Clarity** — Can the problem be stated in plain language without technical jargon? Is it validated by research or observation — or merely assumed? Who specifically experiences this need?
-
-**2. Jobs-to-be-Done** — What job is the user hiring this feature to accomplish? Frame it: "When [situation], the user wants to [motivation] so that they can [expected outcome]." Is this framing grounded in the user's actual job, or a technical concept or stakeholder preference?
-
-**3. Outcome Definition** — What specific behavior or metric should change if this works? How will we know that change occurred? Is the success metric defined before implementation begins — not after?
-
-**4. Assumption Risk** — What assumptions underlie this feature? Which assumption, if wrong, would invalidate the entire effort? Can this riskiest assumption be tested cheaply before committing full engineering investment?
-
-**5. Scope Discipline** — What is the absolute minimum that tests the core assumption or delivers the core user outcome? What has been included that is not essential? What can be deferred to Phase 2 without defeating the core purpose?
-
-**6. Impact Surface** — How many users does this affect (Reach)? How significantly does it affect them (Impact)? How confident are we in those estimates (Confidence)? Is the effort proportionate to the outcome?
-
-**7. Opportunity Cost** — What are we NOT building by choosing to build this? Is this the highest-leverage use of engineering capacity right now — or are we building this because it was already planned?
-
-**8. Instrumentation** — Can we measure adoption, usage, and success after launch? Is instrumentation built into the implementation plan — or deferred to a follow-up ticket?
-
-**9. Maintenance Trajectory** — What ongoing maintenance burden does this create? Does it make the system harder to change or test? What is the total cost of ownership — not just the build cost?
-
-**10. Exit Strategy** — If this feature fails, how will we detect that? What happens next — iterate, pivot, or remove? Is there a plan for sunsetting this if adoption is insufficient?
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Read [decision-modes.md](references/decision-modes.md) when producing a decision record, scoping an experiment, or deciding whether the task should stay direct, product-sized, or high-stakes.
+- Read [evidence-and-experiments.md](references/evidence-and-experiments.md) when evidence conflicts, discovery is warranted, a test is being designed, or measurement choices could distort the decision.
+- Read [ai-product-fit.md](references/ai-product-fit.md) when an AI capability, automation, agent, recommendation, or probabilistic model is proposed.
+- Read [extended-guidance.md](references/extended-guidance.md) only for detailed facilitation, requirement review, opportunity comparison, or a substantive product brief. Inspect its Contents first and load only the relevant section.
+- Use [resource-index.md](references/resource-index.md) to select a reference; do not load the full package by default.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+Use the smallest record that makes the next decision auditable.
+
+**Direct change:** decision; intended outcome; one material assumption (if any); acceptance check.
+
+**Product decision:** decision; problem frame; value hypothesis; dominant uncertainty; evidence and limits; smallest credible next action; learning or acceptance rule; scope boundary; one or two outcome checks; next decision.
+
+**High-stakes decision:** expand the product-decision record with affected parties, harms and constraints, ownership, privacy/security/data boundaries, representative evaluation, human correction or appeal, staged exposure, rollback/fallback, and any required approval gate.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+- [ ] The decision and consequence of being wrong are explicit.
+- [ ] The response is proportionate to uncertainty and reversibility.
+- [ ] The problem is distinguished from the requested solution when that distinction matters.
+- [ ] Evidence is labelled by what it can and cannot establish.
+- [ ] The next action can change the decision or verify the requested outcome.
+- [ ] Scope, quality, safety, and authority are not traded away to move faster.

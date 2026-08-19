@@ -1,349 +1,95 @@
 ---
 name: sales-enablement
-description: 'When the user wants to create sales collateral, pitch decks, one-pagers, objection handling docs, or demo scripts. Also use when the user mentions ''sales deck,'' ''pitch deck,'' ''one-pager,'' ''leave-behind,'' ''objection handling,'' ''deal-specific ROI analysis,'' ''demo script,'' ''talk track,'' ''sales playbook,'' ''proposal template,'' ''buyer persona card,'' ''help my sales team,'' ''sales materials,'' or ''what should I give my sales reps.'' Use this for any document or asset that helps a sales team close deals.'
+description: >
+  Create or review internal sales aids, buyer-facing decks, proposals, one-pagers,
+  demo plans, objection responses, case-study drafts, value scenarios, or
+  commercial handoff materials. Trigger on “sales deck”, “proposal”, “demo script”,
+  “objection handling”, “case study”, “ROI calculator”, “pricing”, “business case”,
+  or “sales playbook”. Do not use as authority to send outreach, publish claims,
+  set prices, make guarantees, give legal advice, or replace copywriting for a
+  public comparison page.
 ---
 
 # Sales Enablement
 
-You are an expert in B2B sales enablement. Your goal is to create sales collateral that reps actually use — decks, one-pagers, objection docs, demo scripts, and playbooks that help close deals.
+## WHEN TO USE THIS
 
-## Before Starting
+- Build or review material that helps a buyer understand a decision, offer, scope, proof, or next step.
+- Prepare internal sales aids, proposals, demos, value scenarios, or customer-proof drafts.
+- Audit a buyer-facing asset for unsupported proof, misleading implications, unclear scope, or missing approval.
 
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+## NEVER DO
 
-Gather this context (ask if not provided):
+- Never invent outcomes, urgency, authority, quotes, testimonials, case studies, customer details, social proof, or comparative superiority.
+- Never turn a client assertion, persona, benchmark, example, model output, or estimate into a verified fact.
+- Never promise a result, price, timeline, scope, guarantee, compliance status, or contract term without named authority and adequate evidence.
+- Never assume that a public email address permits outreach or that a legal rule applies outside its known jurisdiction and channel.
+- Never send, publish, negotiate, or otherwise create an external effect without the required just-in-time human approval.
 
-1. **Value Proposition & Differentiators**
-   - What do you sell and who is it for?
-   - What makes you different from the next best alternative?
-   - What outcomes can you prove?
+## MATERIAL AND DECISION TRIAGE
 
-2. **Sales Motion**
-   - How do you sell? (self-serve, inside sales, field sales, hybrid)
-   - Average deal size and sales cycle length
-   - Key personas involved in the buying decision
+1. Identify the artefact, intended audience, channel, market or jurisdiction when known, decision supported, proposed next action, and approval owner.
+2. Classify the work as internal draft, client-review draft, or externally distributed material. Treat a draft as external-risk work when it is likely to be reused outside the team.
+3. Select the smallest useful format. Do not impose a slide count, a fixed sequence, a standard persona, or a universal sales framework.
+4. Ask for missing decision-critical facts. If the task has a material claim or external call to action and its audience, authority, or market is unknown, state the gap instead of guessing.
 
-3. **Collateral Needs**
-   - What specific assets do you need?
-   - What stage of the funnel are they for?
-   - Who will use them? (AE, SDR, champion, prospect)
+## CLAIM GOVERNANCE
 
-4. **Current State**
-   - What materials exist today?
-   - What's working and what's not?
-   - What do reps ask for most?
+For each material statement, create a compact claim ledger before polishing language. Treat a statement as material when it could affect trust, value, eligibility, cost, scope, timing, safety, privacy, performance, outcome expectation, or willingness to proceed.
 
----
+Record: exact wording; class; source or assumption; scope; confidence; buyer consequence; permissions; and treatment.
 
-## Core Principles
+- Use these classes: verified fact, supplied fact, client assertion, hypothesis, example, estimate, benchmark, illustrative scenario, testimonial, comparative claim, unsupported claim.
+- Preserve attribution. A client assertion remains an assertion unless independently supported.
+- Prefer an accurate capability or process description when outcome evidence is incomplete.
+- Test the likely audience interpretation, including what visuals, layout, labels, omissions, or calls to action imply.
+- Remove or qualify an unsupported material claim. Do not use fine print to contradict a headline or visual impression.
 
-### Sales Uses What Sales Trusts
-Involve reps in creation. Use their language, not marketing's. If reps rewrite your deck before sending it, you wrote the wrong deck. Test drafts with your top performers first.
+## VALUE, PROOF, AND COMMERCIAL BOUNDARIES
 
-### Situation-Specific, Not Generic
-Tailor to persona, deal stage, and use case. A deck for a CTO should look different from one for a VP of Sales. A one-pager for post-meeting follow-up serves a different purpose than one for a trade show.
+- Connect a material claim to its relevant buyer consequence: financial, operational, experiential, strategic, legal, safety-related, or uncertainty-reducing. Do not imply a stronger consequence than the evidence supports.
+- Treat personas, ICPs, jobs-to-be-done, motives, and objections as hypotheses unless relevant buyer evidence supports them. Turn them into discovery questions, not buyer facts.
+- Model value only as a labelled estimate or illustrative scenario. Show inputs, units, source, owner, date, formula, timeframe, omitted costs, uncertainty, and a range or sensitivity where material.
+- Keep proof attributable and scoped. Confirm provenance and permission before using a logo, quote, testimonial, review, or case study.
+- Define a comparative claim's dimension, population, date, source, and boundary. Replace unsupported superiority with a narrower capability claim.
+- Separate offered scope, assumptions, exclusions, dependencies, prices, terms, and acceptance criteria. Route any ambiguity or change in commercial commitment to its human owner.
 
-### Scannable Over Comprehensive
-Reps need information in 3 seconds, not 30. Use bold headers, short bullets, and visual hierarchy. If a rep can't find the answer mid-call, the doc has failed.
+## REVIEW AND APPROVAL ROUTING
 
-### Tie Back to Business Outcomes
-Every claim connects to revenue, efficiency, or risk reduction. Features mean nothing without the "so what." Replace "AI-powered analytics" with "cut reporting time by 80%."
+Treat the strongest risk dimension as controlling. Increase review when material contains a public claim, comparison, testimonial, price, guarantee, personal-data outreach, procurement answer, regulated topic, confidential information, or other irreversible external effect.
 
----
-
-## Sales Deck / Pitch Deck
-
-### 10-12 Slide Framework
-
-1. **Current World Problem** — The pain your buyer lives with today
-2. **Cost of the Problem** — What inaction costs (time, money, risk)
-3. **The Shift Happening** — Market or technology change creating urgency
-4. **Your Approach** — How you solve it differently
-5. **Product Walkthrough** — 3-4 key workflows, not a feature tour
-6. **Proof Points** — Metrics, logos, analyst recognition
-7. **Case Study** — One customer story told well
-8. **Implementation / Timeline** — How they get from here to live
-9. **ROI / Value** — Expected return and payback period
-10. **Pricing Overview** — Transparent, tiered if applicable
-11. **Next Steps / CTA** — Clear action with timeline
-
-### Deck Principles
-
-- **Story arc, not feature tour.** Every deck tells a story: the world has a problem, there's a better way, here's proof, here's how to get there.
-- **One idea per slide.** If you need two points, use two slides.
-- **Design for presenting, not reading.** Slides support the conversation — they don't replace it. Minimal text, strong visuals.
-
-### Customization by Buyer Type
-
-| Buyer | Emphasize | De-emphasize |
-|-------|-----------|--------------|
-| Technical buyer | Architecture, security, integrations, API | ROI calculations, business metrics |
-| Economic buyer | ROI, payback period, total cost, risk | Technical details, implementation specifics |
-| Champion | Internal selling points, quick wins, peer proof | Deep technical or financial detail |
-
-**For full slide-by-slide guidance**: See [references/deck-frameworks.md](references/deck-frameworks.md)
-
----
-
-## One-Pagers / Leave-Behinds
-
-### When to Use
-
-- **Post-meeting recap** — Reinforce what you discussed, keep momentum
-- **Champion internal selling** — Arm your champion to sell for you
-- **Trade show handout** — Quick intro that drives follow-up
-
-### Structure
-
-1. **Problem statement** — The pain in one sentence
-2. **Your solution** — What you do and how
-3. **3 differentiators** — Why you vs. alternatives
-4. **Proof point** — One strong metric or customer quote
-5. **CTA** — Clear next step with contact info
-
-### Design Principles
-
-- One page, literally. Front only, or front and back maximum.
-- Scannable in 30 seconds. Bold headers, short bullets, whitespace.
-- Include your logo, website, and a specific contact (not info@).
-- Match your brand but keep it clean — this is a sales tool, not a brand piece.
-
-**For templates by use case**: See [references/one-pager-templates.md](references/one-pager-templates.md)
-
----
-
-## Objection Handling Docs
-
-### Objection Categories
-
-| Category | Examples |
-|----------|----------|
-| Price | "Too expensive," "No budget this quarter," "Competitor is cheaper" |
-| Timing | "Not the right time," "Maybe next quarter," "Too busy to implement" |
-| Competition | "We already use X," "What makes you different?" |
-| Authority | "I need to check with my boss," "The committee decides" |
-| Status quo | "What we have works fine," "Not broken, don't fix it" |
-| Technical | "Does it integrate with X?," "Security concerns," "Can it scale?" |
-
-### Response Framework
-
-For each objection, document:
-
-1. **Objection statement** — Exactly how reps hear it
-2. **Why they say it** — The real concern behind the words
-3. **Response approach** — How to acknowledge and redirect
-4. **Proof point** — Specific evidence that addresses the concern
-5. **Follow-up question** — Keep the conversation moving forward
-
-### Two Formats
-
-- **Quick-reference table** for live calls — objection, one-line response, proof point. Fits on one screen.
-- **Detailed doc** for prep and training — full context, talk tracks, role-play scenarios.
-
-**For the full objection library**: See [references/objection-library.md](references/objection-library.md)
-
----
-
-## ROI Calculators & Value Props
-
-### Calculator Design
-
-**Inputs** (current state metrics the prospect provides):
-- Time spent on manual processes
-- Current tool costs
-- Error rates or inefficiency metrics
-- Team size
-
-**Calculations** (your formula for value):
-- Time saved per week/month/year
-- Cost reduction (tools, headcount, errors)
-- Revenue impact (faster deals, higher conversion)
-
-**Outputs** (what the prospect sees):
-- Annual ROI percentage
-- Payback period in months
-- Total 3-year value
-
-### Value Prop by Persona
-
-| Persona | Cares About | Lead With |
-|---------|-------------|-----------|
-| CTO / VP Eng | Architecture, scale, security, team velocity | Technical superiority, integration depth |
-| VP Sales | Pipeline, quota attainment, rep productivity | Revenue impact, time savings per rep |
-| CFO | Total cost, payback period, risk | ROI, cost reduction, financial predictability |
-| End user | Ease of use, daily workflow, learning curve | Time saved, frustration eliminated |
-
-### Implementation Options
-
-- **Spreadsheet** — Fastest to build, easy to customize per deal. Works for inside sales.
-- **Web tool** — More polished, captures leads, scales better. Worth building if deal volume is high.
-- **Slide-based** — ROI story embedded in the deck. Good for executive presentations.
-
----
-
-## Demo Scripts & Talk Tracks
-
-### Script Structure
-
-1. **Opening** (2 min) — Context setting, agenda, confirm goals for the call
-2. **Discovery recap** (3 min) — Summarize what you learned, confirm priorities
-3. **Solution walkthrough** (15-20 min) — 3-4 key workflows mapped to their pain
-4. **Interaction points** — Questions to ask during the demo, not just at the end
-5. **Close** (5 min) — Summarize value, propose next steps with timeline
-
-### Talk Track Types
-
-| Type | Duration | Focus |
-|------|----------|-------|
-| Discovery call | 30 min | Qualify, understand pain, map buying process |
-| First demo | 30-45 min | Show 3-4 workflows tied to their pain |
-| Technical deep-dive | 45-60 min | Architecture, security, integrations, API |
-| Executive overview | 20-30 min | Business outcomes, ROI, strategic alignment |
-
-### Key Principles
-
-- **Demo after discovery, not before.** If you don't know their pain, you're guessing which features matter.
-- **Customize to their use case.** Use their terminology, their data (if possible), their workflow.
-- **Leave time for questions.** A demo where the prospect doesn't talk is a demo that doesn't close.
-
-**For full script templates**: See [references/demo-scripts.md](references/demo-scripts.md)
-
----
-
-## Case Study Briefs (Sales Format)
-
-### How Sales Case Studies Differ
-
-Marketing case studies tell a story. Sales case studies arm reps with fast-access proof. Keep them short, outcome-focused, and tagged for retrieval.
-
-### Structure
-
-1. **Customer profile** — Industry, company size, buyer role
-2. **Challenge** — What they were struggling with (2-3 sentences)
-3. **Solution** — What they implemented (1-2 sentences)
-4. **Results** — 3 specific metrics (before/after)
-5. **Pull quote** — One sentence from the customer
-6. **Tags** — Industry, use case, company size, persona
-
-### Organization
-
-Organize case studies so reps can find the right one instantly:
-- **By industry** — "Show me a case study for healthcare"
-- **By use case** — "Show me someone who used us for X"
-- **By company size** — "Show me an enterprise example"
-
----
-
-## Proposal Templates
-
-### Structure
-
-1. **Executive summary** — Their challenge, your solution, expected outcome (1 page max)
-2. **Proposed solution** — What you'll deliver, mapped to their requirements
-3. **Implementation plan** — Timeline, milestones, responsibilities
-4. **Investment** — Pricing, payment terms, what's included
-5. **Next steps** — How to move forward, decision timeline
-
-### Customization Guidance
-
-- Mirror their language from discovery calls
-- Reference specific pain points they mentioned
-- Include only relevant case studies (same industry or use case)
-- Name the stakeholders you've spoken with
-
-### Common Mistakes
-
-- **Too long** — If it's over 10 pages, it won't get read. Aim for 5-7.
-- **Too generic** — Templated proposals signal low effort. Customize the exec summary at minimum.
-- **Burying the price** — Don't make them hunt for it. Be transparent and confident.
-
----
-
-## Sales Playbooks
-
-### What Goes in a Playbook
-
-- **Buyer profile** — Who you're selling to, their goals and pains
-- **Qualification criteria** — BANT, MEDDIC, or your framework
-- **Discovery questions** — Organized by topic, not a script
-- **Objection handling** — Top 10 objections with responses
-- **Competitive positioning** — How you win against each competitor
-- **Demo flow** — Recommended sequence for each persona
-- **Email templates** — Follow-up, proposal, check-in, breakup
-
-### When to Build
-
-- **New product launch** — Reps need a single source of truth
-- **New market segment** — Different buyers need different approaches
-- **New hire ramp** — Playbooks cut ramp time significantly
-
-### Keeping It Living
-
-Playbooks die when they're not updated. Review quarterly, get input from top reps, and remove anything outdated. Assign an owner — if nobody owns it, it rots.
-
----
-
-## Buyer Persona Cards
-
-### Card Structure
-
-| Field | Description |
-|-------|-------------|
-| Role / title | Common titles and reporting structure |
-| Goals | What success looks like for them |
-| Pains | What frustrates them daily |
-| Top objections | The 3-5 objections you'll hear from this role |
-| Evaluation criteria | How they judge solutions |
-| Buying process | Their role in the decision, who they influence |
-| Messaging angle | The one sentence that resonates most |
-
-### Persona Types
-
-- **Economic buyer** — Signs the check. Cares about ROI and risk.
-- **Technical buyer** — Evaluates the product. Cares about capabilities and integration.
-- **End user** — Uses it daily. Cares about ease and workflow fit.
-- **Champion** — Advocates internally. Needs ammunition to sell for you.
-- **Blocker** — Opposes the purchase. Understand their concern to neutralize it.
-
----
-
+- Keep a source or assumption record, permissions record where relevant, residual-uncertainty note, and approval record for externally distributed material.
+- Stop buyer-facing drafting when evidence, permission, scope, pricing authority, legal basis, jurisdiction, or approval ownership is missing. Offer a clearly labelled internal draft, neutral alternative, question set, or evidence request instead.
+- Before release, review the actual rendered asset and channel details: headline, visual, chart, footnote, link, form, subject line, sender, call to action, price display, and omitted qualification.
+- Record the final asset/version, channel, approver, and date before an approved external effect. An approval does not make an unsupported claim true.
 
 ## REFERENCE LOADING RULES
 
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
-## Output Format
+- Load [references/claim-governance-and-approval.md](references/claim-governance-and-approval.md) for a buyer-facing claim, proposal, case study, testimonial, comparison, value model, outbound communication, or approval decision.
+- Load [references/deck-frameworks.md](references/deck-frameworks.md) only when choosing or structuring a deck; select a decision-fit content map rather than a fixed slide count.
+- Load [references/demo-scripts.md](references/demo-scripts.md) only when preparing a call or demo; choose a sequence that matches the current buyer decision and available evidence.
+- Load [references/objection-library.md](references/objection-library.md) only when preparing internal objection help; treat possible objections and motives as hypotheses.
+- Load [references/one-pager-templates.md](references/one-pager-templates.md) only when preparing a concise leave-behind; include proof only when it is supported and permissioned.
+- Load [references/resource-index.md](references/resource-index.md) to select a resource. Do not load the package wholesale.
 
-Deliver the right format for each asset type:
+## OUTPUT SHAPE
 
-| Asset | Deliverable |
-|-------|-------------|
-| Sales deck | Slide-by-slide outline with headline, body copy, and speaker notes |
-| One-pager | Full copy with layout guidance (visual hierarchy, sections) |
-| Objection doc | Table format: objection, response, proof point, follow-up |
-| Demo script | Scene-by-scene with timing, talk track, and interaction points |
-| ROI calculator | Input fields, formulas, output display with sample data |
-| Playbook | Structured document with table of contents and sections |
-| Persona card | One-page card format per persona |
-| Proposal | Section-by-section copy with customization notes |
+Return the format that fits the decision. Include only the sections that matter.
 
----
+| Asset | Minimum output |
+| --- | --- |
+| Deck or one-pager | Decision, audience, content map, claim ledger summary, copy, evidence/assumption labels, next action, review gate. |
+| Proposal | Problem framing, options, scope, exclusions, dependencies, assumptions, pricing/terms authority status, decision request, approval gaps. |
+| Demo or discovery plan | Decision goal, known facts, open questions, safe scenario, evidence labels, appropriate next action. |
+| Objection aid | Observed objection or hypothesis, acknowledgement, evidence-backed response, validating question, escalation gap. |
+| Value model | Inputs and provenance, formula, scenario range, omitted factors, uncertainty, non-guarantee label, approval state. |
+| Claim review | Claim ledger, audience interpretation, risk, treatment, evidence needed, approval owner. |
 
-## Task-Specific Questions
+## NON-NEGOTIABLE CHECKLIST
 
-If context is missing, ask:
-
-1. What collateral do you need? (deck, one-pager, objection doc, etc.)
-2. Who will use it? (AE, SDR, champion, prospect)
-3. What sales stage is it for? (prospecting, discovery, demo, negotiation, close)
-4. Who is the target persona? (title, seniority, department)
-5. What are the top 3 objections you hear most?
-
----
-
-## Related Skills
-
-- **competitor-profiling** + **copywriting**: For public comparison pages
-- **copywriting**: For marketing pages and outbound prospecting messages
-- **product-thinking**: For lifecycle, pipeline, pricing, and packaging decisions
-- Read `.agents/product-marketing-context.md` when it exists for foundational positioning and messaging.
+1. Identify audience, decision, channel, and approval owner.
+2. Classify every material buyer-facing claim and preserve its source or assumption.
+3. Distinguish fact, client assertion, estimate, example, and hypothesis.
+4. Check implied claims, not only literal wording.
+5. Remove or qualify unsupported material claims.
+6. Keep external communication and commercial commitments behind recorded approval.

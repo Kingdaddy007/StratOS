@@ -13,6 +13,10 @@ description: 'Use this skill when planning or implementing cinematic motion for 
 - Load before writing GSAP, ScrollTrigger, canvas, R3F, image sequence, parallax, mask, or before/after reveal code.
 - Load `reference/lenis-gsap-scroll-foundation.md` when Lenis is used as scroll infrastructure.
 - Load `reference/scroll-driven-3d-cube.md` when the concept is a room box, rotating wall set, material plinth, CSS 3D cube, or scroll-driven cube gallery.
+- Load `canvas-ui` when a contained live DOM/WebGL effect may serve a named
+  spatial communication job. Let `canvas-ui` compare it against still, DOM/CSS,
+  and media alternatives, verify the current upstream source, and own its
+  import/fallback gate.
 
 ## NEVER DO
 

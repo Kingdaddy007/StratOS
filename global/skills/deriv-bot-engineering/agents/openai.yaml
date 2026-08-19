@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deriv Bot Engineering"
-  short_description: "Guidance for deriv bot engineering tasks"
-  default_prompt: "Use $deriv-bot-engineering to help complete this task with its domain workflow."

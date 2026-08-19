@@ -79,7 +79,7 @@ Legacy spatial projects do not need to delete or rename their existing fourteen 
 
 ## VISUAL THESIS RULES
 
-Select the governing concept before final typography or color. A visual thesis may be spatial, editorial, typographic, material, project-led, or transformation-led; it must explain the page as a whole. For color palette selection and functional mapping, load the `color-system` skill.
+Select the governing concept before final typography or color. A visual thesis may be spatial, editorial, typographic, material, project-led, or transformation-led; it must explain the page as a whole. For a material colour decision, load the UI/UX `color-and-contrast.md` reference and its `color-evidence-and-context.md` reference when scene, material, light, culture, or a research claim affects the decision.
 
 If the user is unsure, run the concept forge:
 
@@ -142,6 +142,8 @@ For video-native concepts:
 ## REFERENCE LOADING RULES
 
 Load the `reference-intelligence` skill after the creative brief when external references, award-site recordings, screenshots, transcripts, AI reports, or precedent collections must inform vocabulary or validate a territory. Use its two-pass model and Keep/Adapt/Reject/Defer ledger.
+
+Load [reference/project-phase-routing.md](reference/project-phase-routing.md) when a request starts, resumes, or targets one named phase of a substantial Spatial project. It distinguishes the one stateful project-coordination route from focused direct skill work, without discarding the former phase gates.
 
 Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
 

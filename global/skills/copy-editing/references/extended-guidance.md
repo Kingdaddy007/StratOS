@@ -1,5 +1,9 @@
 # Extended Guidance
 
+## Use selected checks, not a compulsory conversion formula
+
+Treat the sweeps and examples below as a selectable diagnostic library. Preserve the editing contract in `../SKILL.md`: do not invent proof, numbers, testimonials, guarantees, urgency, or a strategic change; do not force emotion, risk reversal, or a CTA pattern into a task that does not warrant it. Flag unsupported wording or request confirmation instead.
+
 ## Contents
 
 - [Quick-Pass Editing Checks](#quick-pass-editing-checks)

@@ -1,123 +1,112 @@
 ---
 name: coding
-description: 'Use this skill when writing, modifying, or generating code of any kind. Activated when the user asks to build features, implement functions, create components, write endpoints, set up forms, wire things together, or produce any working implementation. Trigger phrases: "build this", "implement", "write the code for", "create a function that", "add this endpoint", "make it work", "update this code to", "wire this together". Do NOT use for: pure architectural decisions before implementation starts (use architecture skill), root-cause debugging of existing broken code (use debugging skill).'
+description: 'Use when writing or changing production code, configuration with runtime behaviour, components, services, endpoints, scripts, or integrations. Activate for “build”, “implement”, “write code”, “add a feature”, “make this work”, or “change this behaviour”. Do not use for a decision-only architecture discussion (use architecture), unexplained failure diagnosis (use debugging), behavior-preserving structural work as the primary task (use refactoring), or review-only work (use review-audit).'
 ---
 
 # Coding
 
 ## WHEN TO USE THIS
 
-- Writing new code: functions, components, modules, services, endpoints
-- Modifying existing code to change behavior
-- Refactoring local implementation details while preserving behavior
+- Implement a new or changed observable behaviour.
+- Modify an existing module, integration, configuration, or runtime boundary.
+- Make a small local repair after the mechanism is already understood.
 
 ## NEVER DO
 
-- Write code before understanding what it needs to accomplish
-- Skip error handling because the happy path works
-- Create an abstraction for fewer than 3 concrete cases
-- Optimize before profiling proves there is a bottleneck
-- Leave commented-out code, debug statements, or unused imports
-- Write clever/compressed code that trades clarity for brevity
-- Proceed when architecture is unresolved — flag it first
+- Treat a remembered API, a generic rule, or an example as a repository fact.
+- Apply fixed parameter counts, abstraction counts, test counts, or Git commands as universal laws.
+- Declare success from a green command that does not exercise the changed boundary.
+- Let a locally correct change cross an authorization, sensitive-data, destructive, public-contract, production, or irreversible boundary without the required approval.
+- Hide a behaviour change inside a claimed mechanical refactor.
 
----
+## CLASSIFY THE CHANGE BEFORE EDITING
 
-## IMPLEMENTATION PRIORITIES (in order)
+Start with the actual consequence, reversibility, exposure, uncertainty, and change surface. Do not create ceremony for a harmless local edit.
 
-1. **Readability** — Can a new engineer understand this without asking? If the code requires a comment explaining WHAT it does, rename until the name makes it obvious.
-2. **Correctness** — Handle null, empty, malformed, extremely large, concurrent, and failed-dependency cases. Write happy path first, then add each failure mode.
-3. **Maintainability** — Small focused functions, explicit dependencies, no global state, pure logic separated from side effects.
-4. **Convention compliance** — Match the existing codebase's naming, layering, and patterns. Consistency beats local brilliance.
-5. **Performance** — Only after profiling proves a bottleneck. Optimize surgically behind a clean interface.
-6. **Testability** — Isolate side effects. Favor pure functions for logic. Design seams where tests can inject fakes.
-
----
-
-## CODING LENSES
-
-Run these before and during implementation:
-
-| Lens | Question |
-| --- | --- |
-| Intent | Is business intent obvious from names alone — without reading the body? |
-| Scope | Does this function/module have exactly one job? |
-| Abstraction | Is this layer necessary now, or am I abstracting for imagined futures? |
-| Boundaries | Are inputs validated at entry points? Are outputs intentional? |
-| Error behavior | What happens on failure, timeout, malformed input? Handled or swallowed? |
-| State/side effects | Where exactly does state change? Is the order obvious? |
-| Testability | Can important behavior be verified without heroic setup? |
-| Consistency | Does this match the surrounding codebase's patterns? |
-| Simplicity | Is there a simpler version that satisfies the same requirements? |
-| Change safety | What will break when someone edits this? Are dependencies explicit? |
-
----
-
-## EXECUTION SEQUENCE
-
-### New code
-
-1. Define the interface first — inputs, outputs, errors, side effects
-2. Write the most readable, obvious solution (no optimization yet)
-3. Use names that reflect domain/business meaning, not vague mechanical detail
-4. Add error handling for each failure mode before moving on
-
-### Modifying existing code
-
-1. Read surrounding code until you understand the local design intent
-2. Identify what behavior must stay unchanged before touching anything
-3. Make the smallest change that achieves the goal
-4. Check sibling functions — if one had the bug, the twin probably does too
-
-### When unclear
-
-1. State the ambiguity explicitly
-2. Ask if it materially affects implementation
-3. If architecture is unresolved, flag it — don't code around it
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Is | Fix |
+| Risk | Typical condition | Required action |
 | --- | --- | --- |
-| Cleverness trap | Nested ternaries, bitwise tricks, compressed chains | Write the obvious version. Lines are free. |
-| Premature abstraction | Interface with 1 implementation, factory for 2 classes | Wait for 3 concrete cases (Rule of Three) |
-| Premature optimization | Complex data structures for theoretical perf gains | Write simple. Profile. Optimize the measured bottleneck only. |
-| God function | 200-line function doing validation, logic, DB, API, logging | Extract: orchestrating function reads like a table of contents |
-| Shallow module | Wrapper that adds nothing over the underlying call | Only wrap when adding error handling, retry, logging, or domain adaptation |
-| Silent failure | Empty catch, returning null instead of throwing, ignoring 500s | Fail fast. Log with context. Force callers to handle failure cases. |
-| Copy-paste programming | Same 15 lines across 8 files with minor variations | Extract after 3+ concrete cases. Patch all copies immediately in the meantime. |
-| Context ignorance | Solves the local request but violates surrounding architecture | Read the architecture before implementing. Match layer, naming, responsibility. |
+| `R0` reversible local | Documentation, isolated formatting, or no-runtime artifact | Inspect the narrow surface. Use parse, render, lint, or diff evidence when applicable. |
+| `R1` low-consequence repository | Clear local pattern; small reversible implementation or configuration change | Name the changed surface and highest-risk assumption. Use focused evidence. |
+| `R2` ordinary feature | User-visible behaviour, module boundary, persistence, or external call | Write the compact change brief. Select evidence for local logic and each changed boundary. Run a fresh review pass before handoff or release. |
+| `R3` high-consequence | Authorization, sensitive data, public contract, migration, billing, production access, or critical journey | State recovery limits. Add negative and boundary evidence. Route to the relevant specialist and obtain required human approval before external effect. |
+| `R4` irreversible or uncontrolled | Destructive production action, irrecoverable migration, credential exposure, or safety-critical effect | Do not execute. Prepare evidence, a runbook, and a decision request for a human. |
 
----
+For `R2` and above, record only what the next decision needs:
 
-## MANDATORY VERIFICATION TRACE
+```text
+Objective:
+Non-goals:
+Changed surface and boundaries:
+Highest-risk assumption:
+Evidence plan:
+Recovery limit and approval boundary:
+```
 
-Before declaring done, follow data from origin → through every transformation → to final consumer.
+Update the record when discovery changes the actual surface. A plan that no longer matches the diff is stale evidence.
 
-**Example:** "Color injected at line X → sanitizeCandleBar at line Y returns `{time, open, high, low, close, color}` → series.update() at line Z receives all required fields. Confirmed."
+## ESTABLISH FACTS BEFORE IMPLEMENTING
 
-If a parallel function exists (`sanitizeTickPoint` ↔ `sanitizeCandleBar`): verify BOTH.
+1. Read nearby implementations, consumers, tests, configuration, and directory contracts.
+2. State the behaviour that must change and the behaviour that must remain unchanged.
+3. When a library, external API, generated output, or repository convention is unfamiliar, verify it from current local source and authoritative documentation. Do not infer signatures from memory.
+4. Identify the source of truth for generated artifacts. Change the source and regenerate deterministically where the project supports it; do not silently hand-edit generated output.
+5. Make the smallest coherent change that meets the objective. Prefer a clear local solution over speculative layers.
 
----
+Introduce an abstraction when a stable domain concept, expected variation, ownership boundary, or real duplication cost makes it clearer than the alternatives. Treat repeated code as a prompt to inspect the reasons for change, not as a fixed numerical threshold. Use a named parameter object only when it makes the contract and call sites clearer.
 
-## NON-NEGOTIABLE CHECKLIST
+## KEEP INTENT AND BEHAVIOUR INSPECTABLE
 
-- [ ] All variables and functions are named for business/domain intent (not `data`, `flag`, `process`, `check`)
-- [ ] Functions have one clear responsibility and ≤3 parameters (use options object if more needed)
-- [ ] All foreseeable error paths are handled — no empty catch blocks without documented justification
-- [ ] No external dependency failures are silently ignored
-- [ ] No commented-out code, debug statements, or unused imports remain
-- [ ] Code follows existing project naming, layering, and style
-- [ ] Structural verification trace completed before delivery
+- Label behavioural edits separately from mechanical movement, renaming, formatting, and generated output.
+- Separate them by default when doing so improves review or rollback.
+- Combine them only when they are inseparable for a safe repair. State the dependency and provide distinct evidence for the structural and behavioural claims.
+- Preserve explicit error handling. Handle malformed input, dependency failure, timeout, partial failure, and concurrency only where the changed boundary makes them plausible; do not manufacture generic branches.
+- Check sibling functions or parallel consumers when the same failure pattern may recur.
 
----
+## SELECT EVIDENCE FROM THE FAILURE SURFACE
+
+Use `testing` to select and interpret evidence. Match the evidence to what could actually be wrong:
+
+| Changed surface | Minimum evidence to consider |
+| --- | --- |
+| Local pure logic | Focused behaviour or invariant test; type/static check when available. |
+| Runtime configuration or integration | Parse/build/type evidence plus a focused boundary check. |
+| User-visible flow | Local tests plus targeted manual or browser evidence where the user journey changes. |
+| Persistence, external service, or public contract | Integration or contract evidence, failure and compatibility cases. |
+| Authorization, sensitive data, destructive migration, production path | Negative and boundary evidence, recovery proof where relevant, specialist route, and required approval. |
+| Legacy code with weak tests | Characterize observable current behaviour where practical; state what remains unknown and escalate if the unobservable behaviour is high consequence. |
+
+A check proves only the claim and environment it exercised. Record unrun, flaky, mocked, or non-representative evidence honestly.
+
+## HAND OFF A NONTRIVIAL CHANGE
+
+For `R2` and above, or whenever another agent reviews the work, provide:
+
+```text
+Objective and non-goals:
+Meaningful change surface and review base:
+Behavioural claim and unchanged behaviour:
+Highest-risk assumptions:
+Evidence actually run, with scope and results:
+Recovery limit and residual uncertainty:
+Questions for the reviewer:
+Decision requested:
+```
+
+Ask `review-audit` for a fresh bounded reasoning pass when the risk, handoff, or release path warrants it. A distinct Assurance agent is useful when available; its absence must not turn a reversible local edit into a blocked task.
 
 ## OUTPUT SHAPE
 
-**Simple implementation:** Brief statement of what was built → Code → What to verify
+```text
+Risk and objective:
+Change and why:
+Evidence actually run and what it covers:
+Residual uncertainty or approval gate:
+```
 
-**Moderate implementation:** Objective restatement → Approach and rationale → Code → Assumptions made → Edge cases and error handling → What to verify
+## NON-NEGOTIABLE CHECKLIST
 
-**Complex implementation:** All of the above + Key design decisions explained + Testing recommendations + Security/performance considerations if relevant + Next steps
+1. Classify the change before treating it as routine.
+2. Verify unfamiliar repository and dependency facts from source.
+3. Keep the meaningful behavioural claim inspectable.
+4. Choose evidence for the plausible failure surface, not for a ritual.
+5. State residual uncertainty and required approval honestly.

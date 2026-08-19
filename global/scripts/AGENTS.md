@@ -14,7 +14,9 @@ This directory contains deterministic development, validation, build, and verifi
 
 ## 3. Exposed Interfaces
 
-- `os.py`: `validate`, `build`, and `install` development CLI.
+- `os.py`: `validate`, `build`, and `install` development CLI. `--profile` is the
+  compatible single-pack shorthand; `--packs` safely composes Media, Growth,
+  and Spatial with the implicit General base.
 - `verify.py`: project baseline verification runner; it does not declare deployment readiness.
 - `checks/`: focused baseline scanners used by `verify.py`.
 
@@ -28,4 +30,3 @@ This directory contains deterministic development, validation, build, and verifi
 
 - Run `python -m unittest discover -s tests -p "test_*.py"`.
 - Run `python global/scripts/os.py validate`.
-

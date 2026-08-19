@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "media",
+  "description": "Optional image and video generation, media direction, and provider-specific production capability.",
+  "always_active": false,
+  "extends": "general",
+  "activation": [
+    "The request concerns image or video generation, media direction, provider-specific media work, or a named Seedance request.",
+    "The user explicitly selects the media pack."
+  ],
+  "exclusions": [
+    "Ordinary product work that merely contains an image or video field.",
+    "General UI, backend, debugging, infrastructure, security, or non-media work."
+  ]
+}

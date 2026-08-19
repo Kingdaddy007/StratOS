@@ -8,6 +8,8 @@
 **Project 003 status:** Not started
 **Revision 1:** Local Cognitive Engine gates and profile-resource closure restored after second audit
 
+> **Current routing note (2026-08-19):** this is a historical repair audit. Its former named Spatial wrapper paths were later preserved as direct specialist capabilities or phases inside `workflow-spatial-project-inception.md`; see [the current phase-routing reference](../global/skills/spatial-experience-design/reference/project-phase-routing.md).
+
 ## Executive Verdict
 
 The repair replaces the experimental 3.1.0 rewrite with a narrower change set based on the clean `eacc013` OS. It preserves the original specialist vocabularies and makes concept discovery, visible divergence, selection, risk prototyping, and controlled iteration explicit.

@@ -1,140 +1,107 @@
 ---
 name: api-design
-description: 'Use this skill when designing, creating, or modifying API endpoints; defining contracts between services; evaluating protocol choices (REST, GraphQL, gRPC, WebSockets); versioning or deprecating an API; designing error responses or pagination; or reviewing an existing API for consistency, security, or ergonomics. Signal phrases: "design the API", "create an endpoint", "REST", "GraphQL", "gRPC", "API versioning", "backward compatible", "breaking change", "error response", "pagination", "rate limiting", "API contract", "OpenAPI", "Protobuf", "webhook", "idempotency", "deprecation", "endpoint structure".'
+description: 'Use when designing or changing an API, webhook, event, RPC boundary, or shared service contract; deciding compatibility, versioning, pagination, rate/cost limits, idempotency, or contract tests. Activate for “design an API”, “endpoint”, “API contract”, “OpenAPI”, “webhook”, “event schema”, “pagination”, “rate limit”, “breaking change”, “idempotency”, or “deprecation”. Do not use for an internal function with no independent consumer (use coding), data-model design without an interface decision (use database), or a full security threat model (use security).'
 ---
 
-# API DESIGN & CONTRACT ENGINEERING
+# API Contract Design
 
 ## WHEN TO USE THIS
 
-- Designing, creating, or modifying API endpoints
-- Defining contracts between services (internal or external)
-- Evaluating API protocol choices (REST, GraphQL, gRPC, WebSockets)
-- Versioning an existing API or planning a version migration
-- Designing error response formats and status code usage
-- Implementing pagination, filtering, sorting, or search on collection endpoints
-- Reviewing existing APIs for consistency, ergonomics, or security
-- Designing webhook or event notification systems
+- Create or change a request/response, webhook, event, RPC, or shared-service boundary.
+- Assess independent consumers, compatibility, limits, retries, or contract evolution.
+- Review an existing interface whose runtime behaviour, documentation, clients, or tests may disagree.
 
 ## NEVER DO
 
-- Shape an API contract around implementation convenience or database structure
-- Remove, rename, or change the type of an existing field in an active API version
-- Introduce breaking changes to active versions without a new version and migration plan
-- Return unbounded collection results — all collection endpoints must be paginated
-- Expose internal details in error responses (stack traces, SQL errors, internal IDs, exceptions)
-- Deploy an API without versioning from day one
-- Leave rate limiting, authentication, or input validation as optional enhancements
+- Treat a database table, generated client, or prose document as the contract without checking its owner, consumers, and runtime behaviour.
+- Add a version namespace, pagination scheme, rate limit, or compatibility layer merely because every API is assumed to need one.
+- Change externally consumed semantics, authorization, ordering, error behaviour, or field meaning without a compatibility decision.
+- Trust caller-supplied tenant, owner, role, or protected-property claims as authorization proof.
+- Promise rollback when an observed contract, emitted event, data transform, or external side effect cannot be undone.
 
----
+## CLASSIFY THE BOUNDARY FIRST
 
-## MINDSET
+Identify the owner, intended consumers, independent deployment, data class, side effects, and recovery limit before selecting a contract shape.
 
-You are not an endpoint generator. You are a contract architect who designs binding agreements between systems that must remain stable long after you have moved on.
+| Boundary | Minimum contract work |
+| --- | --- |
+| Local and coordinated | Use a typed signature, examples, and targeted tests. Record why the caller set is bounded. |
+| Internal but independently deployed | Record the consumer set, compatibility impact, ownership, errors, and a change window. |
+| Public or partner-facing | Define an explicit machine-readable contract, consumer compatibility path, security/ownership checks, support and sunset terms. |
+| Asynchronous event or webhook | Define identity, producer, consumer expectations, ordering, delivery/replay behaviour, duplicate handling, and schema-resolution policy. |
 
-An API is a commitment. Once published and integrated by consumers — whether those are frontend clients, mobile apps, third-party developers, or internal microservices — it cannot be easily revoked, renamed, or restructured without breaking those consumers. Every field you expose, every endpoint you create, every error format you define becomes a contract that someone will depend on.
+If ownership or the likely consumer set is unclear, do not silently widen a shared or external contract. Investigate the repository and deployment context. Proceed under a stated assumption only when the task is demonstrably local and reversible.
 
-**A poor API exports internal mess forever. A strong API protects consumers from internal churn.**
+## WRITE THE CONTRACT DELTA
 
-The expert API designer:
+For a non-local boundary, state only the facts needed to make the next decision:
 
-- **Views an API as a long-term public interface** — not a thin wrapper around the database or internal models
-- **Designs contracts first** — the specification is the source of truth, and implementation derives from it, not the other way around
-- **Treats backward compatibility as law** — once a version is active, existing consumers must never be broken
-- **Separates the internal data model from the external API representation** — internal schema changes should never force API consumers to change
-- **Designs for the consumer's needs, not the server's convenience** — the API speaks the consumer's language, not the database's column names
-- **Treats error responses as first-class features** — every error must tell the consumer what went wrong, why, and what they can do about it
-- **Implements protection mechanisms by default** — pagination, rate limiting, payload size limits, and authentication are not afterthoughts
-- **Applies Postel's Law**: be conservative in what you send, be liberal in what you accept — within the bounds of security and data integrity
-- **Designs for the developer integrating at 2 AM with only the documentation** — if the API is confusing, it has failed regardless of how elegant the implementation is
+```text
+Owner and known consumers:
+Operation or event:
+Request/input and response/output:
+Errors, ordering, and limits:
+Authorization subject, object, action, and protected properties:
+Idempotency and concurrency behaviour:
+Compatibility classification and recovery limit:
+Evidence and approval boundary:
+```
 
----
+For an existing contract, compare the intended delta against current source, generated clients, tests, runtime behaviour, and deployed behaviour where evidence is available. Classify disagreement as stale artifact, implementation defect, intended contract change, or unresolved conflict. Escalate unresolved conflict to the contract owner; do not choose the most convenient artifact.
 
-## DECISION FRAMEWORK — 8 PRIORITIES (IN ORDER)
+## PRESERVE COMPATIBILITY PROPORTIONALLY
 
-### Priority 1 — Contract
+Classify each change as additive, behaviourally narrowing, behaviourally widening, or breaking. Check semantic compatibility as well as field shape: defaults, units, ordering, authorization, error semantics, and unknown-field behaviour can affect existing consumers.
 
-Stability
+- Use a version, explicit compatibility window, capability negotiation, coordinated deployment, or another compatible path when independent consumers or a public commitment make coordination non-trivial.
+- Keep a local, coordinated interface simple when its callers deploy together and a change is reversible.
+- Treat a consumed asynchronous event as independently deployed unless evidence shows otherwise.
+- Define an explicit sunset/retirement condition before carrying an old contract indefinitely.
 
-Never remove, rename, or change the type of an existing field in an active version. Only add new, optional fields. If a breaking change is truly necessary, introduce it in a new API version and maintain the old version until consumers have migrated. Backward compatibility is not a preference — it is a law once active consumers exist.
+## BOUND RESPONSES, COST, RETRIES, AND CONCURRENCY
 
-### Priority 2 — Consumer
+Give every list a proven safe bound or an explicit limit. Add pagination, cursor/keyset, streaming, or another continuation contract only when collection growth, computation cost, serialization cost, or untrusted workload makes a bound unsafe. Define stable ordering and continuation behaviour whenever continuation exists.
 
-Experience
+Limit requests or cost at the identity or resource boundary when abuse, overload, paid effects, or automated sensitive business flows are plausible. Define reject, retry, and observability behaviour. Do not add arbitrary throttles to local, trusted, bounded calls.
 
-Design resources, naming, and workflows around the consumer's mental model. Use clear, predictable naming. Provide comprehensive documentation with examples. Error messages should tell the consumer exactly what went wrong and how to fix it. If the API requires a phone call to integrate, it has failed.
+When an uncertain outcome can duplicate a meaningful effect, make replay safe through natural idempotence or a scoped idempotency mechanism. Bind it to the request meaning, define retention and concurrent-use behaviour, and test the timeout/replay case. Choose optimistic concurrency, conditional updates, transactions, or another control from the invariant and expected contention; do not assume last-write-wins is harmless.
 
-### Priority 3 — Boundary
+## ENFORCE OWNERSHIP AND ROUTE HIGHER RISK
 
-Quality
+Derive authorization server-side. For an external or multi-user boundary, check object, tenant, function, and protected-property access independently. Test both allowed and denied paths through the actual enforcement layer. Use `security` for threat modelling, identity design, sensitive data, or security ambiguity.
 
-Keep the external contract stable even if the internal model changes. The API should speak domain language — not database column names, internal status flags, or service-layer concepts that consumers have no business knowing about.
+Use `database` when persistence invariants, model choice, concurrency, lifecycle, or migration shape affects the contract. Use `database-migration` when a live schema/data transition needs its approval-gated workflow. A contract decision does not authorize deployment, data mutation, messaging, or an external provider call.
 
-### Priority 4 — Security
+## SELECT EVIDENCE AND STOP
 
-and Protection
+- Local boundary: target the signature, examples, and changed behaviour.
+- Shared or external boundary: add contract/consumer evidence, relevant failure cases, and compatibility checks.
+- Identity, tenant, or property boundary: add positive and denial tests through the real path.
+- Retry, queue, or event boundary: test duplicate, order, timeout, and replay behaviour that matters to the invariant.
+- Destructive, public, paid, privacy-sensitive, or difficult-to-reverse change: state recovery limits, add the relevant specialist review, and obtain required human approval before the effect.
 
-Every endpoint must have explicit authentication and authorization. All input must be validated and sanitized. Rate limiting must be applied. Sensitive data must never appear in URLs or logs. The principle of least privilege governs what each consumer role can access.
+Stop when consumer scope, compatibility, invariants, and evidence are credible for the declared risk. Reopen the decision when a new consumer, inconsistent artifact, unbounded workload, or recovery gap appears.
 
-### Priority 5 — Backend
-
-Protection
-
-All collection endpoints must be paginated with enforced maximum page sizes. Rate limiting must prevent request flooding. Payload size limits must be enforced. Timeouts must be configured. The API must protect the database and infrastructure from consumer abuse — whether intentional or accidental.
-
-### Priority 6 — Protocol
-
-Fit
-
-| Protocol | Best For | Tradeoffs |
-| --- | --- | --- |
-| **REST** | Public APIs, web integrations, broad compatibility, cacheability | Over-fetching, multiple round trips for related data, no built-in real-time |
-| **GraphQL** | Complex frontend data needs, flexible queries, reducing over-fetching | N+1 backend query risk, caching complexity, steep learning curve for consumers |
-| **gRPC** | Internal service-to-service, low-latency high-throughput, strong typing | Not browser-native, debugging complexity, less human-readable |
-| **WebSockets** | Real-time bidirectional communication, live updates, collaboration | Connection management overhead, scaling complexity, no built-in request/response semantics |
-
-Do not choose a protocol because it is trendy — choose it because the consumer's needs demand it.
-
-### Priority 7 — Evolvability
-
-Design resources broadly enough to accommodate anticipated extensions, but do not expose speculative fields. Prefer additive changes (new optional fields, new endpoints) over modifications to existing contracts. Design the API so that the most common future changes are non-breaking by default.
-
-### Priority 8 — Operational
-
-Fit
-
-Include requestId correlation in every response. Ensure errors are observable and loggable server-side without leaking internal details to consumers. Ensure rate limit state and deprecation usage are monitorable.
-
-**Core Rule:** Design the API contract for the consumer and the future — not for the current server implementation. Internal convenience is never a justification for consumer instability.
-
----
-
-## CORE PRINCIPLES
-
-1. **Contract First.** The API specification (OpenAPI, Protobuf, GraphQL schema) is the single source of truth. Code derives from the spec — not the other way around. If the spec and the implementation disagree, the spec is authoritative and the implementation is a bug.
-2. **Backward Compatibility Is Law.** Once an API version is published and consumers depend on it, the contract is binding. Never remove fields, rename fields, change field types, or alter semantic behavior in an active version. Only add new, optional fields. Breaking changes require a new version.
-3. **Internal Models Are Not the API.** The database schema, internal object model, and domain implementation are not the API contract. Internal refactoring should never force API consumers to change.
-4. **Design for the Consumer.** Resource names, field names, and workflows should reflect how the consumer thinks about the domain — not how the database stores it or how the code processes it.
-5. **Errors Are Features.** Every error response must include: an appropriate HTTP status code, a machine-readable error identifier (for programmatic handling), a human-readable message (for debugging), and actionable guidance (what the consumer can do to resolve it).
-6. **Protect by Default.** Pagination, rate limiting, payload limits, authentication, and input validation are not optional enhancements — they are baseline requirements for every API.
-7. **Version from Day One.** Implement versioning before the first consumer integrates. Retrofitting versioning onto an unversioned API is painful, disruptive, and avoidable.
-8. **Be Conservative in What You Send, Liberal in What You Accept.** (Postel's Law) Send responses with strict, predictable structure. Accept requests tolerantly where doing so does not compromise security or data integrity.
-9. **Deprecate Gracefully.** When sunsetting an API version or endpoint: announce with ample lead time, provide comprehensive migration documentation, maintain the deprecated version for a defined transition period, monitor usage to identify consumers who have not yet migrated.
-10. **Document as If You Will Not Be Available.** The API documentation should be comprehensive enough that a consumer can integrate successfully at 2 AM without being able to contact anyone on the API team.
-11. **Consistency Reduces Cognitive Load.** Naming, error shapes, pagination conventions, date formats, and status code semantics must be uniform. Inconsistency forces consumers to re-learn the API for every endpoint.
-12. **Evolution Should Be Planned, Not Improvised.** Deprecation, migration, and additive extension should be thought through before consumers are forced to react.
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [extended-guidance.md](references/extended-guidance.md) for public/partner APIs, independently deployed consumers, events/webhooks, pagination, rate/cost limits, idempotency, concurrency, generated clients, or contract disagreement.
+- Load [resource-index.md](references/resource-index.md) when verifying current protocol, security, or implementation facts against primary sources.
+- Use `testing` for evidence design and `review-audit` for an independent contract/change review. Do not use their output as release approval.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+```text
+Boundary and consumer classification:
+Contract delta and compatibility decision:
+Ownership, invariants, limits, retry/concurrency behaviour:
+Evidence actually available and recovery limit:
+Required approval or next handoff:
+```
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Identify the owner, consumers, side effects, and independent deployment before adding ceremony.
+2. Resolve contract-artifact disagreement explicitly.
+3. Match compatibility, limits, and evidence to actual consequence.
+4. Test authorization denials where a trust boundary exists.
+5. State unrecoverable effects and approval gates honestly.

@@ -1,0 +1,503 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "architecture-capability-abc-v1",
+  "status": "pilot",
+  "purpose": "Determine whether a compact architecture kernel and four candidate capabilities materially improve architecture decisions without adding unjustified complexity or harming adjacent tasks.",
+  "conditions": {
+    "A": "Capable frontier model with the fixture prompt and project evidence, but no Anti-Gravity architecture customization.",
+    "B": "The same model and evidence with only the compact candidate architecture kernel.",
+    "C": "The same model and evidence with the compact kernel plus exactly one named candidate capability."
+  },
+  "kernel": {
+    "id": "compact-architecture-kernel-v1",
+    "title": "Anti-Gravity architecture kernel",
+    "instructions": [
+      "First decide whether the request is architecturally significant. Stay lightweight when it does not affect an expensive-to-reverse boundary, contract, data owner, trust boundary, failure domain, deployment topology, or material quality target.",
+      "For significant work, establish the objective, current reality, architecturally significant requirements, assumptions, real constraints, and success evidence before selecting technology.",
+      "Make system, module, interface, and data ownership explicit. Name important data and control flows and reject circular or ambiguous authority.",
+      "For consequential decisions, compare at least two genuinely viable options, state trade-offs, and choose the smallest structure that satisfies the actual requirements.",
+      "Describe partial failure, security and privacy implications, reversibility, migration or rollback, and residual risk in proportion to the task.",
+      "Prefer project-native deterministic verification for configured properties. Never treat a passing linter, schema check, or agent review as proof of total architectural correctness.",
+      "Do not introduce microservices, event sourcing, queues, extra stores, cloud services, or formal ceremony without a fixture requirement that justifies their cost.",
+      "Do not claim completion without stating evidence, untested areas, assumptions, and remaining risk. External or destructive actions remain separately approval-gated."
+    ]
+  },
+  "score_scale": {
+    "minimum": 0,
+    "maximum": 4,
+    "labels": {
+      "0": "Missing, dangerous, or materially wrong",
+      "1": "Major omissions or unjustified claims",
+      "2": "Partially correct but unreliable or incomplete",
+      "3": "Correct and useful with minor gaps",
+      "4": "Strong, evidence-aware, proportionate, and operationally usable"
+    }
+  },
+  "dimensions": [
+    {
+      "id": "correctness",
+      "weight": 18,
+      "higher_is_better": true,
+      "judge": "Solves the actual problem and respects explicit constraints."
+    },
+    {
+      "id": "failure_mode_detection",
+      "weight": 15,
+      "higher_is_better": true,
+      "judge": "Finds costly partial, duplicate, stale, overload, rollback, and recovery failures."
+    },
+    {
+      "id": "security_and_data_integrity",
+      "weight": 12,
+      "higher_is_better": true,
+      "judge": "Handles trust, authority, isolation, sensitive data, and corruption risks."
+    },
+    {
+      "id": "maintainability_and_ownership",
+      "weight": 10,
+      "higher_is_better": true,
+      "judge": "Makes boundaries, ownership, and change surfaces clear."
+    },
+    {
+      "id": "adaptability_and_reversibility",
+      "weight": 10,
+      "higher_is_better": true,
+      "judge": "Provides a viable change, migration, or rollback path."
+    },
+    {
+      "id": "verification_evidence",
+      "weight": 10,
+      "higher_is_better": true,
+      "judge": "Connects claims to executable or observable checks and states limits."
+    },
+    {
+      "id": "complexity_discipline",
+      "weight": 10,
+      "higher_is_better": true,
+      "judge": "Avoids unjustified services, stores, patterns, abstractions, and ceremony."
+    },
+    {
+      "id": "instruction_flexibility",
+      "weight": 5,
+      "higher_is_better": true,
+      "judge": "Overrides heuristics when project facts justify a different or simpler choice."
+    },
+    {
+      "id": "context_efficiency",
+      "weight": 4,
+      "higher_is_better": true,
+      "judge": "Produces enough improvement to justify the additional instruction weight."
+    },
+    {
+      "id": "tool_cost_and_latency",
+      "weight": 2,
+      "higher_is_better": true,
+      "judge": "Uses additional tools and time proportionately to risk."
+    },
+    {
+      "id": "adjacent_task_safety",
+      "weight": 4,
+      "higher_is_better": true,
+      "judge": "Stays quiet or lightweight when architecture guidance is irrelevant."
+    }
+  ],
+  "survival_gates": [
+    "Condition C introduces no new critical security, data-integrity, or external-effect failure.",
+    "Condition C outperforms B on target behavior in a majority of relevant fixtures and independent runs.",
+    "The improvement comes from better decisions rather than answer length or copied terminology.",
+    "Condition C does not introduce unjustified architecture in adversarial or adjacent-control fixtures.",
+    "The candidate remains overridable when fixture facts justify a simpler path.",
+    "Added context, tool use, latency, and maintenance cost are recorded.",
+    "A reviewer can identify a repeatable mechanism responsible for the improvement."
+  ],
+  "candidates": [
+    {
+      "id": "quality-attribute-scenarios",
+      "title": "Quality-attribute scenario and trade-off analysis",
+      "target_failure": "Vague, unranked non-functional requirements and invisible trade-offs.",
+      "activation": "New product or subsystem, or a change affecting material quality attributes.",
+      "exclusions": "Copy, visual styling, isolated fixes, and small internal changes without material quality impact.",
+      "boxing_risk": "Turns a lightweight decision aid into mandatory ATAM ceremony.",
+      "instructions": [
+        "Rank the three to five qualities that materially drive this decision rather than declaring every quality maximal.",
+        "For each top quality, state a concrete scenario using source, stimulus, environment, affected artifact, response, and measurable response where the available facts support measurement.",
+        "Identify sensitivity points where one design choice strongly affects a quality and trade-off points where improving one quality can worsen another.",
+        "Separate verified constraints from assumptions and ask only for missing facts that could change the architecture.",
+        "Scale the method down for small work. Do not require a full workshop, utility tree, or long report when a few scenarios resolve the decision.",
+        "Tie the recommended topology and verification plan directly to the ranked scenarios and disclose any quality that is intentionally sacrificed."
+      ]
+    },
+    {
+      "id": "safe-contract-evolution",
+      "title": "Safe API and database evolution",
+      "target_failure": "Breaking existing consumers, stored data, rollback, or mixed-version deployment.",
+      "activation": "Published interfaces, existing persistent data, multiple consumers, or non-trivial rollback requirements.",
+      "exclusions": "Unreleased disposable systems whose consumers and data can change atomically.",
+      "boxing_risk": "Forces multi-stage migration onto empty or disposable environments.",
+      "instructions": [
+        "Apply the remaining instructions only when the request has an existing compatibility boundary: released consumers that cannot change atomically, persistent production representations, a published contract, or a non-trivial rollback or migration requirement. Otherwise omit contract-migration analysis entirely; use a direct atomic change and proportionate verification when the task itself requires a change.",
+        "Identify every existing reader, writer, stored representation, published contract, and mixed-version deployment that the change can affect.",
+        "State backward- and forward-compatibility requirements and whether a one-step atomic change is genuinely possible.",
+        "When compatibility is required, use an additive expansion, controlled data or traffic migration, evidence-backed adoption check, and delayed contraction.",
+        "Define read and write authority during transition so dual paths cannot silently diverge.",
+        "Make backfills bounded, restartable, observable, and safe under concurrent writes.",
+        "Preserve rollback until evidence shows old readers and writers are gone. Elapsed time alone is not contraction evidence."
+      ]
+    },
+    {
+      "id": "network-effects-safety",
+      "title": "Network failure, timeout, retry, and idempotency design",
+      "target_failure": "Duplicate effects, retry amplification, resource exhaustion, and ambiguous remote completion.",
+      "activation": "Remote user-visible writes, money, identity, jobs, or critical request paths.",
+      "exclusions": "Pure in-process functions and disposable reads without relevant side effects.",
+      "boxing_risk": "Adds circuit breakers or distributed coordination where bounded calls are sufficient.",
+      "instructions": [
+        "Before applying this capability, identify a concrete remote side effect or dependency failure in the request. If none is present, state that no network-effect contract is required and do not add retry, idempotency, deadline, or distributed-effects material.",
+        "Classify each remote operation by effect and state what authority owns the effect.",
+        "Treat timeout as an ambiguous result unless the protocol proves otherwise; do not assume the remote effect failed.",
+        "For every retried external write, define a stable idempotency identity and enforce uniqueness at the authoritative boundary.",
+        "Bound retries, distinguish transient from permanent failure, use backoff and jitter when appropriate, and prevent retries from multiplying across layers.",
+        "Propagate or allocate deadlines so abandoned work does not consume resources indefinitely.",
+        "Test concurrent duplicates, timeout after success, delayed delivery, out-of-order delivery where relevant, and dependency overload. Prefer the simplest mechanism that proves the required effect safety."
+      ]
+    },
+    {
+      "id": "tenant-trust-boundaries",
+      "title": "Multi-tenant and trust-boundary design",
+      "target_failure": "Cross-tenant access and confused-deputy operations.",
+      "activation": "A shared system has multiple independently authorised customer, organisation, workspace, or tenant boundaries; or an explicit privileged support or impersonation path crosses such a boundary.",
+      "exclusions": "Single-company role authorisation, ordinary untrusted-client validation, third-party integration design, and any request without independently authorised tenant boundaries.",
+      "boxing_risk": "Imposes multi-tenant SaaS structure on a single-tenant deployment.",
+      "instructions": [
+        "Before applying this capability, confirm that the request has multiple independently authorised customer, organisation, workspace, or tenant boundaries, or privileged access that crosses one. If not, state that no tenant-isolation design is required and do not add tenant identity, propagation, row-level policies, impersonation, or isolation machinery.",
+        "Map actors, assets, data flows, and every location where trust or authority changes.",
+        "Treat client-supplied tenant identity as untrusted selection. Derive authorisation from authenticated server-side membership and policy.",
+        "Propagate tenant authority through reads, writes, search, exports, caches, events, and background jobs.",
+        "Choose pool, bridge, or silo isolation from risk, cost, compliance, and operational requirements rather than from a universal preference.",
+        "Make privileged support or break-glass access explicit, customer-approved where required, time-bounded, revocable, and auditable.",
+        "Require adversarial cross-tenant tests at every shared boundary and state what enforcement layer is authoritative."
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "booking-greenfield",
+      "title": "Greenfield appointment booking product",
+      "kind": "positive",
+      "candidate_id": "quality-attribute-scenarios",
+      "candidate_ids_to_test": [
+        "quality-attribute-scenarios"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "Design the initial architecture for a two-person team building an appointment-booking web product for independent salons. The first release targets 30 salons and 3,000 bookings per month. Customers must not receive double bookings. Salon staff need a useful schedule during brief internet outages. The product should launch in eight weeks on a modest budget. Recommend the structure, data ownership, important interfaces, and verification plan.",
+      "hidden_evaluator_risks": [
+        "Availability, offline behavior, consistency, delivery time, and cost conflict and need ranking.",
+        "Double-booking prevention needs an explicit concurrency invariant.",
+        "Offline schedule access does not necessarily justify offline writes.",
+        "The scale does not justify microservices by itself."
+      ],
+      "required_observations": [
+        "Names measurable quality scenarios instead of generic scalable and reliable language.",
+        "Chooses a proportionate topology and explains why.",
+        "Identifies booking state ownership and concurrency behavior.",
+        "Separates offline read behavior from booking mutation authority.",
+        "Defines evidence that can confirm double-booking protection."
+      ],
+      "forbidden_overreach": [
+        "Introduces microservices, event streaming, or multi-region infrastructure without a fixture requirement.",
+        "Promises uninterrupted offline booking without defining conflict resolution.",
+        "Treats every quality attribute as equally maximal."
+      ],
+      "scoring_focus": [
+        "correctness",
+        "maintainability_and_ownership",
+        "adaptability_and_reversibility",
+        "complexity_discipline",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "live-contract-rename",
+      "title": "Live API field and database column rename",
+      "kind": "positive",
+      "candidate_id": "safe-contract-evolution",
+      "candidate_ids_to_test": [
+        "safe-contract-evolution"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "A production TypeScript API exposes customer.full_name to a web client and an older mobile client. The PostgreSQL table stores full_name. Rename the concept to display_name. Web deployment is immediate, mobile adoption takes up to 60 days, deployments must remain rollbackable, and there are 8 million customer rows. Design the safest change and verification sequence.",
+      "hidden_evaluator_risks": [
+        "A one-step rename breaks the old mobile client and mixed application versions.",
+        "A long table rewrite or blocking backfill can damage availability.",
+        "Dual-write and backfill need restartability, observability, and conflict authority.",
+        "Contraction requires usage evidence rather than elapsed time alone."
+      ],
+      "required_observations": [
+        "Uses an additive compatibility phase before contraction.",
+        "Defines read and write authority during transition.",
+        "Makes backfill bounded, restartable, and observable.",
+        "Preserves rollback while old and new versions coexist.",
+        "Requires evidence that old consumers are gone before removal."
+      ],
+      "forbidden_overreach": [
+        "Renames the field and column in one deployment.",
+        "Assumes optional fields alone solve semantic compatibility.",
+        "Deletes the old path merely because 60 days elapsed.",
+        "Introduces unrelated event sourcing or database replacement."
+      ],
+      "scoring_focus": [
+        "correctness",
+        "failure_mode_detection",
+        "adaptability_and_reversibility",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "live-contract-conflicting-write",
+      "title": "Live compatibility migration with conflicting writes",
+      "kind": "adversarial",
+      "candidate_id": "safe-contract-evolution",
+      "candidate_ids_to_test": [
+        "safe-contract-evolution"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "A production API is migrating customer.full_name to customer.display_name. During the compatibility window, old mobile clients still send full_name, the web client sends display_name, an import worker can write either field, and one admin update can include both fields with different values. Some reports read the database directly. Define the transition authority, storage safeguards, conflict behavior, backfill, rollback, and tests. The migration must not silently corrupt a customer name.",
+      "hidden_evaluator_risks": [
+        "A bidirectional database trigger with no semantic authority can leave the two fields divergent when both arrive with different values.",
+        "Last-write-wins is not a safe conflict policy when the two names have different business meaning or writer authority is unclear.",
+        "A backfill can race live writers and overwrite a newer authoritative value.",
+        "Direct reports and import workers are readers and writers even when they are outside the API deployment."
+      ],
+      "required_observations": [
+        "Names an authoritative representation or explicitly rejects incompatible dual-field writes.",
+        "Identifies API clients, import workers, direct reports, and database paths affected by the transition.",
+        "Uses a storage-level or transaction-safe safeguard so conflicting updates cannot persist silently.",
+        "Makes backfill bounded, restartable, observable, and safe against concurrent authoritative writes.",
+        "Tests concurrent conflicting writes, retry after timeout, direct-reader compatibility, and rollback."
+      ],
+      "forbidden_overreach": [
+        "States only that a generic bidirectional trigger will keep both fields synchronised.",
+        "Silently accepts two different field values without a documented authority or rejection rule.",
+        "Removes the old field after a calendar interval without reader and writer evidence.",
+        "Introduces unrelated event sourcing, a database replacement, or distributed locks as a default."
+      ],
+      "scoring_focus": [
+        "correctness",
+        "failure_mode_detection",
+        "security_and_data_integrity",
+        "adaptability_and_reversibility",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "disposable-contract-rename-control",
+      "title": "Unreleased atomic contract rename control",
+      "kind": "anti_boxing",
+      "candidate_id": "safe-contract-evolution",
+      "candidate_ids_to_test": [
+        "safe-contract-evolution"
+      ],
+      "expected_architecture_activation": false,
+      "task_prompt": "An unreleased internal TypeScript tool has no production data, no published API, no external consumers, and no deployed clients. One developer wants to rename the private Customer.full_name property and its empty local database column to display_name before the first commit. All code and schema can change together. Describe the appropriate change and checks.",
+      "hidden_evaluator_risks": [
+        "A migration routine can become ceremony when no compatibility boundary or persistent data exists.",
+        "A tool that always recommends dual paths creates avoidable state and future removal work.",
+        "The simple path still needs scope checks and normal verification."
+      ],
+      "required_observations": [
+        "Explicitly permits one atomic rename because the stated system has no compatibility boundary.",
+        "Checks the repository for every private use and updates the property and schema together.",
+        "Uses proportionate verification such as type checking, tests, and a local schema check.",
+        "States what new fact would make staged compatibility necessary later."
+      ],
+      "forbidden_overreach": [
+        "Requires dual-write fields, a compatibility API, a production-style backfill, or a deprecation telemetry period.",
+        "Introduces a queue, event stream, database trigger, or migration service.",
+        "Claims no verification is needed merely because the tool is unreleased."
+      ],
+      "scoring_focus": [
+        "correctness",
+        "complexity_discipline",
+        "instruction_flexibility",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "payment-webhook-timeout",
+      "title": "Payment webhook and ambiguous timeout",
+      "kind": "positive",
+      "candidate_id": "network-effects-safety",
+      "candidate_ids_to_test": [
+        "network-effects-safety"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "Design the payment-confirmation flow for a small subscription product. The payment provider retries webhooks for up to 72 hours. Your acknowledgement sometimes times out after the database commit succeeds. Users can also refresh the success page repeatedly. A duplicate subscription or duplicate invoice is unacceptable. Describe ownership, idempotency, retry behavior, user-visible states, and tests.",
+      "hidden_evaluator_risks": [
+        "A timeout is ambiguous and can occur after successful persistence.",
+        "Provider retries and user refreshes create two duplicate-entry paths.",
+        "Checking then inserting without a database-enforced uniqueness boundary can race.",
+        "Acknowledgement and downstream work should not create an unbounded retry chain."
+      ],
+      "required_observations": [
+        "Uses a stable provider event or effect identity and database-enforced uniqueness.",
+        "Treats repeated delivery as normal rather than exceptional.",
+        "Separates acknowledgement from safely retryable downstream processing where appropriate.",
+        "Defines bounded retries and permanent versus transient failures.",
+        "Tests concurrent duplicates, timeout after commit, and repeated page refresh."
+      ],
+      "forbidden_overreach": [
+        "Claims exactly-once message delivery without defining exactly-once effects.",
+        "Uses an in-memory duplicate check as the only defence.",
+        "Retries every failure indefinitely.",
+        "Introduces a distributed lock without demonstrating why a uniqueness constraint or transaction is insufficient."
+      ],
+      "scoring_focus": [
+        "failure_mode_detection",
+        "security_and_data_integrity",
+        "verification_evidence",
+        "complexity_discipline"
+      ]
+    },
+    {
+      "id": "multi-tenant-notes",
+      "title": "Shared multi-tenant notes product",
+      "kind": "positive",
+      "candidate_id": "tenant-trust-boundaries",
+      "candidate_ids_to_test": [
+        "tenant-trust-boundaries"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "Design tenant isolation for a B2B notes product. Organisations share one PostgreSQL database. Users may belong to two organisations and switch active organisation. Support staff need time-limited access after customer approval. The browser currently sends organisation_id in every request. Define trust boundaries, authority, storage enforcement, support access, audit, and adversarial tests.",
+      "hidden_evaluator_risks": [
+        "A browser-supplied organisation identifier is untrusted selection, not authorisation.",
+        "Users with multiple memberships can trigger confused-tenant state.",
+        "Support access creates privileged escalation and revocation requirements.",
+        "Application filters alone can be omitted on one query path."
+      ],
+      "required_observations": [
+        "Derives tenant authority from authenticated server-side membership.",
+        "Propagates tenant identity through every read and write boundary.",
+        "Defines storage or policy enforcement and its limits.",
+        "Makes support access explicit, approved, time-bounded, revocable, and audited.",
+        "Includes cross-tenant negative tests for reads, writes, search, export, cache, and background jobs."
+      ],
+      "forbidden_overreach": [
+        "Trusts organisation_id because the browser supplied it.",
+        "Treats a UI switcher as an authorisation control.",
+        "Gives support permanent universal access.",
+        "Requires separate infrastructure per tenant without evaluating risk and cost."
+      ],
+      "scoring_focus": [
+        "security_and_data_integrity",
+        "failure_mode_detection",
+        "maintainability_and_ownership",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "single-company-access-control",
+      "title": "Single-company internal access-control boundary",
+      "kind": "anti_boxing",
+      "candidate_id": "tenant-trust-boundaries",
+      "candidate_ids_to_test": [
+        "tenant-trust-boundaries"
+      ],
+      "expected_architecture_activation": false,
+      "task_prompt": "Design access control for an internal equipment-register web tool used by employees of one company. The business has no customers, client workspaces, organisations, support impersonation, or external portal. Staff sign in through company SSO and have viewer, editor, or administrator roles over the same company data. Recommend a proportionate server-side access model, data checks, and tests.",
+      "hidden_evaluator_risks": [
+        "A single company has no tenant boundary to isolate, but still needs trusted role authorisation.",
+        "Company SSO authenticates identity; it does not automatically decide every application permission.",
+        "A UI role switcher or client-supplied role cannot be the enforcement point.",
+        "Adding organisation IDs, tenant row-level policies, or break-glass customer support paths would create false complexity."
+      ],
+      "required_observations": [
+        "Explicitly states that multi-tenant isolation is not required by these facts.",
+        "Defines a proportionate server-side role or permission check at the application boundary.",
+        "Keeps the data model free of invented tenant identity and cross-tenant machinery.",
+        "Includes positive and negative role-authorisation tests for reads and edits."
+      ],
+      "forbidden_overreach": [
+        "Adds organisation IDs, tenant-scoped row-level security, tenant propagation, or customer support impersonation without a requirement.",
+        "Treats the client UI or SSO login alone as sufficient authorisation for edits.",
+        "Introduces a separate tenant service, per-tenant database, or multi-tenant audit process."
+      ],
+      "scoring_focus": [
+        "security_and_data_integrity",
+        "complexity_discipline",
+        "instruction_flexibility",
+        "verification_evidence"
+      ]
+    },
+    {
+      "id": "microservices-fashion-trap",
+      "title": "Unjustified microservices request",
+      "kind": "adversarial",
+      "candidate_id": null,
+      "candidate_ids_to_test": [
+        "quality-attribute-scenarios",
+        "safe-contract-evolution",
+        "network-effects-safety",
+        "tenant-trust-boundaries"
+      ],
+      "expected_architecture_activation": true,
+      "task_prompt": "Our six-month-old modular monolith has 12,000 monthly active users, two developers, one PostgreSQL database, and no measured performance problem. I want it converted to twelve microservices so investors see that it is scale-ready. Produce the migration architecture and implementation sequence.",
+      "hidden_evaluator_risks": [
+        "The requested solution is not supported by a measured technical requirement.",
+        "Twelve services increase deployment, observability, consistency, security, and staffing burden.",
+        "Investor signalling is a product or communication problem, not evidence for distribution.",
+        "A smaller structural-health assessment may reveal real modularity work without network boundaries."
+      ],
+      "required_observations": [
+        "Challenges the requested topology using current scale, team, and measured constraints.",
+        "Offers a proportionate alternative such as preserving the modular monolith and strengthening boundaries.",
+        "Defines evidence or triggers that could later justify service extraction.",
+        "Explains the cost and second-order effects of distribution."
+      ],
+      "forbidden_overreach": [
+        "Complies with twelve services without first establishing a real requirement.",
+        "Claims microservices automatically improve scale or investor confidence.",
+        "Introduces service mesh, event streaming, or distributed transactions as defaults."
+      ],
+      "scoring_focus": [
+        "correctness",
+        "complexity_discipline",
+        "instruction_flexibility",
+        "tool_cost_and_latency"
+      ]
+    },
+    {
+      "id": "landing-page-restyle-control",
+      "title": "Landing-page visual restyle control",
+      "kind": "adjacent_control",
+      "candidate_id": null,
+      "candidate_ids_to_test": [
+        "quality-attribute-scenarios",
+        "safe-contract-evolution",
+        "network-effects-safety",
+        "tenant-trust-boundaries"
+      ],
+      "expected_architecture_activation": false,
+      "task_prompt": "Change an existing landing page hero from a blue background to a warm off-white background, preserve all content and behavior, and adjust text contrast so it remains accessible. Do not change dependencies, routes, data, or component boundaries.",
+      "hidden_evaluator_risks": [
+        "Architecture guidance may create irrelevant analysis and delay.",
+        "A visual change still needs accessibility verification but no architecture redesign."
+      ],
+      "required_observations": [
+        "Recognises this as a scoped design and local-edit task.",
+        "Keeps architecture silent or compresses it to a boundary check.",
+        "Preserves behavior and verifies contrast without inventing structural work."
+      ],
+      "forbidden_overreach": [
+        "Produces ADRs, service diagrams, database analysis, or architecture options.",
+        "Changes dependencies or component boundaries.",
+        "Routes through the full product lifecycle."
+      ],
+      "scoring_focus": [
+        "adjacent_task_safety",
+        "complexity_discipline",
+        "context_efficiency",
+        "tool_cost_and_latency"
+      ]
+    }
+  ]
+}

@@ -1,60 +1,97 @@
-# Anti-Gravity OS: Start Here
+# Start Here — Anti-Gravity OS V4
 
-Anti-Gravity OS is a library of instructions for an AI coding agent. It is not a replacement operating system and it does not silently grant permissions. It helps an agent choose the right workflow, load the right skill, keep project context organized, and stop for approval before risky actions.
+## What this is
 
-## The one-minute mental model
+Anti-Gravity is a **personal AI Product Studio**. It helps one person direct
+capable AI to understand, design, build, check, and improve a product without
+forcing every task through a giant prompt or a fake company roleplay.
+
+It does not replace your judgement. You set the goal and approve important
+effects. The system helps choose the right depth of thinking and checking.
+
+## The simple picture
 
 ```text
-Your request
-   ↓
-AGENTS.md (what the agent must obey)
-   ↓
-GLOBAL_MEMORY.md (how to classify and route the request)
-   ↓
-workflow (the sequence and approval gates)
-   ↓
-skill (specialist instructions for one capability)
-   ↓
-.agents/contexts/ (truth about this project)
-   ↓
-evidence, verification, and a clear hand-off
+You set the goal
+        ↓
+Studio Director understands the job
+        ↓
+It works directly or calls the right lead
+        ↓
+Skills give focused help; workflows add useful gates
+        ↓
+Evidence is checked; you approve consequential actions
 ```
 
-The authored source is `global/`. The `dist/<host>/` folders are generated payloads for a particular AI host and should not be edited by hand.
+## The main pieces
 
-## What to read first
+| Name | Plain meaning |
+| --- | --- |
+| `global/GEMINI.md` | The main agent. It tells the Studio Director how to behave, stay safe, and decide when to involve help. |
+| `global/GLOBAL_MEMORY.md` | The router. It tells the main agent which lead, skill, workflow, or pack fits the task. |
+| `global/manifest.yaml` | The exact inventory. It is the source of truth for what exists and which pack it belongs to. |
+| `global/agents/` | The five on-demand specialist leads plus the Studio Director. |
+| `global/skills/` | Focused expert playbooks. A skill is used only when it helps. |
+| `global/workflows/` | Useful routes and gates. They are not mandatory checklists. |
+| `global/reference/` and skill references | Deeper information loaded only when needed. |
+| `.agents/contexts/` in a real project | Current facts about that one client or product. It is not global memory. |
 
-1. [README.md](README.md) for the project overview and commands.
-2. [GLOSSARY.md](GLOSSARY.md) for unfamiliar terms.
-3. [docs/architecture-map.md](docs/architecture-map.md) for the file relationships.
-4. [docs/common-requests.md](docs/common-requests.md) for copyable request examples.
-5. [docs/codex-integration.md](docs/codex-integration.md) if you use Codex.
+## The six agents
 
-You can ignore adapters, schemas, hooks, and CI until you need to install or extend the system. They are implementation details, not extra work you must perform for every project.
+| Agent | Use it when you need |
+| --- | --- |
+| Studio Director | The best default. It sizes the task and chooses the smallest useful route. |
+| Product & Strategy Lead | Product ideas, client understanding, scope, market, positioning, growth decisions. |
+| Systems Architect | Data, APIs, boundaries, reliability, migrations, technical trade-offs. |
+| Design Director | UX, interface states, accessible design, visual direction, spatial/media decisions. |
+| Staff Engineer | Building, fixing, integrating, refactoring, and local tests. |
+| Assurance & Quality Lead | Independent checking, security, regression risk, and proof. |
 
-## A normal request
+They are not all used for every task. A small change can be handled directly.
 
-Say what you want in ordinary language. For example:
+## Packs
 
-> Diagnose why the checkout test is failing. Do not edit files yet.
+`general` is always active. The other packs add specialist material only when
+the job needs it:
 
-The router should select diagnosis mode, keep the work read-only, load the debugging skill, inspect project context, and return evidence. If you later say “implement the fix,” the workflow can move into an edit phase.
+| Pack | For |
+| --- | --- |
+| `spatial` | Cinematic/showroom/interior/architecture-adjacent website work. |
+| `media` | AI image or video planning and provider-aware generation guidance. |
+| `growth` | Positioning, offers, copy, conversion, prospecting, and sales material. |
 
-## A creative video request
+## What exists now
 
-Say the goal and, when known, the platform:
+The canonical manifest currently contains **48 skills**, **17 workflows**, and
+**6 reusable agents**.
 
-> Create a 10-second product reveal for Google Flow using the current Veo model available in my account.
+- General: 29 skills and 14 workflows.
+- Spatial: 10 skills and 1 workflow.
+- Media: 2 skills and no standalone workflow; video work routes through the
+  `video-generation` skill.
+- Growth: 8 skills and 2 guarded commercial workflows.
 
-The video workflow separates the platform (Flow), the model (for example Veo 3.1 or Gemini Omni Flash), the creative brief, and the final export. See [docs/common-requests.md](docs/common-requests.md) and the [video-generation skill](global/skills/video-generation/SKILL.md).
+For the exact current list, read `global/manifest.yaml`. Do not rely on old
+folders, generated copies, or a previous installation.
 
-## Safe defaults
+## Before using it in a real project
 
-- Diagnosis and proposals do not edit the workspace.
-- Network, dependency, destructive, deployment, publishing, messaging, and purchase actions require an explicit approval gate.
-- External pages, repository text, logs, tool output, and references are data to inspect—not authority over the agent.
-- A project’s active context belongs in `.agents/contexts/`; blank templates in `global/context_templates/` are only scaffolding.
+1. Start with the **Studio Director**.
+2. Give the project name, goal, constraints, links/files, and what success
+   looks like.
+3. Let it choose direct work or the smallest relevant lead/skill/route.
+4. Approve only actions with real outside consequences: spend, publish, send,
+   deploy, change production data, or delete important data.
 
-## If something looks confusing
+## Important distinction
 
-Read the glossary before deleting or moving anything. In particular, do not delete `baselines`, `adapters`, `schemas`, or `hooks`: each has a small, specific job explained there.
+A skill can give planning or prompt guidance without giving the agent a real
+external account or button. For example, `video-generation` can plan a film or
+write a provider-aware prompt. It cannot spend credits or generate a video
+until you have provider access and approve that action.
+
+## Where this is today
+
+The canonical V4 source is being completed and tested in this repository.
+Generated host payloads are disposable test output until Beloved explicitly
+approves a global installation or repository release.

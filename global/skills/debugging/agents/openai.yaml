@@ -1,4 +1,4 @@
 interface:
   display_name: "Debugging"
-  short_description: "Guidance for debugging tasks"
-  default_prompt: "Use $debugging to help complete this task with its domain workflow."
+  short_description: "Evidence-led diagnosis and repair gates"
+  default_prompt: "Use $debugging to investigate this failure before proposing or applying a repair."

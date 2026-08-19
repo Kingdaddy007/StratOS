@@ -1,4 +1,4 @@
 interface:
-  display_name: "Marketing Psychology"
-  short_description: "Guidance for marketing psychology tasks"
+  display_name: "Ethical Behavioural Insight"
+  short_description: "Context-limited behavioural insight for clarity, trust, and informed choice"
   default_prompt: "Use $marketing-psychology to help complete this task with its domain workflow."

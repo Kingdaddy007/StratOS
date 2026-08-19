@@ -9,7 +9,7 @@
 [![CI](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/badge/release-3.0.0-38bdf8)
 ![Skills](https://img.shields.io/badge/skills-72-22d3ee)
-![Workflows](https://img.shields.io/badge/workflows-52-8b5cf6)
+![Workflows](https://img.shields.io/badge/workflows-17-8b5cf6)
 ![Hosts](https://img.shields.io/badge/hosts-5-6366f1)
 ![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-334155)
 
@@ -23,8 +23,8 @@ It is not an LLM and it is not a replacement desktop operating system. It is the
 
 | Capability | Current state |
 | --- | --- |
-| Canonical capabilities | 72 registered skills |
-| Execution playbooks | 52 registered workflows |
+| Canonical capabilities | 48 registered skills |
+| Execution playbooks | 17 registered workflows |
 | Host targets | Gemini, Codex, Cursor, Windsurf, OpenCode |
 | Profiles | General engineering by default; spatial design when selected |
 | Safety | Trust boundaries, mutation classes, approval gates, dry-run installation |
@@ -186,6 +186,7 @@ Work is classified as `read_only`, `local_edit`, `dependency_or_network`, `destr
 | [`START_HERE.md`](START_HERE.md) | A plain-language mental model |
 | [`GLOSSARY.md`](GLOSSARY.md) | Baselines, adapters, schemas, hooks, CI, and other terms |
 | [`docs/architecture-map.md`](docs/architecture-map.md) | Build-time and runtime relationships |
+| [`docs/architecture-capability-decision-packet.md`](docs/architecture-capability-decision-packet.md) | v4 architecture research synthesis and A/B/C evaluation gate |
 | [`docs/common-requests.md`](docs/common-requests.md) | Copyable examples of what to ask an agent |
 | [`docs/codex-integration.md`](docs/codex-integration.md) | How Anti-Gravity governs Codex |
 | [`SETUP.md`](SETUP.md) | Host installation locations and commands |

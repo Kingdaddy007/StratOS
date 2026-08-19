@@ -8,7 +8,7 @@ Use plain language. These examples show the intent and safety mode Anti-Gravity 
 | Implement | “Implement the validated login fix and run the focused tests.” | `implement` → build/debug/test; local edit |
 | New SaaS | “Help me start a general SaaS project. Ask for missing requirements before coding.” | general project inception |
 | General UI | “Design the dashboard UX for a finance app.” | general UI design; no spatial profile |
-| Spatial portfolio | “Plan a cinematic interior designer portfolio with a scroll narrative.” | spatial profile; storytelling/spatial workflows |
+| Spatial portfolio | “Plan a cinematic interior designer portfolio with a scroll narrative.” | Spatial project workflow for full coordination; direct Spatial skills for a focused concept, story, reference, UI, or motion task |
 | Google video | “Draft a 10-second product reveal for Google Flow using the current Veo model in my account.” | video generation; inspect the current Flow model list |
 | Seedance video | “Create a Seedance 2.0 multi-shot prompt with character continuity.” | video generation → Seedance references |
 | Deploy | “Deploy the approved build to production.” | ship-to-production; just-in-time approval required |

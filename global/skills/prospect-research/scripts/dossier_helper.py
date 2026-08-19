@@ -21,6 +21,13 @@ SCORE_LIMITS = {
     "contact_accessibility": 20,
     "personalization_potential": 10,
 }
+ALLOWED_RECOMMENDED_ACTIONS = (
+    "Prepare concept for review",
+    "Verify manually",
+    "Prepare light outreach draft for review",
+    "Add to a local nurture proposal",
+    "Do not target",
+)
 REQUIRED_FIELDS = (
     "studio_name",
     "country",
@@ -77,10 +84,16 @@ def validate_dossier(dossier: dict[str, Any]) -> list[str]:
     team_size = dossier.get("team_size")
     if team_size is not None and (not isinstance(team_size, int) or team_size < 0):
         errors.append("team_size must be a non-negative integer or null")
-    if dossier.get("recommended_action") == "Create concept immediately":
+    action = dossier.get("recommended_action")
+    if action not in ALLOWED_RECOMMENDED_ACTIONS:
+        errors.append(
+            "recommended_action must be one of: "
+            + ", ".join(ALLOWED_RECOMMENDED_ACTIONS)
+        )
+    if action == "Prepare concept for review":
         total = score_dossier(dossier)["total"]
         if total < 80:
-            errors.append("concept immediately requires an Elite score of 80 or higher")
+            errors.append("concept review requires an Elite score of 80 or higher")
     return errors
 
 

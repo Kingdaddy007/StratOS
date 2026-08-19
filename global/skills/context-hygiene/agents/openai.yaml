@@ -1,4 +1,4 @@
 interface:
   display_name: "Context Hygiene"
   short_description: "Guidance for context hygiene tasks"
-  default_prompt: "Use $context-hygiene to help complete this task with its domain workflow."
+  default_prompt: "Use $context-hygiene to prepare an authority-safe task handoff without inventing durable state."

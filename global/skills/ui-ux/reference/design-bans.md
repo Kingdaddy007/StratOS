@@ -46,6 +46,5 @@ Film grain via SVG `<feTurbulence>` is an intentional premium aesthetic treatmen
 
 **Cross-references:**
 - `skills/ui-ux/SKILL.md` Layer 2 > Absolute Bans
-- `workflow-impeccable-critique.md` > LLM Design Review > AI Slop Detection
-- `workflow-impeccable-audit.md` > Dimension 5: Anti-Patterns
+- `skills/ui-ux/reference/operation-routing.md` > audit or critique
 - `skills/cinematic-motion/SKILL.md` Section 1 > Diagnostic Step 3

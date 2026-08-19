@@ -1,4 +1,0 @@
-interface:
-  display_name: "Seedance Pipeline"
-  short_description: "Guidance for seedance pipeline tasks"
-  default_prompt: "Use $seedance-pipeline to help complete this task with its domain workflow."

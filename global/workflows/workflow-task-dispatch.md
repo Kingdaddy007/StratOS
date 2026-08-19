@@ -1,87 +1,97 @@
 ---
 id: task-dispatch
-version: 1
+version: 2
 status: active
-intent: Execute task dispatch with explicit authority, state, outputs, and evidence.
-use_when: [the task matches task dispatch]
-do_not_use_when: [another workflow more precisely matches the requested outcome]
-inputs: [user objective, workspace context, constraints, requested authority mode]
-required_resources: [applicable AGENTS.md files, referenced skills and contexts]
-mutation_class: local_edit
-approval_gates: [confirm scope expansion or destructive action before mutation]
-states: [intake, assess, propose, approve-if-needed, execute-if-authorized, verify, deliver]
-outputs: [task result, changed-artifact list when applicable, evidence, residual risks]
-verification: [run proportionate checks, record raw evidence, label anything unverified]
-failure_paths: [stop on authority or contract conflict, preserve state, report blocker and safe next action]
-resume_contract: task-scoped .agents/workflows/task-dispatch.json using the workflows directory contract
+intent: Coordinate only bounded independent work without turning every task into a multi-agent exercise.
+use_when: [a task has independently verifiable parts with exclusive ownership and a clear benefit from delegation]
+do_not_use_when: [one agent can safely complete the work, tasks overlap in ownership, the return contract is unclear, or delegation would add ceremony without evidence]
+inputs: [parent objective, mode, mutation ceiling, task boundaries, relevant project truth, available host capabilities]
+required_resources: [applicable AGENTS.md files, relevant skill contracts, task-scoped workflow state when local writes are authorised]
+mutation_class: read_only
+approval_gates: [inherit the parent task ceiling; require just-in-time approval before any destructive or external worker effect]
+states: [assess, charter, dispatch-if-justified, integrate, verify, deliver]
+outputs: [dispatch decision, bounded worker charters when used, evidence ledger, integration result, residual risks]
+verification: [confirm exclusive ownership, review each return against its charter, run proportionate integration checks, label unverified evidence]
+failure_paths: [do not dispatch on ambiguous ownership, stop a worker that exceeds its charter, preserve evidence, release ownership, and return work to the coordinator]
+resume_contract: task-scoped .agents/workflows/task-id.json following the workflows directory contract
 next_workflows: [none]
 profiles: [general]
 ---
 
-# WORKFLOW: TASK DISPATCH (ORCHESTRATION)
-
-**Version:** Gold v1.2
-**Layer:** 7 — Orchestration Workflow
-**Tier:** 2 — Loaded by task
-**Primary Mode:** Architect / Orchestrator
-**Purpose:** Handles the safe handoff of isolated micro-tasks to separate chat sessions or subagents.
+# Task Dispatch
 
 ## WHEN TO USE
 
-Use this workflow when you have broken down an implementation plan into micro-tasks, and one or more of those tasks is highly isolated, tedious, or time-consuming.
+- Split a task only when at least two parts are independent, have exclusive file or decision ownership, and can return useful evidence separately.
+- Use a host-visible functional lead or temporary worker only when its distinct judgement, isolation, or speed benefit is material.
+- Keep work in the current task when direct execution is clearer, safer, or faster.
 
-Instead of doing it all in one long, sequential, context-bloating session, you act as the Orchestrator and dispatch the work.
+## NEVER DO
 
-## THE DISPATCH PROCESS
+- Never create workers to simulate activity, use up concurrency, or avoid integrating the work yourself.
+- Never give two workers write ownership of the same file or unresolved interface.
+- Never let a worker raise its mutation ceiling, install software, publish, deploy, message, purchase, alter credentials, or act on production without the parent's explicit just-in-time approval.
+- Never treat a worker's summary as proof; inspect its evidence and affected boundaries.
+- Never make a custom agent a permanent department or require all work to pass through it.
 
-### 1. Identify Dispatchable Tasks
+## DISPATCH DECISION
 
-A task is dispatchable if:
+Dispatch only if all answers are yes:
 
-- It is highly isolated (e.g., writing tests for a pure function, styling a simple component, writing documentation).
-- It does not require deep knowledge of the entire system architecture.
-- Its inputs and expected outputs are clear.
-- Its blocking edges are known and it does not overlap another worker's file ownership.
-- It can return useful evidence independently. Task count alone is never a reason to dispatch.
+1. Is the parent objective already clear enough to state a testable sub-outcome?
+2. Does the subtask have exclusive file/decision ownership?
+3. Can the worker receive a minimum, non-sensitive context bundle?
+4. Is the allowed mode and mutation ceiling explicit?
+5. Can the parent verify the result without trusting the worker's self-assessment?
+6. Does delegation improve time, independence of review, or evidence quality enough to justify the coordination cost?
 
-### 2. Prepare the Task Brief
+If any answer is no, do not dispatch. Narrow the task, resolve the dependency, or work directly.
 
-For each task, create a task ID and self-contained brief. Use available subagent tooling directly when authorized and available; otherwise present the brief for a separate session.
+## WORKER CHARTER
 
-### Format
+Create one concise charter per worker:
 
+| Field | Required content |
+| --- | --- |
+| Goal | Testable outcome, not a vague activity |
+| Mode and ceiling | `diagnose`, `propose`, `implement`, or `incident-mitigate`; maximum permitted mutation class |
+| Owned scope | Exact files, decision boundary, and forbidden overlap |
+| Inputs | Minimum applicable context, interfaces, and constraints |
+| Required output | Artifact, decision, or finding the parent needs |
+| Verification | Commands, inspections, fixtures, or evidence expected |
+| Stop conditions | Ambiguity, authority conflict, blocked dependency, or approval gate |
+| Return contract | Touched files, raw evidence, assumptions, blockers, residual risks |
+
+Use a functional lead when its role owns the decision. Use a temporary worker for a narrow bounded job. Both remain subordinate to the Studio Director's integration and the user's authority.
+
+## INTEGRATE
+
+1. Confirm the worker stayed inside its charter and ownership boundary.
+2. Read the changed files or decision artifact; do not rely only on the summary.
+3. Check interfaces, adjacent dependent paths, and any shared project truth affected by the result.
+4. Run the planned proportionate verification.
+5. Record evidence, unresolved risks, and the next action in task-scoped state only when state writes are authorised.
+6. Reject, revise, or re-scope work that lacks evidence, exceeds authority, or conflicts with the parent objective.
+
+## OUTPUT SHAPE
+
+Return:
+
+```text
+Dispatch decision: direct work | delegated
+Why: <material reason>
+Workers: <none or compact charter list>
+Ownership: <exclusive boundaries>
+Evidence required: <integration checks>
+Approval boundary: <none or exact later action>
+Result: <integrated outcome or blocker>
+Residual risks: <none or explicit list>
 ```
 
-## Task Brief: [Task Name]
+## NON-NEGOTIABLE CHECKLIST
 
-**Goal:** [What needs to be achieved]
-**Inputs:** [Specific files to read or APIs to use]
-**Expected Outputs:** [Specific files to write or changes to make]
-**Constraints:** [Formatting rules, performance needs, etc.]
-**Verification:** [How the new agent should prove it works]
-**Context Needed:** [A 1-2 sentence summary of what the agent needs to know]
-**Blocked By / Blocks:** [Task IDs]
-**Owned Files:** [Exclusive write scope; overlaps are forbidden]
-**Authority Mode:** [diagnose / propose / implement]
-**Return Contract:** [Touched files, commands, raw evidence, assumptions, residual risks]
-```
-
-### 3. Handoff
-
-Dispatch only tasks whose dependencies are satisfied. Record task ID, worker ID, status, ownership, and expected evidence in the task-scoped workflow state. Limit concurrency to the available platform slots and useful independent work; never create workers merely to appear parallel.
-
-### 4. Re-integration
-
-When a worker or sub-session returns:
-
-1. Review the changes made (using git status/diff or by reading the touched files).
-2. Verify the subagent followed the brief and didn't break adjacent behavior.
-3. Mark the task as complete in your master checklist.
-4. Proceed to the next task.
-5. On failure or timeout, preserve evidence, release ownership, and either retry with a narrower brief or return the task to the orchestrator.
-
-## WHY WE DO THIS
-
-- **Context Protection:** Complex tasks bloat context windows. Splitting them saves tokens and prevents hallucination.
-- **Parallelization:** The user can have multiple agents working on isolated tasks simultaneously.
-- **Focus:** The master agent (you) stays focused on the big picture, architecture, and integration.
+1. Dispatch only independently verifiable work.
+2. Keep authority and scope explicit.
+3. Preserve exclusive ownership.
+4. Integrate and verify every worker result.
+5. Stop at the parent task's approval gate.

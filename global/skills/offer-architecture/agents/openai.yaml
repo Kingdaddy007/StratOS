@@ -1,0 +1,4 @@
+interface:
+  display_name: "Offer Architecture"
+  short_description: "Prepare bounded offers, proof, scope, and price hypotheses"
+  default_prompt: "Use $offer-architecture to prepare a truthful, decision-ready offer without making external commitments."

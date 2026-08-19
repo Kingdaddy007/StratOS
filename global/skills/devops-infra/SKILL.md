@@ -1,156 +1,88 @@
 ---
 name: devops-infra
-description: 'Use this skill when the work involves infrastructure provisioning, deployment pipelines, observability, monitoring, incident response, or operational reliability. Activated when the user is building or modifying CI/CD pipelines; implementing or improving logging, metrics, alerting, or tracing; investigating production incidents or outages; designing environment architecture; managing secrets or configuration; evaluating cloud services; capacity planning; disaster recovery; Dockerizing applications; or auditing operational readiness.'
+description: 'Use this skill to design, inspect, or change infrastructure, environments, CI/CD, operational telemetry, alerts, secret handling, delivery, recovery, or incident readiness. Trigger on deploy, production, CI/CD, infrastructure, cloud, environment, monitoring, logs, metrics, traces, alerts, secrets, backup, rollback, disaster recovery, outage, or operational readiness. Do not use for a code-only performance diagnosis; use performance unless delivery or operations are materially involved.'
 ---
 
-# DEVOPS & INFRASTRUCTURE
+# DevOps and Infrastructure
 
 ## WHEN TO USE THIS
 
-- Infrastructure provisioning, configuration, or architecture tasks
-- Building or modifying CI/CD deployment pipelines
-- Implementing or improving monitoring, logging, alerting, or tracing
-- Investigating production incidents or outages
-- Managing secrets, credentials, or configuration across environments
-- Capacity planning, disaster recovery, or backup strategies
-- Dockerizing applications or container orchestration design
-- Auditing infrastructure safety, environment parity, or operational readiness
+- Design or inspect an environment, deployment path, CI/CD process, recovery path, backup, or operational readiness.
+- Choose logs, metrics, traces, profiles, health checks, dashboards, or alerts for a live failure mode.
+- Handle infrastructure, secret, configuration, incident, or delivery-risk decisions.
 
 ## NEVER DO
 
-- Configure infrastructure manually through a cloud provider UI without capturing it as code
-- Propose deployments that require manual steps or SSH access in the critical path
-- Alert on system-level causes (CPU %, memory %) when the alert should be on user-facing symptoms
-- Store secrets in code repositories, environment files, or shared documents
-- Treat disaster recovery as documented without testing it
-- Recommend infrastructure more complex than the team can safely operate
-- Say "rollback is available" without verifying it has actually been tested
+- Treat IaC, JSON logs, distributed tracing, a dedicated secret manager, automated deployment, canaries, or automated rollback as universal baselines.
+- Expose live secrets in source, logs, screenshots, prompts, generated artifacts, or untrusted tool input.
+- Page a human without a concrete action, owner, and response path.
+- Call rollback real without checking the artifact, configuration, data state, external effects, and dependency compatibility.
+- Execute a deploy, publish, traffic change, credential change, or other external effect without the required just-in-time human approval.
+- Claim generic checks establish safety, compliance, security, or production readiness.
 
----
+## CLASSIFY THE OPERATIONAL DECISION
 
-## MINDSET
+1. State the service or user boundary, affected environment, failure consequence, operational decision, and recovery limit.
+2. Inspect current delivery, configuration, dependencies, stateful effects, existing telemetry, ownership, and documented/manual steps.
+3. Use the smallest operational package that can expose the current failure mode:
 
-You are not a server clicker. You are an operational systems engineer designing the conditions under which software can be built, deployed, observed, recovered, and evolved safely — without heroics, without tribal knowledge, and without the original builder in the room.
+| Context | Minimum useful package |
+| --- | --- |
+| Local or disposable prototype | Reproduction, focused check, relevant logs, simple timing where needed, and a reversible local change. |
+| Shared internal tool | Success/failure evidence, relevant duration, correlation without sensitive data, health or smoke check, recorded version, and recovery note. |
+| Early product | User-facing success/error signal, relevant latency or job duration, dependency/resource signal, deploy version, and reproducible build/deploy path. |
+| Production service | User-facing check, success/error and latency or duration signal, dependency/resource evidence, deploy marker, correlation sufficient for diagnosis, and containment path. |
+| Stateful job or high-consequence system | Work-unit outcomes, partial/duplicate output controls, recovery or quarantine path, independent/domain review, and human authorization before effect. |
 
-Infrastructure is not background scenery. It is the runtime nervous system of software delivery — the environment in which design-time assumptions become runtime reality. A feature that works on a laptop but cannot be deployed safely, monitored clearly, or recovered quickly is not production-ready. When infrastructure works, no one notices. When it fails, everything fails.
+4. Escalate to stronger controls only when repeated environments, manual drift, multiple operators, cross-service attribution, credential rotation/audit, traffic, blast radius, recovery cost, or consequence make them necessary.
 
-The goal is not maximum tooling, cloud sophistication, or platform prestige. The goal is **reproducible, observable, safe, and boring delivery.** Good operational design is boring on purpose.
+## DESIGN OBSERVABILITY AND ALERTS
 
----
+- Select signals by question. Use logs for events, metrics for measured behaviour, traces for request paths, and profiles for resource attribution. Do not require the full set by default.
+- Capture only the fields needed for diagnosis. Protect secrets and sensitive data. Add correlation where a failure crosses components or cannot be reconstructed safely from simpler evidence.
+- Page on actionable current or imminent user/business harm. Use internal signals for diagnosis and carefully chosen early warning. Demote a signal with no defined action to a dashboard, ticket, or scheduled review.
+- Tie every alert to its threshold rationale, owner, response action, and known blind spots. Review noise and remove or repair ignored alerts.
 
-## DECISION FRAMEWORK — 8 PRIORITIES (IN ORDER)
+## PLAN DELIVERY, CONTAINMENT, AND RECOVERY
 
-### Priority 1 — Reproducibility
+1. Record the artifact or configuration version, affected state, blast radius, pre-exposure evidence, continue/hold decision, and containment path.
+2. Use a direct controlled release for local reversible work. Use a recorded version and repeatable steps for shared internal work. Use limited exposure, a feature flag, a scheduled window, or a staged rollout when external impact or blast radius makes it worthwhile.
+3. Treat rollout as a decision point, not proof. Monitor the relevant harm boundary and stop, hold, or contain when the criterion is crossed.
+4. Distinguish rollback from containment. If data, schema, messages, payment, access, or another one-way effect changed, prefer a tested forward fix, feature disablement, compensating action, pause, or quarantine when binary rollback cannot safely restore state.
+5. Use IaC or equivalent recorded automation when reproducibility, drift control, repeated environments, or recovery makes it valuable. Capture a simple manual path when that is the safer proportional choice.
+6. Use a secret-handling mechanism proportionate to the environment. Strengthen it for multiple environments, rotation, audit, multiple operators, or high-consequence credentials; never weaken the exposure prohibition.
+7. Stop before external or consequential effect until the required human approval is present. A second agent does not count as independent merely because it is a different agent.
 
-Can this environment be destroyed and recreated from code alone? All infrastructure must be defined as code (Terraform, CloudFormation, Pulumi, Ansible, or equivalent). No manual configuration through cloud UIs. No undocumented SSH modifications. If a step cannot be repeated by another engineer without tribal knowledge, it is operational debt.
+## HANDLE INCIDENTS WITHOUT OVERCLAIMING
 
-### Priority 2 — Observability
+- First establish scope, user impact, affected boundaries, recent changes, and immediate containment options.
+- Preserve the evidence needed to diagnose; avoid irreversible actions that obscure recovery or root cause.
+- Mitigate the active harm with the narrowest safe action. Route production actions to the approval gate.
+- Record what is known, inferred, unknown, and the recovery limit. After restoration, identify a structural prevention candidate; do not force a large observability programme onto a small incident.
 
-When something goes wrong in production, can we determine WHY from the telemetry — without SSH access, guessing, or the original builder's presence? Implement the three pillars: structured logs (JSON with consistent schema), metrics (p95/p99 latency, error rates, throughput, resource utilization), and distributed tracing (trace IDs propagated across all services).
-
-### Priority 3 — Deployment
-
-Safety
-
-Can changes be deployed and rolled back without manual intervention, extended downtime, or data loss? Automate the full pipeline: build, test, deploy, verify, rollback if needed. Ensure schema migrations and code deployments are decoupled so each can be rolled back independently.
-
-### Priority 4 — Secret
-
-Management
-
-Are all secrets managed securely — never in code, never in plaintext, never in shared documents? Use dedicated secret management systems (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault). Rotate secrets on a defined schedule. Audit access.
-
-### Priority 5 — Blast
-
-Radius Containment
-
-If this component fails, what else breaks? Design independent failure domains. Use circuit breakers between services. Ensure partial system failure results in degraded functionality — not complete system collapse.
-
-### Priority 6 — Alert
-
-Quality
-
-Is every alert actionable? Alert on user-facing symptoms: error rate, p99 latency, availability. Do NOT alert on CPU at 80% or memory at 70% unless they directly and provably correlate with user-facing degradation. Every alert must have a documented runbook. If an alert fires regularly and is ignored, fix it or remove it.
-
-### Priority 7 — Operational
-
-Simplicity
-
-Does this infrastructure add real leverage, or just complexity? Use the simplest operational model that meets current and near-term requirements. Complexity must earn its keep.
-
-### Priority 8 — Cost
-
-Efficiency
-
-Right-size instances based on actual utilization data. Monitor infrastructure cost as a first-class operational metric. Never sacrifice reliability or observability to save cost — the cost of an outage always exceeds the cost of adequate infrastructure.
-
----
-
-## CORE PRINCIPLES
-
-1. **Infrastructure Is Code.** If it was configured through a UI, it does not exist. Manual configuration creates unreproducible state that will fail at the worst possible moment.
-
-2. **Safe, Boring Deployments Beat Heroic Ones.** The best deployment process is the one the team trusts. Frequent, low-drama, observable releases are superior to risky, heroic pushes. If the team fears deploying, that is a reliability signal.
-
-3. **Logs Are Data, Not Text.** All logs must be structured (JSON), include consistent fields (timestamp, service name, trace ID, severity, message, relevant context), and be programmatically queryable. Logs are a data pipeline, not a debug console.
-
-4. **Observability Over Monitoring.** Monitoring detects known failure modes. Observability enables investigation of unknown failure modes (high-cardinality structured data, ad-hoc queries, distributed tracing). Both are needed. Monitoring alone is insufficient for complex systems.
-
-5. **Alert on Symptoms, Debug with Causes.** Pagers should ring when users are affected. System-level metrics (CPU, memory, disk) are diagnostic data — not, by themselves, alert-worthy.
-
-6. **Shift-Left Observability.** Telemetry must be written concurrently with application logic — not added as a follow-up after launch. Observability is a feature, not technical debt.
-
-7. **Automate the Dangerous Things.** Deployments, scaling, rollbacks, failovers — must be automated. Humans under pressure at 3 AM make mistakes. Automated systems execute the same procedure every time.
-
-8. **Immutable Infrastructure.** Never patch a running server. Never SSH into production to make a change. Build a new instance from updated code and destroy the old one. Manual patches create configuration drift.
-
-9. **Design for Failure.** Every component will eventually fail. Design so that individual component failure results in graceful degradation, not system-wide collapse. Test failure scenarios regularly — disaster recovery that has never been rehearsed is fiction.
-
-10. **Environments Must Match.** Dev, staging, and production must be as similar as possible. Use the same IaC definitions, parameterized per environment. Configuration drift causes the most insidious bugs.
-
-11. **Every Secret Has an Expiration Date.** Secrets must be rotated on a defined schedule. Leaked secrets must be revoked immediately. Secret management is a continuous operational discipline.
-
-12. **Incidents Should Improve the System.** If an outage occurs and nothing in instrumentation, process, or design changes afterward, the system is not learning. Treat incidents as input to structural improvement.
-
----
-
-## DEVOPS LENSES
-
-Apply all eleven when designing, implementing, or evaluating infrastructure:
-
-**1. Reproducibility** — Is all infrastructure defined as code? Can the entire environment be destroyed and recreated from the repo alone? Are there any manual configuration steps not captured in code? Is IaC code reviewed with the same rigor as application code?
-
-**2. Deployment** — Is the pipeline fully automated from commit to production? What deployment strategy is used (rolling, blue-green, canary)? What happens if a deployment fails midway? Can rollback be executed? Has rollback been tested?
-
-**3. Observability** — Are logs structured (JSON) with consistent field schemas? Are trace IDs propagated across all services? Can a single user's request be traced with one query? Are metrics capturing p95/p99 latency — not just averages? Is PII scrubbed from all log output?
-
-**4. Alerting** — Is every alert actionable? Does every alert have a documented runbook? Is alert fatigue a problem? Are thresholds based on SLO/SLI definitions or arbitrary round numbers?
-
-**5. Security** — Are all secrets in a dedicated secret management system? Are secrets rotated on schedule? Is access to production restricted to the minimum necessary set? Are container images built from trusted base images and scanned for vulnerabilities? Is SSH access to production disabled or audited?
-
-**6. Failure** — What happens if a single instance dies? Does the system recover automatically? Are circuit breakers implemented between services? Has disaster recovery been tested in the last 90 days? Can backups be restored?
-
-**7. Environment** — Are environments provisioned from the same IaC code, parameterized per environment? Is there meaningful configuration drift between staging and production? Can a new environment be created on demand?
-
-**8. Team Operability** — Can another engineer run and debug this system at 2 AM without the original builder? Are runbooks available, current, and usable under pressure? Does the infra design match the team's operational maturity?
-
-**9. Pipeline** — Does the CI pipeline run all tests automatically on every commit? Does it block merges when tests fail? Are pipeline configurations version-controlled and reviewed?
-
-**10. Cost** — Are resources right-sized based on actual utilization? Is auto-scaling configured to scale down as well as up? Is infrastructure cost tracked as a first-class operational metric?
-
-**11. Documentation** — Is there an architecture diagram showing the infrastructure topology? Are on-call procedures documented with escalation paths? Is the documentation current, or has it drifted from reality?
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [references/extended-guidance.md](references/extended-guidance.md) for delivery profiles, signal selection, alert design, recovery analysis, incident handling, or concrete evidence records.
+- Load [references/resource-index.md](references/resource-index.md) when applying a dated telemetry, HTTP, release, or host-specific operational claim. Verify the linked source before using provider syntax or tool behaviour.
+- Route a code-level latency/capacity diagnosis to `$performance`. Route a security vulnerability or authorization decision to `$security`. Use the matching workflow for `incident-response`, `ship-to-production`, `dependency-upgrade`, or `database-migration` execution sequence.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+```markdown
+## Operational decision
+
+- Boundary, environment, and consequence:
+- Current evidence and known limits:
+- Minimum operational package:
+- Delivery or containment approach:
+- Recovery reality and approval boundary:
+- Verification at the harm boundary:
+- Decision, owner, and next action:
+```
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Match controls and evidence to the actual consequence and failure mode.
+2. Keep secrets and sensitive data out of observable artifacts.
+3. Make recovery limits explicit; do not promise rollback without proof.
+4. Obtain approval before an external, irreversible, or high-consequence effect.

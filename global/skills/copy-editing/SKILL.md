@@ -1,319 +1,89 @@
 ---
 name: copy-editing
-description: 'When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the user mentions ''edit this copy,'' ''review my copy,'' ''copy feedback,'' ''proofread,'' ''polish this,'' ''make this better,'' ''copy sweep,'' ''tighten this up,'' ''this reads awkwardly,'' ''clean up this text,'' ''too wordy,'' ''sharpen the messaging,'' ''refresh this content,'' ''update this page,'' ''this content is outdated,'' or ''content audit.'
+description: 'Use when reviewing, proofreading, tightening, refreshing, or improving existing marketing, product, website, email, or sales copy while preserving its intended meaning. Trigger on edit this copy, proofread, polish, tighten, sharpen messaging, content refresh, copy feedback, or content audit. Do NOT use to create new copy from scratch (use copywriting), to change an unresolved audience/offer/positioning decision (use expert-positioning or product-thinking), or to diagnose interface conversion friction (use page-cro or ui-ux).'
 ---
 
 # Copy Editing
 
-You are an expert copy editor specializing in marketing and conversion copy. Your goal is to systematically improve existing copy through focused editing passes while preserving the core message.
+## WHEN TO USE THIS
 
-## Core Philosophy
+- Improve existing wording for clarity, precision, tone, structure, accessibility, consistency, or factual freshness.
+- Review a draft or public-facing asset and identify claim, proof, ambiguity, or reader-comprehension risks.
+- Refresh an existing asset whose facts, product detail, examples, terminology, or audience fit may have changed.
 
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before editing. Use brand voice and customer language from that context to guide your edits.
+## NEVER DO
 
-Good copy editing isn't about rewriting—it's about enhancing. Each pass focuses on one dimension, catching issues that get missed when you try to fix everything at once.
+- Never silently change the original audience, offer, strategic posture, factual claim, promise, or desired action.
+- Never invent missing numbers, testimonials, guarantees, credentials, customer language, urgency, or proof to make a revision stronger.
+- Never run all seven sweeps or convene an imagined expert panel when a quick, bounded edit is the appropriate job.
+- Never treat readability, emotion, specificity, proof, risk reversal, or a conversion device as a universal requirement.
+- Never turn an editing task into publication, outreach, a public claim, or another external effect.
 
-**Key principles:**
-- Don't change the core message; focus on enhancing it
-- Multiple focused passes beat one unfocused review
-- Each edit should have a clear reason
-- Preserve the author's voice while improving clarity
+## PRESERVE THE EDITING CONTRACT
 
----
+1. Identify what must remain unchanged: intended meaning, audience, offer, approved facts, tone constraints, desired action, and any protected wording.
+2. Read applicable `AGENTS.md` files and only the relevant active project truth under `.agents/contexts/` when it exists. Use supplied source material before requesting more.
+3. Classify the job before editing: quick polish, focused review, full revision, content refresh, or strategic handoff.
+4. Mark the boundary between an edit and a strategic change. If a better result requires a new promise, audience, proof, hierarchy, or product decision, show that change explicitly and route it; do not smuggle it into the rewrite.
 
-## The Seven Sweeps Framework
+## SELECT THE SMALLEST REVIEW
 
-Edit copy through seven sequential passes, each focusing on one dimension. After each sweep, loop back to check previous sweeps aren't compromised.
+| Level | Use when | Work to perform |
+| --- | --- | --- |
+| Quick pass | A CTA, paragraph, headline, or short block needs a bounded polish. | Check clarity, specificity, tone, claim risk, and the requested constraint. |
+| Focused review | The user names a concern such as confusing language, weak proof, tone drift, or wordiness. | Inspect the relevant sweeps only and show the reason for material edits. |
+| Full revision or refresh | A significant page, campaign, or aging asset needs a broad review. | Inspect clarity, message/benefit, proof, specificity, tone/accessibility, next action, and freshness proportionately. |
+| Evidence-gated review | The asset includes material public, comparative, outcome, regulated, vulnerable-audience, or synthetic-media claims. | Label claim limits, flag missing substantiation, and stop before external use that needs approval. |
 
-### Sweep 1: Clarity
+## EDIT IN PASSES, NOT BY HABIT
 
-**Focus:** Can the reader understand what you're saying?
+Choose only the passes that serve the task:
 
-**What to check:**
-- Confusing sentence structures
-- Unclear pronoun references
-- Jargon or insider language
-- Ambiguous statements
-- Missing context
+1. **Clarity and structure:** remove ambiguity, jargon, redundancy, and buried meaning.
+2. **Voice and audience fit:** preserve the approved posture; reduce accidental corporate, generic, or inappropriate language.
+3. **Reader consequence:** connect a verified capability to why it matters without promoting an unsupported outcome.
+4. **Proof and claims:** flag missing attribution, scope, date, condition, or evidence; soften rather than fabricate.
+5. **Specificity and freshness:** replace filler with confirmed detail, or leave a labelled placeholder where confirmation is absent. Check stale product facts, prices, dates, examples, and terminology during a refresh.
+6. **Emotion and trust:** improve resonance only when it is truthful, appropriate to the audience, and does not create pressure or manipulation.
+7. **Next action and friction:** make a genuine next step understandable. Add a guarantee, trial, privacy assurance, or urgency only when it is actually offered and approved.
 
-**Common clarity killers:**
-- Sentences trying to say too much
-- Abstract language instead of concrete
-- Assuming reader knowledge they don't have
-- Burying the point in qualifications
+After a material change, recheck earlier selected passes for contradictions. Preserve the author’s intent unless the user explicitly authorises a strategic rewrite.
 
-**Process:**
-1. Read through quickly, highlighting unclear parts
-2. Don't correct yet—just note problem areas
-3. After marking issues, recommend specific edits
-4. Verify edits maintain the original intent
+## CLAIM, PROOF, AND HANDOFF RULES
 
-**After this sweep:** Confirm the "Rule of One" (one main idea per section) and "You Rule" (copy speaks to the reader) are intact.
+Use [Meaning and Evidence Foundation](../../reference/meaning-and-evidence-foundation.md) when a material claim, proof, audience, promise, or narrative decision is unclear. For the edit itself:
 
----
+- distinguish fact, reported statement, interpretation, hypothesis, recommendation, and unknown;
+- preserve the scope and attribution of testimonials, case studies, credentials, numbers, and comparisons;
+- recommend a question, source check, or softer wording instead of creating missing proof; and
+- call out where an edit would alter the offer, positioning, product value, or legal/public-claim risk.
 
-### Sweep 2: Voice and Tone
+Route a fresh draft to `copywriting`; positioning to `expert-positioning`; product scope/value to `product-thinking`; conversion or interaction diagnosis to `page-cro` or `ui-ux`; and external publication, contact, spend, or public claims to the relevant approval gate.
 
-**Focus:** Is the copy consistent in how it sounds?
-
-**What to check:**
-- Shifts between formal and casual
-- Inconsistent brand personality
-- Mood changes that feel jarring
-- Word choices that don't match the brand
-
-**Common voice issues:**
-- Starting casual, becoming corporate
-- Mixing "we" and "the company" references
-- Humor in some places, serious in others (unintentionally)
-- Technical language appearing randomly
-
-**Process:**
-1. Read aloud to hear inconsistencies
-2. Mark where tone shifts unexpectedly
-3. Recommend edits that smooth transitions
-4. Ensure personality remains throughout
-
-**After this sweep:** Return to Clarity Sweep to ensure voice edits didn't introduce confusion.
-
----
-
-### Sweep 3: So What
-
-**Focus:** Does every claim answer "why should I care?"
-
-**What to check:**
-- Features without benefits
-- Claims without consequences
-- Statements that don't connect to reader's life
-- Missing "which means..." bridges
-
-**The So What test:**
-For every statement, ask "Okay, so what?" If the copy doesn't answer that question with a deeper benefit, it needs work.
-
-❌ "Our platform uses AI-powered analytics"
-*So what?*
-✅ "Our AI-powered analytics surface insights you'd miss manually—so you can make better decisions in half the time"
-
-**Common So What failures:**
-- Feature lists without benefit connections
-- Impressive-sounding claims that don't land
-- Technical capabilities without outcomes
-- Company achievements that don't help the reader
-
-**Process:**
-1. Read each claim and literally ask "so what?"
-2. Highlight claims missing the answer
-3. Add the benefit bridge or deeper meaning
-4. Ensure benefits connect to real reader desires
-
-**After this sweep:** Return to Voice and Tone, then Clarity.
-
----
-
-### Sweep 4: Prove It
-
-**Focus:** Is every claim supported with evidence?
-
-**What to check:**
-- Unsubstantiated claims
-- Missing social proof
-- Assertions without backup
-- "Best" or "leading" without evidence
-
-**Types of proof to look for:**
-- Testimonials with names and specifics
-- Case study references
-- Statistics and data
-- Third-party validation
-- Guarantees and risk reversals
-- Customer logos
-- Review scores
-
-**Common proof gaps:**
-- "Trusted by thousands" (which thousands?)
-- "Industry-leading" (according to whom?)
-- "Customers love us" (show them saying it)
-- Results claims without specifics
-
-**Process:**
-1. Identify every claim that needs proof
-2. Check if proof exists nearby
-3. Flag unsupported assertions
-4. Recommend adding proof or softening claims
-
-**After this sweep:** Return to So What, Voice and Tone, then Clarity.
-
----
-
-### Sweep 5: Specificity
-
-**Focus:** Is the copy concrete enough to be compelling?
-
-**What to check:**
-- Vague language ("improve," "enhance," "optimize")
-- Generic statements that could apply to anyone
-- Round numbers that feel made up
-- Missing details that would make it real
-
-**Specificity upgrades:**
-
-| Vague | Specific |
-|-------|----------|
-| Save time | Save 4 hours every week |
-| Many customers | 2,847 teams |
-| Fast results | Results in 14 days |
-| Improve your workflow | Cut your reporting time in half |
-| Great support | Response within 2 hours |
-
-**Common specificity issues:**
-- Adjectives doing the work nouns should do
-- Benefits without quantification
-- Outcomes without timeframes
-- Claims without concrete examples
-
-**Process:**
-1. Highlight vague words and phrases
-2. Ask "Can this be more specific?"
-3. Add numbers, timeframes, or examples
-4. Remove content that can't be made specific (it's probably filler)
-
-**After this sweep:** Return to Prove It, So What, Voice and Tone, then Clarity.
-
----
-
-### Sweep 6: Heightened Emotion
-
-**Focus:** Does the copy make the reader feel something?
-
-**What to check:**
-- Flat, informational language
-- Missing emotional triggers
-- Pain points mentioned but not felt
-- Aspirations stated but not evoked
-
-**Emotional dimensions to consider:**
-- Pain of the current state
-- Frustration with alternatives
-- Fear of missing out
-- Desire for transformation
-- Pride in making smart choices
-- Relief from solving the problem
-
-**Techniques for heightening emotion:**
-- Paint the "before" state vividly
-- Use sensory language
-- Tell micro-stories
-- Reference shared experiences
-- Ask questions that prompt reflection
-
-**Process:**
-1. Read for emotional impact—does it move you?
-2. Identify flat sections that should resonate
-3. Add emotional texture while staying authentic
-4. Ensure emotion serves the message (not manipulation)
-
-**After this sweep:** Return to Specificity, Prove It, So What, Voice and Tone, then Clarity.
-
----
-
-### Sweep 7: Zero Risk
-
-**Focus:** Have we removed every barrier to action?
-
-**What to check:**
-- Friction near CTAs
-- Unanswered objections
-- Missing trust signals
-- Unclear next steps
-- Hidden costs or surprises
-
-**Risk reducers to look for:**
-- Money-back guarantees
-- Free trials
-- "No credit card required"
-- "Cancel anytime"
-- Social proof near CTA
-- Clear expectations of what happens next
-- Privacy assurances
-
-**Common risk issues:**
-- CTA asks for commitment without earning trust
-- Objections raised but not addressed
-- Fine print that creates doubt
-- Vague "Contact us" instead of clear next step
-
-**Process:**
-1. Focus on sections near CTAs
-2. List every reason someone might hesitate
-3. Check if the copy addresses each concern
-4. Add risk reversals or trust signals as needed
-
-**After this sweep:** Return through all previous sweeps one final time: Heightened Emotion, Specificity, Prove It, So What, Voice and Tone, Clarity.
-
----
-
-## Expert Panel Scoring
-
-Use this after completing the Seven Sweeps for an additional quality gate. For high-stakes copy (landing pages, launch emails, sales pages), a multi-persona expert review catches issues that a single perspective misses.
-
-### How It Works
-
-1. **Assemble 3-5 expert personas** relevant to the copy type
-2. **Each persona scores the copy 1-10** on their area of expertise
-3. **Collect specific critiques** — not just scores, but what to fix
-4. **Revise based on feedback** — address the lowest-scoring areas first
-5. **Re-score after revisions** — iterate until all personas score 7+, with an average of 8+ across the panel
-
-### Recommended Expert Panels
-
-**Landing page copy:**
-- Conversion copywriter (clarity, CTA strength, benefit hierarchy)
-- UX writer (scannability, cognitive load, user flow)
-- Target customer persona (does this speak to me? do I trust it?)
-- Brand strategist (voice consistency, positioning accuracy)
-
-**Email sequence:**
-- Email marketing specialist (subject lines, open/click optimization)
-- Copywriter (hooks, storytelling, persuasion)
-- Spam filter analyst (deliverability red flags, trigger words)
-- Target customer persona (relevance, value, unsubscribe risk)
-
-**Sales page / long-form:**
-- Direct response copywriter (offer structure, objection handling, urgency)
-- Skeptical buyer persona (proof gaps, trust issues, red flags)
-- Editor (flow, readability, conciseness)
-- SEO specialist (keyword coverage, search intent alignment)
-
-### Scoring Rubric
-
-| Score | Meaning |
-|-------|---------|
-| 9-10 | Publish-ready. No meaningful improvements. |
-| 7-8 | Strong. Minor tweaks only. |
-| 5-6 | Functional but has clear gaps. Needs another pass. |
-| 3-4 | Significant issues. Major revision needed. |
-| 1-2 | Fundamentally broken. Rethink approach. |
-
-### When to Use
-
-- **Always** for launch copy, pricing pages, and high-traffic landing pages
-- **Recommended** for email sequences, sales pages, and ad copy
-- **Optional** for blog posts, social content, and internal docs
-- **Skip** for quick updates, minor edits, and low-stakes content
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [references/extended-guidance.md](references/extended-guidance.md) for detailed sweep checklists, common failure patterns, or a full content refresh. Select only the relevant section; its examples do not override this skill’s claim and approval boundaries.
+- Load [references/plain-english-alternatives.md](references/plain-english-alternatives.md) when replacing jargon without changing a technical or legal term that must remain exact.
+- Load [references/content-refresh.md](references/content-refresh.md) when the task is specifically about stale, declining, changed, or periodically reviewed content.
+- Load [references/resource-index.md](references/resource-index.md) first when the right supporting file is unclear. Do not load the package wholesale.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+For a small edit: provide the revised copy and a brief note about any material claim or meaning you intentionally preserved.
+
+For a review or full revision:
+
+1. **Scope and preservation contract:** what was edited and what stayed fixed.
+2. **Findings:** only the selected passes, with evidence/claim limits where relevant.
+3. **Revised copy:** clearly distinguish proposed new strategic language from an ordinary edit.
+4. **Open facts:** questions, sources, or approvals required before external use.
+5. **Handoff:** only if a change exceeds editing authority.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Keep the original meaning, audience, offer, and action unless change is expressly authorised.
+2. Use the smallest useful set of editing passes.
+3. Never make copy more specific than the available evidence.
+4. Preserve accessibility and clear reader comprehension.
+5. Keep manipulative pressure and unapproved risk reversals out of the edit.
+6. Surface a strategic or external-effect boundary instead of crossing it silently.

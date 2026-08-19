@@ -30,6 +30,7 @@ Use these when Anti-Gravity needs to deliver a structured artifact:
 - `prd-template.md`
 - `risk-assessment.md`
 - `project-brief.md`
+- `decision-evidence-record.md`
 
 ### Context-authoring templates
 

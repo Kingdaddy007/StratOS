@@ -26,7 +26,8 @@ from typing import Any, Iterable
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GLOBAL_ROOT = REPO_ROOT / "global"
 MANIFEST_PATH = GLOBAL_ROOT / "manifest.yaml"
-SUPPORTED_HOSTS = ("gemini", "codex", "cursor", "windsurf", "opencode")
+SUPPORTED_HOSTS = ("antigravity", "gemini", "codex", "cursor", "windsurf", "opencode")
+ANTIGRAVITY_RULE_MAX_CHARACTERS = 12_000
 MUTATION_CLASSES = (
     "read_only",
     "local_edit",
@@ -54,6 +55,57 @@ WORKFLOW_REQUIRED_FIELDS = (
     "profiles",
 )
 SKILL_NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+FUNCTIONAL_OWNERS = {
+    "studio_support",
+    "product_strategy",
+    "systems_architecture",
+    "design_direction",
+    "staff_engineering",
+    "assurance_quality",
+}
+AGENT_REQUIRED_FIELDS = (
+    "id",
+    "name",
+    "description",
+    "functional_owner",
+    "delivery_role",
+    "profiles",
+    "activation",
+    "exclusions",
+    "default_mutation_class",
+    "allowed_mutation_classes",
+    "tool_capabilities",
+    "primary_agent",
+    "subagent",
+    "can_delegate",
+    "model_tier",
+    "command_policy",
+    "skills",
+    "return_contract",
+    "delegation_contract",
+)
+AGENT_OPTIONAL_FIELDS = ("conditional_skills",)
+AGENT_ALLOWED_FIELDS = set(AGENT_REQUIRED_FIELDS) | set(AGENT_OPTIONAL_FIELDS)
+AGENT_RETURN_CONTRACT_REQUIREMENTS = (
+    ("scope",),
+    ("input", "provenance"),
+    ("authority",),
+    ("evidence",),
+    ("finding", "decision"),
+    ("confidence",),
+    ("conflict",),
+    ("recommendation",),
+    ("stop", "escalate"),
+    ("residual",),
+    ("owner",),
+)
+CANONICAL_AGENT_TOOL_CAPABILITIES = {
+    "read_file",
+    "list_files",
+    "search_text",
+    "edit_file",
+    "run_command",
+}
 MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 UNRESOLVED_TOKEN_PATTERN = re.compile(
     r"(?<!\$)\{\{[A-Za-z_][A-Za-z0-9_.-]*\}\}"
@@ -213,8 +265,9 @@ def parse_simple_yaml(text: str) -> dict[str, Any]:
     """Parse the deliberately small YAML subset used by OS metadata.
 
     Supported constructs are top-level scalar keys, inline lists, block lists,
-    and folded/literal scalar blocks. Nested mappings belong in JSON registry
-    files rather than Markdown frontmatter.
+    one-level mappings inside a block list, and folded/literal scalar blocks.
+    Deeper nested mappings belong in JSON registry files rather than Markdown
+    frontmatter.
     """
 
     result: dict[str, Any] = {}
@@ -254,13 +307,52 @@ def parse_simple_yaml(text: str) -> dict[str, Any]:
                 candidate = lines[index]
                 if candidate and not candidate.startswith((" ", "\t")):
                     break
-                candidate = candidate.strip()
-                if candidate:
-                    if not candidate.startswith("-"):
+                item = candidate.strip()
+                if item:
+                    if not item.startswith("-"):
                         raise ValueError(
                             f"Only block lists are supported at line {index + 1}"
                         )
-                    items.append(parse_scalar(candidate[1:].strip()))
+                    value = item[1:].strip()
+                    if ":" not in value:
+                        items.append(parse_scalar(value))
+                        index += 1
+                        continue
+
+                    item_key, item_value = value.split(":", 1)
+                    item_key = item_key.strip()
+                    if not re.fullmatch(r"[A-Za-z0-9_-]+", item_key):
+                        raise ValueError(f"Invalid nested key at line {index + 1}: {item_key}")
+                    mapping: dict[str, Any] = {item_key: parse_scalar(item_value.strip())}
+                    index += 1
+                    while index < len(lines):
+                        continuation = lines[index]
+                        if continuation and not continuation.startswith((" ", "\t")):
+                            break
+                        nested = continuation.strip()
+                        if not nested:
+                            index += 1
+                            continue
+                        if nested.startswith("-"):
+                            break
+                        if ":" not in nested:
+                            raise ValueError(
+                                f"Only one-level mappings are supported at line {index + 1}"
+                            )
+                        nested_key, nested_value = nested.split(":", 1)
+                        nested_key = nested_key.strip()
+                        if not re.fullmatch(r"[A-Za-z0-9_-]+", nested_key):
+                            raise ValueError(
+                                f"Invalid nested key at line {index + 1}: {nested_key}"
+                            )
+                        if nested_key in mapping:
+                            raise ValueError(
+                                f"Duplicate nested key at line {index + 1}: {nested_key}"
+                            )
+                        mapping[nested_key] = parse_scalar(nested_value.strip())
+                        index += 1
+                    items.append(mapping)
+                    continue
                 index += 1
             result[key] = items
             continue
@@ -348,6 +440,125 @@ def validate_skill_files(repo_root: Path) -> list[dict[str, str]]:
                         )
                     )
     return problems
+
+
+def validate_agent_files(repo_root: Path) -> tuple[list[dict[str, str]], dict[str, dict[str, Any]]]:
+    """Validate portable agent contracts before an adapter renders host files."""
+    problems: list[dict[str, str]] = []
+    agents: dict[str, dict[str, Any]] = {}
+    directory = repo_root / "global" / "agents"
+    for path in sorted(directory.glob("*/AGENT.md")):
+        relative = path.relative_to(repo_root)
+        try:
+            metadata, _ = split_frontmatter(path)
+        except (OSError, UnicodeDecodeError, ValueError) as exc:
+            problems.append(issue("agent-frontmatter", relative, str(exc)))
+            continue
+        missing = [field for field in AGENT_REQUIRED_FIELDS if field not in metadata]
+        if missing:
+            problems.append(issue("agent-fields", relative, f"missing fields: {', '.join(missing)}"))
+            continue
+        unexpected = set(metadata) - AGENT_ALLOWED_FIELDS
+        if unexpected:
+            problems.append(
+                issue(
+                    "agent-frontmatter-keys",
+                    relative,
+                    f"unsupported canonical keys: {', '.join(sorted(unexpected))}",
+                )
+            )
+        agent_id = metadata["id"]
+        if not isinstance(agent_id, str) or not SKILL_NAME_PATTERN.fullmatch(agent_id):
+            problems.append(issue("agent-id", relative, "id must be hyphen-case"))
+            continue
+        if agent_id != path.parent.name or metadata.get("name") != agent_id:
+            problems.append(issue("agent-name", relative, "id and name must match the agent folder"))
+        if agent_id in agents:
+            problems.append(issue("agent-duplicate", relative, f"duplicate id {agent_id}"))
+        agents[agent_id] = metadata
+        if not isinstance(metadata.get("description"), str) or not metadata["description"].strip():
+            problems.append(issue("agent-description", relative, "description is required"))
+        if metadata.get("functional_owner") not in FUNCTIONAL_OWNERS:
+            problems.append(issue("agent-owner", relative, "unknown functional_owner"))
+        if metadata.get("delivery_role") not in {
+            "orchestrator",
+            "functional_lead",
+            "independent_assurance",
+        }:
+            problems.append(issue("agent-role", relative, "invalid delivery_role"))
+        for field in (
+            "profiles",
+            "activation",
+            "exclusions",
+            "allowed_mutation_classes",
+            "tool_capabilities",
+            "skills",
+            "return_contract",
+            "delegation_contract",
+        ):
+            if not isinstance(metadata.get(field), list) or not metadata[field]:
+                problems.append(issue("agent-field-type", relative, f"{field} must be a non-empty list"))
+            elif any(not isinstance(value, str) or not value.strip() for value in metadata[field]):
+                problems.append(issue("agent-field-type", relative, f"{field} entries must be non-empty strings"))
+        if isinstance(metadata.get("return_contract"), list):
+            return_text = " ".join(metadata["return_contract"]).lower()
+            missing_return_requirements = [
+                "/".join(terms)
+                for terms in AGENT_RETURN_CONTRACT_REQUIREMENTS
+                if not any(term in return_text for term in terms)
+            ]
+            if missing_return_requirements:
+                problems.append(
+                    issue(
+                        "agent-return-contract",
+                        relative,
+                        "return_contract must cover: " + ", ".join(missing_return_requirements),
+                    )
+                )
+        if metadata.get("default_mutation_class") not in MUTATION_CLASSES:
+            problems.append(issue("agent-mutation", relative, "invalid default_mutation_class"))
+        allowed = metadata.get("allowed_mutation_classes", [])
+        if any(value not in MUTATION_CLASSES for value in allowed):
+            problems.append(issue("agent-mutation", relative, "invalid allowed_mutation_classes"))
+        elif metadata.get("default_mutation_class") not in allowed:
+            problems.append(issue("agent-mutation", relative, "default mutation must be allowed"))
+        if any(value not in CANONICAL_AGENT_TOOL_CAPABILITIES for value in metadata.get("tool_capabilities", [])):
+            problems.append(issue("agent-tools", relative, "unknown canonical tool capability"))
+        if metadata.get("model_tier") not in {"inherit", "flash", "pro"}:
+            problems.append(issue("agent-model", relative, "invalid model_tier"))
+        if metadata.get("command_policy") not in {"off", "sandbox"}:
+            problems.append(issue("agent-command-policy", relative, "invalid command_policy"))
+        for field in ("primary_agent", "subagent", "can_delegate"):
+            if not isinstance(metadata.get(field), bool):
+                problems.append(issue("agent-field-type", relative, f"{field} must be boolean"))
+        conditional_skills = metadata.get("conditional_skills", [])
+        if not isinstance(conditional_skills, list):
+            problems.append(issue("agent-conditional-skills", relative, "conditional_skills must be a list"))
+        else:
+            for index, selection in enumerate(conditional_skills):
+                if not isinstance(selection, dict) or set(selection) != {"profiles", "skills"}:
+                    problems.append(
+                        issue(
+                            "agent-conditional-skills",
+                            relative,
+                            f"conditional_skills[{index}] must contain only profiles and skills",
+                        )
+                    )
+                    continue
+                for field in ("profiles", "skills"):
+                    values = selection[field]
+                    if not isinstance(values, list) or not values or any(
+                        not isinstance(value, str) or not SKILL_NAME_PATTERN.fullmatch(value)
+                        for value in values
+                    ):
+                        problems.append(
+                            issue(
+                                "agent-conditional-skills",
+                                relative,
+                                f"conditional_skills[{index}].{field} must be a non-empty hyphen-case list",
+                            )
+                        )
+    return problems, agents
 
 
 def validate_workflow_files(repo_root: Path) -> tuple[list[dict[str, str]], dict[str, dict[str, Any]]]:
@@ -456,6 +667,32 @@ def validate_adapters(repo_root: Path) -> list[dict[str, str]]:
             problems.append(issue("adapter-fields", path.relative_to(repo_root), f"missing {sorted(missing)}"))
         if adapter.get("host") != host or adapter.get("namespace") != "antigravity":
             problems.append(issue("adapter-identity", path.relative_to(repo_root), "host or namespace mismatch"))
+        if host == "antigravity":
+            agent_fields = {"agents_target", "agent_format", "agent_tool_map"}
+            missing_agent_fields = agent_fields - set(adapter)
+            if missing_agent_fields:
+                problems.append(
+                    issue(
+                        "adapter-agents",
+                        path.relative_to(repo_root),
+                        f"missing {sorted(missing_agent_fields)}",
+                    )
+                )
+            elif adapter.get("agent_format") != "antigravity-markdown":
+                problems.append(
+                    issue("adapter-agents", path.relative_to(repo_root), "unsupported agent_format")
+                )
+            else:
+                mapped = adapter.get("agent_tool_map", {})
+                missing_tools = CANONICAL_AGENT_TOOL_CAPABILITIES - set(mapped)
+                if missing_tools or any(not isinstance(value, str) or not value for value in mapped.values()):
+                    problems.append(
+                        issue(
+                            "adapter-agents",
+                            path.relative_to(repo_root),
+                            "agent_tool_map must cover every canonical capability",
+                        )
+                    )
         capabilities = adapter.get("capabilities", {})
         for capability in (
             "read_file",
@@ -483,6 +720,7 @@ def distributable_markdown(repo_root: Path) -> Iterable[Path]:
         global_root / "global_templates",
         global_root / "reference",
         global_root / "design-audit",
+        global_root / "agents",
     )
     for root in roots:
         if root.exists():
@@ -497,6 +735,14 @@ def validate_markdown(repo_root: Path) -> list[dict[str, str]]:
     for path in sorted(set(distributable_markdown(repo_root))):
         relative = path.relative_to(repo_root)
         text = path.read_text(encoding="utf-8-sig", errors="replace")
+        if path == repo_root / "global" / "GEMINI.md" and len(text) > ANTIGRAVITY_RULE_MAX_CHARACTERS:
+            problems.append(
+                issue(
+                    "gemini-policy-length",
+                    relative,
+                    f"exceeds Antigravity's {ANTIGRAVITY_RULE_MAX_CHARACTERS}-character rule limit",
+                )
+            )
         if path.parent.name == "workflows" and UNRESOLVED_TOKEN_PATTERN.search(text):
             problems.append(issue("unresolved-token", relative, "contains unresolved {{...}} token"))
         for pattern in PERSONAL_PATH_PATTERNS:
@@ -534,7 +780,9 @@ def validate_forbidden_files(repo_root: Path) -> list[dict[str, str]]:
 
 
 def validate_manifest(
-    repo_root: Path, workflows: dict[str, dict[str, Any]]
+    repo_root: Path,
+    workflows: dict[str, dict[str, Any]],
+    agents: dict[str, dict[str, Any]],
 ) -> list[dict[str, str]]:
     problems: list[dict[str, str]] = []
     path = repo_root / "global" / "manifest.yaml"
@@ -544,14 +792,48 @@ def validate_manifest(
         manifest = load_manifest(repo_root)
     except ValidationFailed as exc:
         return [issue("manifest-json", path.relative_to(repo_root), str(exc))]
-    if manifest.get("schema_version") != 1:
-        problems.append(issue("manifest-version", path.relative_to(repo_root), "schema_version must be 1"))
+    if manifest.get("schema_version") != 2:
+        problems.append(issue("manifest-version", path.relative_to(repo_root), "schema_version must be 2"))
     if set(manifest.get("hosts", [])) != set(SUPPORTED_HOSTS):
         problems.append(issue("manifest-hosts", path.relative_to(repo_root), "host registry mismatch"))
     if set(manifest.get("mutation_classes", [])) != set(MUTATION_CLASSES):
         problems.append(issue("manifest-mutations", path.relative_to(repo_root), "mutation registry mismatch"))
 
-    registries = ("skills", "workflows", "context_templates", "baselines", "templates")
+    profiles = manifest.get("profiles", [])
+    definitions = manifest.get("profile_definitions", {})
+    if set(definitions) != set(profiles):
+        problems.append(issue("manifest-profiles", path.relative_to(repo_root), "profile definitions mismatch"))
+    elif definitions.get("general") != {"kind": "base", "extends": []}:
+        problems.append(
+            issue("manifest-profiles", path.relative_to(repo_root), "general must be the sole base profile")
+        )
+    else:
+        for profile_id, definition in definitions.items():
+            if profile_id == "general":
+                continue
+            if definition.get("kind") != "pack" or definition.get("extends") != ["general"]:
+                problems.append(
+                    issue(
+                        "manifest-profiles",
+                        path.relative_to(repo_root),
+                        f"{profile_id} must be a pack extending general",
+                    )
+                )
+            profile_path = repo_root / "global" / "profiles" / profile_id / "profile.json"
+            if not profile_path.exists():
+                problems.append(
+                    issue("manifest-profile-path", path.relative_to(repo_root), f"missing profile file for {profile_id}")
+                )
+
+    registries = (
+        "skills",
+        "workflows",
+        "context_templates",
+        "baselines",
+        "templates",
+        "resources",
+        "agents",
+    )
     for registry_name in registries:
         seen: set[str] = set()
         for entry in manifest.get(registry_name, []):
@@ -563,11 +845,39 @@ def validate_manifest(
             if not isinstance(entry_path, str) or not (repo_root / entry_path).exists():
                 problems.append(
                     issue("manifest-path", path.relative_to(repo_root), f"missing path for {entry_id}: {entry_path}")
+                    )
+            destination = entry.get("destination")
+            if destination is not None and (
+                not isinstance(destination, str)
+                or not destination
+                or Path(destination).is_absolute()
+                or ".." in Path(destination).parts
+            ):
+                problems.append(
+                    issue("manifest-destination", path.relative_to(repo_root), f"invalid destination for {entry_id}")
+                )
+            if entry.get("functional_owner") not in FUNCTIONAL_OWNERS:
+                problems.append(
+                    issue("manifest-owner", path.relative_to(repo_root), f"invalid owner for {entry_id}")
+                )
+            if not isinstance(entry.get("delivery_role"), str) or not entry["delivery_role"]:
+                problems.append(
+                    issue("manifest-role", path.relative_to(repo_root), f"missing delivery role for {entry_id}")
                 )
             for profile in entry.get("profiles", []):
-                if profile not in manifest.get("profiles", []):
+                if profile not in profiles:
                     problems.append(
                         issue("manifest-profile", path.relative_to(repo_root), f"unknown profile {profile}")
+                    )
+            if registry_name == "agents":
+                compatibility = entry.get("host_compatibility", [])
+                if not isinstance(compatibility, list) or not compatibility:
+                    problems.append(
+                        issue("manifest-agent-host", path.relative_to(repo_root), f"missing host compatibility for {entry_id}")
+                    )
+                elif any(host not in manifest.get("hosts", []) for host in compatibility):
+                    problems.append(
+                        issue("manifest-agent-host", path.relative_to(repo_root), f"unknown agent host for {entry_id}")
                     )
 
     manifest_workflows = {entry.get("id") for entry in manifest.get("workflows", [])}
@@ -594,6 +904,38 @@ def validate_manifest(
                 f"registry mismatch; missing={sorted(disk_skills - manifest_skills)}, stale={sorted(manifest_skills - disk_skills)}",
             )
         )
+    for agent_id, metadata in agents.items():
+        declared_skills = set(metadata.get("skills", []))
+        for selection in metadata.get("conditional_skills", []):
+            if isinstance(selection, dict):
+                declared_skills.update(selection.get("skills", []))
+                for profile in selection.get("profiles", []):
+                    if profile not in profiles:
+                        problems.append(
+                            issue(
+                                "agent-conditional-profile",
+                                path.relative_to(repo_root),
+                                f"{agent_id} selects unknown profile {profile}",
+                            )
+                        )
+        missing_skills = sorted(declared_skills - disk_skills)
+        if missing_skills:
+            problems.append(
+                issue(
+                    "agent-skills",
+                    path.relative_to(repo_root),
+                    f"{agent_id} references missing skills: {', '.join(missing_skills)}",
+                )
+            )
+    manifest_agents = {entry.get("id") for entry in manifest.get("agents", [])}
+    if manifest_agents != set(agents):
+        problems.append(
+            issue(
+                "manifest-agents",
+                path.relative_to(repo_root),
+                f"registry mismatch; missing={sorted(set(agents) - manifest_agents)}, stale={sorted(manifest_agents - set(agents))}",
+            )
+        )
     return problems
 
 
@@ -609,17 +951,26 @@ def validate_routing_fixtures(
         manifest = load_manifest(repo_root)
     except ValidationFailed as exc:
         return [issue("routing-fixtures", path.relative_to(repo_root), str(exc))]
+    if fixture.get("schema_version") != 3:
+        problems.append(issue("routing-version", path.relative_to(repo_root), "schema_version must be 3"))
     required = {
         "id",
         "request",
-        "workflow",
-        "profile",
+        "route_kind",
+        "route",
+        "base_profile",
+        "active_packs",
+        "functional_leads",
         "mode",
         "maximum_mutation_class",
         "approval_required",
     }
     seen: set[str] = set()
     valid_modes = {"diagnose", "propose", "implement", "incident-mitigate"}
+    routes_by_kind = {
+        "workflow": workflows,
+        "skill": {entry.get("id"): entry for entry in manifest.get("skills", [])},
+    }
     for scenario in fixture.get("scenarios", []):
         missing = required - set(scenario)
         scenario_id = scenario.get("id", "<unknown>")
@@ -633,17 +984,61 @@ def validate_routing_fixtures(
                 issue("routing-duplicate", path.relative_to(repo_root), f"duplicate scenario {scenario_id}")
             )
         seen.add(scenario_id)
-        if scenario["workflow"] not in workflows:
+        route_kind = scenario["route_kind"]
+        route = scenario["route"]
+        if route_kind not in routes_by_kind:
             problems.append(
                 issue(
-                    "routing-workflow",
+                    "routing-route-kind",
                     path.relative_to(repo_root),
-                    f"{scenario_id} references unknown workflow {scenario['workflow']}",
+                    f"{scenario_id} has invalid route_kind {route_kind!r}",
                 )
             )
-        if scenario["profile"] not in manifest.get("profiles", []):
+        elif route not in routes_by_kind[route_kind]:
             problems.append(
-                issue("routing-profile", path.relative_to(repo_root), f"{scenario_id} has unknown profile")
+                issue(
+                    "routing-route",
+                    path.relative_to(repo_root),
+                    f"{scenario_id} references unknown {route_kind} {route}",
+                )
+            )
+        if scenario["base_profile"] != "general":
+            problems.append(
+                issue("routing-profile", path.relative_to(repo_root), f"{scenario_id} must use the general base")
+            )
+        active_packs = scenario["active_packs"]
+        if not isinstance(active_packs, list) or len(active_packs) != len(set(active_packs)):
+            problems.append(
+                issue("routing-packs", path.relative_to(repo_root), f"{scenario_id} active_packs must be unique")
+            )
+        elif any(
+            pack not in manifest.get("profiles", [])
+            or manifest["profile_definitions"].get(pack, {}).get("kind") != "pack"
+            for pack in active_packs
+        ):
+            problems.append(
+                issue("routing-packs", path.relative_to(repo_root), f"{scenario_id} has an invalid pack")
+            )
+        elif route_kind in routes_by_kind and route in routes_by_kind[route_kind]:
+            route_profiles = set(routes_by_kind[route_kind][route].get("profiles", []))
+            selected_profiles = {"general", *active_packs}
+            if not route_profiles & selected_profiles:
+                problems.append(
+                    issue(
+                        "routing-route-profile",
+                        path.relative_to(repo_root),
+                        f"{scenario_id} routes {route_kind} {route} outside selected profiles",
+                    )
+                )
+        functional_leads = scenario["functional_leads"]
+        known_leads = {entry["functional_owner"] for entry in manifest.get("agents", [])}
+        if not isinstance(functional_leads, list) or not functional_leads:
+            problems.append(
+                issue("routing-leads", path.relative_to(repo_root), f"{scenario_id} must select a lead")
+            )
+        elif any(lead not in known_leads for lead in functional_leads):
+            problems.append(
+                issue("routing-leads", path.relative_to(repo_root), f"{scenario_id} has an unknown lead")
             )
         if scenario["mode"] not in valid_modes:
             problems.append(
@@ -671,14 +1066,26 @@ def validate_repository(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     problems: list[dict[str, str]] = []
     problems.extend(validate_forbidden_files(repo_root))
     problems.extend(validate_skill_files(repo_root))
+    agent_problems, agents = validate_agent_files(repo_root)
+    problems.extend(agent_problems)
     workflow_problems, workflows = validate_workflow_files(repo_root)
     problems.extend(workflow_problems)
     problems.extend(validate_context_templates(repo_root))
     problems.extend(validate_adapters(repo_root))
     problems.extend(validate_markdown(repo_root))
-    problems.extend(validate_manifest(repo_root, workflows))
+    problems.extend(validate_manifest(repo_root, workflows, agents))
     problems.extend(validate_routing_fixtures(repo_root, workflows))
     return {"ok": not problems, "issue_count": len(problems), "issues": problems}
+
+
+def filesystem_path(path: Path) -> str:
+    """Return a Windows-safe filesystem path without changing portable metadata."""
+    resolved = str(path.resolve())
+    if os.name != "nt" or resolved.startswith("\\\\?\\"):
+        return resolved
+    if resolved.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + resolved[2:]
+    return "\\\\?\\" + resolved
 
 
 def copy_entry(
@@ -693,14 +1100,14 @@ def copy_entry(
             *additional_ignores,
         )
         shutil.copytree(
-            source,
-            destination,
+            filesystem_path(source),
+            filesystem_path(destination),
             dirs_exist_ok=True,
             ignore=shutil.ignore_patterns(*ignored_names),
         )
     else:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        os.makedirs(filesystem_path(destination.parent), exist_ok=True)
+        shutil.copy2(filesystem_path(source), filesystem_path(destination))
 
 
 def validate_payload(payload: Path) -> list[dict[str, str]]:
@@ -730,14 +1137,201 @@ def validate_payload(payload: Path) -> list[dict[str, str]]:
                 problems.append(issue("payload-link", relative, f"non-portable link: {raw_link}"))
                 continue
             candidate = (path.parent / link.replace("%20", " ")).resolve()
-            if candidate.suffix.lower() == ".md" and not candidate.exists():
+            if candidate.suffix.lower() == ".md" and not os.path.exists(filesystem_path(candidate)):
                 problems.append(issue("payload-link", relative, f"missing target: {raw_link}"))
     return problems
+
+
+def resolve_pack_selection(
+    manifest: dict[str, Any], profile: str | None, packs: Iterable[str] = ()
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Resolve legacy --profile and explicit pack requests into stable composition."""
+    requested: list[str] = []
+    if profile and profile != "general":
+        requested.append(profile)
+    for raw_pack in packs:
+        for pack in raw_pack.split(","):
+            value = pack.strip()
+            if value:
+                requested.append(value)
+
+    definitions = manifest.get("profile_definitions", {})
+    for pack in requested:
+        if pack == "general":
+            raise AntiGravityError("general is implicit; use --profile general or omit --packs")
+        definition = definitions.get(pack)
+        if definition is None or definition.get("kind") != "pack":
+            raise AntiGravityError(f"Unknown optional pack: {pack}")
+
+    requested_set = set(requested)
+    ordered_packs = tuple(
+        profile_id
+        for profile_id in manifest["profiles"]
+        if profile_id != "general" and profile_id in requested_set
+    )
+    return ("general", *ordered_packs), ordered_packs
+
+
+def profile_key(active_packs: Iterable[str]) -> str:
+    packs = tuple(active_packs)
+    return "general" if not packs else "+".join(packs)
+
+
+def agent_skills_for_profiles(metadata: dict[str, Any], selected_profiles: Iterable[str]) -> list[str]:
+    """Return baseline skills plus profile-specific skills without duplicate loading."""
+    active_profiles = set(selected_profiles)
+    selected: list[str] = []
+    for skill_id in metadata["skills"]:
+        if skill_id not in selected:
+            selected.append(skill_id)
+    for selection in metadata.get("conditional_skills", []):
+        if not active_profiles.intersection(selection["profiles"]):
+            continue
+        for skill_id in selection["skills"]:
+            if skill_id not in selected:
+                selected.append(skill_id)
+    return selected
+
+
+def render_antigravity_agent(
+    source: Path,
+    destination: Path,
+    adapter: dict[str, Any],
+    available_skills: set[str],
+    selected_skills: list[str],
+) -> None:
+    """Render one portable role contract into Antigravity's Markdown agent format."""
+    metadata, body = split_frontmatter(source)
+    missing_skills = sorted(set(selected_skills) - available_skills)
+    if missing_skills:
+        raise ValidationFailed(
+            f"Agent {metadata['id']} references unavailable skills: {', '.join(missing_skills)}"
+        )
+    tool_map = adapter["agent_tool_map"]
+    tools: list[str] = []
+    for capability in metadata["tool_capabilities"]:
+        host_tool = tool_map[capability]
+        if host_tool not in tools:
+            tools.append(host_tool)
+    lines = [
+        "---",
+        f"name: {metadata['name']}",
+        f"description: {json.dumps(metadata['description'])}",
+        "tools:",
+        *(f"  - {tool}" for tool in tools),
+        f"mainAgent: {str(metadata['primary_agent']).lower()}",
+        f"subagent: {str(metadata['subagent']).lower()}",
+        f"model: {metadata['model_tier']}",
+        f"commandExecutionPolicy: {metadata['command_policy']}",
+        "---",
+        "",
+    ]
+    # Antigravity's Manager surface can discover a workspace agent while leaving
+    # its AgentBasePath unset. In that state the documented relative `skills:`
+    # frontmatter entries are silently discarded. Workspace skills are still
+    # discovered normally, so expose this role's deliberate routes in its prompt
+    # rather than making an unusable frontmatter binding.
+    capability_routes = [
+        "\n\n## Available capability routes\n",
+        "The active profile makes these skill guides available to this role:",
+        *(f"- `{skill_id}`" for skill_id in selected_skills),
+        "",
+        "A listed skill is available for analysis, planning, and local drafting. "
+        "It does not grant an external account, provider, paid action, publication, "
+        "or production change.",
+    ]
+    capability_routes.extend(
+        [
+            "",
+            "## Required specialist return",
+            "Return all of these fields before handoff:",
+            *(f"- **{item}**" for item in metadata["return_contract"]),
+            "",
+            "## Delegation contract",
+            *(f"- {item}" for item in metadata["delegation_contract"]),
+        ]
+    )
+    if "video-generation" in selected_skills:
+        capability_routes.extend(
+            [
+                "",
+                "`video-generation` is available for video planning, provider-aware "
+                "briefing, prompt drafting, comparison, and diagnosis. Direct video "
+                "generation remains unavailable unless a visible provider surface, "
+                "account access, and just-in-time approval are present.",
+            ]
+        )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        "\n".join(lines) + body.lstrip("\n") + "\n".join(capability_routes) + "\n",
+        encoding="utf-8",
+    )
+
+
+def render_codex_agent_reference(
+    source: Path,
+    destination: Path,
+    available_skills: set[str],
+    selected_skills: list[str],
+) -> None:
+    """Render a profile-filtered role reference without claiming Codex custom-agent support."""
+    metadata, body = split_frontmatter(source)
+    missing_skills = sorted(set(selected_skills) - available_skills)
+    if missing_skills:
+        raise ValidationFailed(
+            f"Agent {metadata['id']} references unavailable skills: {', '.join(missing_skills)}"
+        )
+    routes = [
+        "## Available capability routes",
+        "",
+        "Select only the route that matches the task. These are references, not authority.",
+        *(f"- `skills/{skill_id}/SKILL.md`" for skill_id in selected_skills),
+        "",
+        "## Required specialist return",
+        "Return all of these fields before handoff:",
+        *(f"- **{item}**" for item in metadata["return_contract"]),
+        "",
+        "## Delegation contract",
+        *(f"- {item}" for item in metadata["delegation_contract"]),
+    ]
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        "\n".join(
+            [
+                "<!-- Generated portable role reference for Codex.",
+                "The host's main AGENTS.md policy remains authoritative; this file does not claim host-selectable custom-agent support. -->",
+                "",
+                body.lstrip("\n").rstrip(),
+                "",
+                *routes,
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def activate_staged_payload(stage: Path, final: Path) -> None:
+    """Replace a generated payload without deleting the last known-good copy first."""
+    backup = final.parent / f".{final.name}-previous-{uuid.uuid4().hex[:8]}"
+    moved_existing = False
+    try:
+        if final.exists():
+            final.replace(backup)
+            moved_existing = True
+        stage.replace(final)
+    except Exception:
+        if moved_existing and backup.exists() and not final.exists():
+            backup.replace(final)
+        raise
+    if moved_existing:
+        shutil.rmtree(backup, ignore_errors=True)
 
 
 def build_payload(
     host: str,
     profile: str = "general",
+    packs: Iterable[str] = (),
     repo_root: Path = REPO_ROOT,
     output_root: Path | None = None,
 ) -> Path:
@@ -749,18 +1343,20 @@ def build_payload(
             f"Canonical source has {validation['issue_count']} validation issue(s); run validate"
         )
     manifest = load_manifest(repo_root)
-    if profile not in manifest["profiles"]:
-        raise AntiGravityError(f"Unknown profile: {profile}")
+    selected_profiles, active_packs = resolve_pack_selection(manifest, profile, packs)
     adapter = load_json(repo_root / "global" / "adapters" / host / "adapter.json")
     output_root = (output_root or repo_root / "dist").resolve()
     output_root.mkdir(parents=True, exist_ok=True)
-    final = output_root / host
+    composition_key = profile_key(active_packs)
+    host_output = output_root / host
+    host_output.mkdir(parents=True, exist_ok=True)
+    final = host_output / composition_key
     # Keep the sibling stage name short. Deep skill/reference trees can otherwise
     # cross the legacy Windows MAX_PATH boundary before atomic activation.
-    stage = output_root / f".{host}-{uuid.uuid4().hex[:8]}"
+    stage = host_output / f".{composition_key}-{uuid.uuid4().hex[:8]}"
     stage.mkdir(parents=True)
     try:
-        instruction_source = repo_root / "global" / "GEMINI.md"
+        instruction_source = repo_root / manifest["canonical"]["policy"]
         instruction_target = stage / adapter["instruction_target"]
         instruction_target.parent.mkdir(parents=True, exist_ok=True)
         header = (
@@ -782,38 +1378,85 @@ def build_payload(
         copy_entry(repo_root / "global" / "memory", content_root / "memory")
         copy_entry(repo_root / "global" / "schemas", content_root / "schemas")
 
-        selected_profiles = {"general", profile}
         registry_destinations = {
             "skills": Path(adapter["skills_target"]),
             "workflows": Path(adapter["workflows_target"]),
             "context_templates": Path("context_templates"),
             "baselines": Path("baselines"),
             "templates": Path("global_templates"),
+            "resources": Path("."),
         }
         for registry_name, destination_root in registry_destinations.items():
             for entry in manifest[registry_name]:
-                if not selected_profiles.intersection(entry["profiles"]):
+                if not set(selected_profiles).intersection(entry["profiles"]):
                     continue
                 source = repo_root / entry["path"]
                 if registry_name == "skills":
                     destination = content_root / destination_root / entry["id"]
+                elif registry_name == "resources":
+                    destination = content_root / entry.get("destination", source.name)
                 else:
                     destination = content_root / destination_root / source.name
-                ignores = ("skills",) if registry_name == "skills" and entry["id"] == "seedance" else ()
-                copy_entry(source, destination, additional_ignores=ignores)
+                copy_entry(source, destination)
+
+        if adapter.get("agent_format") == "antigravity-markdown":
+            agent_root = content_root / adapter["agents_target"]
+            available_skills = {
+                entry["id"]
+                for entry in manifest["skills"]
+                if set(selected_profiles).intersection(entry["profiles"])
+            }
+            for entry in manifest["agents"]:
+                if host not in entry["host_compatibility"]:
+                    continue
+                if not set(selected_profiles).intersection(entry["profiles"]):
+                    continue
+                source = repo_root / entry["path"] / "AGENT.md"
+                metadata, _ = split_frontmatter(source)
+                render_antigravity_agent(
+                    source,
+                    agent_root / entry["id"] / "agent.md",
+                    adapter,
+                    available_skills,
+                    agent_skills_for_profiles(metadata, selected_profiles),
+                )
+        elif host == "codex":
+            # Codex does not expose the same host-selectable custom-agent format
+            # as Antigravity. Ship profile-filtered role references for the main
+            # Codex policy to consult without representing them as native agents.
+            agent_root = content_root / "agents"
+            available_skills = {
+                entry["id"]
+                for entry in manifest["skills"]
+                if set(selected_profiles).intersection(entry["profiles"])
+            }
+            for entry in manifest["agents"]:
+                if host not in entry["host_compatibility"]:
+                    continue
+                if not set(selected_profiles).intersection(entry["profiles"]):
+                    continue
+                source = repo_root / entry["path"] / "AGENT.md"
+                metadata, _ = split_frontmatter(source)
+                render_codex_agent_reference(
+                    source,
+                    agent_root / entry["id"] / "agent.md",
+                    available_skills,
+                    agent_skills_for_profiles(metadata, selected_profiles),
+                )
 
         copy_entry(repo_root / "global" / "manifest.yaml", stage / "manifest.json")
-        if (repo_root / "global" / "reference").exists():
-            copy_entry(repo_root / "global" / "reference", content_root / "reference")
-        if profile == "spatial" and (repo_root / "global" / "design-audit").exists():
-            copy_entry(repo_root / "global" / "design-audit", content_root / "design-audit")
         copy_entry(
             repo_root / "global" / "adapters" / host / "adapter.json",
             stage / "adapter.json",
         )
-        copy_entry(
-            repo_root / "global" / "profiles" / profile / "profile.json",
+        write_json_atomic(
             stage / "profile.json",
+            {
+                "schema_version": 2,
+                "base_profile": "general",
+                "active_packs": list(active_packs),
+                "profile_key": composition_key,
+            },
         )
         payload_problems = validate_payload(stage)
         if payload_problems:
@@ -823,9 +1466,7 @@ def build_payload(
             raise ValidationFailed(
                 f"Generated {host}/{profile} payload has {len(payload_problems)} issue(s): {summary}"
             )
-        if final.exists():
-            shutil.rmtree(final)
-        stage.replace(final)
+        activate_staged_payload(stage, final)
         return final
     except Exception:
         shutil.rmtree(stage, ignore_errors=True)
@@ -1082,12 +1723,32 @@ def build_parser() -> argparse.ArgumentParser:
 
     build_parser_command = subparsers.add_parser("build", help="Build a host payload")
     build_parser_command.add_argument("--host", required=True, choices=SUPPORTED_HOSTS)
-    build_parser_command.add_argument("--profile", default="general")
+    build_parser_command.add_argument(
+        "--profile",
+        default="general",
+        help="Backward-compatible single optional pack shorthand",
+    )
+    build_parser_command.add_argument(
+        "--packs",
+        action="append",
+        default=[],
+        help="Comma-separated optional packs; may be repeated",
+    )
     build_parser_command.add_argument("--output", type=Path)
 
     install_parser = subparsers.add_parser("install", help="Safely install a host payload")
     install_parser.add_argument("--host", required=True, choices=SUPPORTED_HOSTS)
-    install_parser.add_argument("--profile", default="general")
+    install_parser.add_argument(
+        "--profile",
+        default="general",
+        help="Backward-compatible single optional pack shorthand",
+    )
+    install_parser.add_argument(
+        "--packs",
+        action="append",
+        default=[],
+        help="Comma-separated optional packs; may be repeated",
+    )
     install_parser.add_argument("--target", required=True, type=Path)
     install_parser.add_argument("--dry-run", action="store_true")
     install_parser.add_argument("--yes", action="store_true")
@@ -1109,7 +1770,7 @@ def main(argv: list[str] | None = None) -> int:
             print_validation(result, args.json)
             return 0 if result["ok"] else 1
         if args.command == "build":
-            payload = build_payload(args.host, args.profile, output_root=args.output)
+            payload = build_payload(args.host, args.profile, args.packs, output_root=args.output)
             print(json.dumps({"status": "built", "payload": str(payload)}, indent=2))
             return 0
         if args.command == "install":
@@ -1120,6 +1781,7 @@ def main(argv: list[str] | None = None) -> int:
                     payload = build_payload(
                         args.host,
                         args.profile,
+                        args.packs,
                         output_root=Path(directory),
                     )
                     result = (
@@ -1128,7 +1790,7 @@ def main(argv: list[str] | None = None) -> int:
                         else install_payload(payload, args.target, args.host, True, False)
                     )
             else:
-                payload = build_payload(args.host, args.profile)
+                payload = build_payload(args.host, args.profile, args.packs)
                 result = (
                     install_codex_global(payload, args.target, False, args.yes)
                     if args.codex_global

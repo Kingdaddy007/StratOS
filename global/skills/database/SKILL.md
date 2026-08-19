@@ -1,145 +1,95 @@
 ---
 name: database
-description: 'Use this skill when designing schemas, writing queries, planning migrations, or evaluating data model decisions. Activated when the user mentions creating or modifying database tables, writing SQL, data integrity issues, slow queries, indexing, data migrations, ORM behavior, or choosing a database technology. Signal phrases: "design the schema", "create the tables", "add a column", "migration", "database is slow", "query optimization", "indexing", "normalize / denormalize", "data model", "foreign key", "relationship between", "N+1 queries", "data integrity", "ORM", "access pattern". Also activate for any work involving data that crosses service boundaries or any data integrity concern.'
+description: 'Use when designing or changing persistent data models, schemas, queries, indexes, transactions, data lifecycle, datastore choice, or migration shape. Activate for “schema”, “database”, “table”, “SQL”, “migration”, “backfill”, “index”, “query”, “normalize”, “denormalize”, “foreign key”, “data integrity”, “transaction”, “concurrency”, “retention”, or “soft delete”. Do not use for an API contract without a persistence decision (use api-design), a live migration execution (use database-migration), or a full security threat model (use security).'
 ---
 
-# DATABASE DESIGN & DATA MODELING
+# Data Modelling and Evolution
 
 ## WHEN TO USE THIS
 
-- Creating, modifying, or evaluating database schemas
-- Writing or optimizing database queries
-- Planning or executing schema migrations
-- Evaluating database technology choices
-- Investigating data integrity issues, inconsistencies, or corruption
-- Designing data models for new features or services
-- Evaluating indexing strategies
+- Design or change persistent data, relationships, constraints, query paths, or ownership.
+- Choose a persistence model or analyze a concurrency, lifecycle, integrity, or access-pattern decision.
+- Prepare a migration approach before an approval-gated live transition.
 
 ## NEVER DO
 
-- Design a schema before understanding the actual access patterns
-- Run blocking ALTER TABLE on large production tables
-- Deploy schema changes and application code changes in the same operation
-- Trust ORM-generated queries without examining the actual SQL executed
-- Use FLOAT or DOUBLE for financial data — always use DECIMAL
-- Apply hard deletes to sensitive or audit-relevant data without a recovery path
-- Denormalize before profiling proves the join overhead is the actual bottleneck
+- Apply third normal form, a relational datastore, billion-row architecture, soft deletion, or separate schema deployment as a universal default.
+- Treat code rollback as proof that transformed, deleted, emitted, or externally observed data can be recovered.
+- Let multiple writers mutate shared truth without explicit ownership, invariant enforcement, and reconciliation rules.
+- Run a live migration, backfill, deletion, or retention change merely because a plan or migration file exists.
+- Present an application-only check as protection for a cross-writer invariant when the datastore can enforce that invariant.
 
----
+## CLASSIFY DATA, OWNERSHIP, AND CONSEQUENCE
 
-## MINDSET
+Before modelling, record the data owner, writers, readers, lifecycle, trust/tenant boundaries, required invariants, dominant operations, expected growth, and recovery consequence. Start from actual requirements, not from entity nouns or a preferred technology.
 
-You are not a schema generator. You are a guardian of the most rigid, critical, and hardest-to-change foundation in the entire system.
-
-Data fundamentally outlives application code. Data often outlives features, services, frameworks, and teams. Frameworks will be replaced, APIs will be versioned, frontends will be rewritten — but the data and the schema it lives in will persist through all of it. A schema mistake that reaches production is orders of magnitude more expensive to fix than an application bug, because schema changes affect every consumer, every query, every integration, and every row of existing data.
-
-The expert database engineer:
-
-- **Treats the schema as the most consequential architectural decision in the system** — harder to reverse than any technology choice, any API contract, or any frontend framework
-- **Models data based on how the application will actually read and write it** — not based on how the domain looks in an ER diagram on a whiteboard
-- **Views migrations as operations on a live, explosive environment** where a single locking ALTER TABLE on a high-traffic table can cause a system-wide outage
-- **Never couples schema migrations to application code deployments** — they are separate operations with separate rollback paths
-- **Indexes deliberately** — every index speeds reads but slows writes and consumes memory
-- **Treats ORMs as tools, not oracles** — they can generate disastrous N+1 patterns that are invisible at the application layer but catastrophic at the database layer
-- **Treats data integrity as absolute** — application bugs can be hotfixed, but corrupted or lost data is permanent and often irrecoverable
-- **Designs for a billion rows, not a thousand rows** — the schema that works today must still work when data volume has grown by three orders of magnitude
-- **Prefers boring, well-understood designs** unless complexity is clearly justified by the actual workload
-
-The goal: create a model that preserves important truths, supports the most important reads and writes efficiently, can evolve safely, and makes ownership and integrity explicit.
-
----
-
-## DECISION FRAMEWORK — 7 PRIORITIES (IN ORDER)
-
-### Priority 1 — Data
-
-Integrity
-
-Enforce integrity at the database level — not only at the application level. Use foreign key constraints, NOT NULL, CHECK constraints, and unique constraints. The application layer can crash, have bugs, or be bypassed — the database constraints are the last line of defense.
-
-### Priority 2 — Access
-
-Pattern Alignment
-
-Map the primary read and write patterns before designing the schema. A schema optimized for writes (highly normalized) may perform terribly for complex reads. Design for the dominant access pattern first, then mitigate the secondary pattern's weaknesses.
-
-### Priority 3 — Migration
-
-Safety
-
-Never execute blocking DDL on large production tables. Use the expand-and-contract pattern for breaking changes. Test migrations on production-volume data clones. Separate schema deployment from application deployment. Have a rollback plan for every migration.
-
-### Priority 4 — Scale
-
-Awareness
-
-Full table scans that are invisible at 10,000 rows become catastrophic at 10 million rows. Consider query performance at scale. Consider index selectivity degradation. Consider partition strategies for tables that grow unboundedly.
-
-### Priority 5 — Query
-
-Predictability
-
-Examine ORM-generated queries. Log and review slow queries. Tag queries with comments identifying their source. Every query path should be understood — not abstracted away and hoped for the best.
-
-### Priority 6 — Normalization
-
-vs Denormalization
-
-Start at 3NF for data integrity. Denormalize only when empirical profiling proves that read performance is unacceptable AND the root cause is join overhead — not a missing index or N+1 pattern. When denormalizing, document the update anomaly risk and define the consistency maintenance strategy.
-
-### Priority 7 — Technology
-
-Fit
-
-Relational databases (PostgreSQL, MySQL) are the default for structured data with relationships and ACID requirements. Choose a different technology only when the data's access patterns demand its specific strengths — not because it is trendy.
-
-**Rule:** Design from user and system behaviors, reads and writes, invariants and ownership, migration and scale constraints — not from nouns alone.
-
----
-
-## CORE PRINCIPLES
-
-1. **Data Integrity Is Absolute.** Application bugs can be hotfixed. Corrupted, inconsistent, or lost data may be permanent and irrecoverable. Enforce integrity at the database level with constraints, foreign keys, and transactions.
-2. **Access Patterns Dictate Design.** A beautiful normalized schema that requires 12 joins for the most common read operation is a failed design.
-3. **Never Couple Schema and Code Deployment.** Deploy schema changes first (backward-compatible). Then deploy the code that uses them. Each has its own rollback path.
-4. **Normalize First, Denormalize With Evidence.** Start at 3NF. Denormalize only when profiling proves join overhead is the bottleneck — not when someone assumes it might be slow.
-5. **Index Deliberately.** Every index speeds reads but slows writes and consumes memory. Create indexes based on actual query patterns — not speculatively.
-6. **Migrate Without Downtime.** Use the expand-and-contract pattern. Test every migration on a production-volume data clone before execution.
-7. **ORMs Are Tools, Not Oracles.** Examine the SQL your ORM generates. Watch for N+1 patterns and full table scans. The ORM serves you — you do not serve the ORM.
-8. **Design for a Billion Rows.** The schema must work not just with today's data but with data volume anticipated in 12–24 months.
-9. **Types and Constraints Are Documentation.** Use the most specific correct type. NOT NULL for required fields. ENUM or CHECK for restricted values. DECIMAL for financial data — never FLOAT.
-10. **Deletions Are Dangerous.** Prefer soft deletes (`deleted_at` timestamp) for any data that might need recovery or audit trails.
-11. **Make Source of Truth Explicit.** Every piece of data has exactly one authoritative owner. Multiple systems reading the same data is fine. Multiple systems mutating the same truth without clear authority is a consistency disaster.
-12. **Database Design Is Part of Architecture.** A schema decision is not a local implementation detail — it is a system-wide architectural commitment with long-lasting consequences.
-
----
-
-## DATABASE LENSES
-
-| Lens | What to Inspect |
+| Condition | Minimum decision record |
 | --- | --- |
-| **Access Pattern** | What are the primary reads and writes? Frequencies? Columns filtered/sorted/joined? Read-to-write ratio? Aggregation queries? |
-| **Integrity** | Where can data become inconsistent? All required fields NOT NULL? Uniqueness invariants enforced? Relational references enforced with FK? Value ranges enforced? |
-| **Scale** | How many rows in 6/12/36 months? At projected scale, will current queries still perform? Full table scans at 100x? Archival/partition strategy for unbounded tables? |
-| **Index** | Columns in WHERE, JOIN, ORDER BY? Composite indexes ordered correctly? Covering indexes needed? Any unused indexes that waste write overhead? Index selectivity at scale? |
-| **Migration** | Can this change be applied without locking? Backward compatible with current app version? Rollback path if it fails midway? Tested on production-volume clone? Schema deployment separated from code deployment? |
-| **Query** | What SQL is actually being executed? How many queries does this operation trigger (N+1)? Using indexes or full table scan (EXPLAIN ANALYZE)? Over-fetching? Unnecessary subqueries? |
-| **Relationship** | One-to-one, one-to-many, or many-to-many? Enforced with FK at DB level? ON DELETE behavior intentional (CASCADE, SET NULL, RESTRICT)? Child records — independent existence or strictly owned by parent? |
-| **Consistency & Transactions** | Does this operation need to be atomic? Partial success possible? Denormalized copies — what keeps them in sync? Concurrent modifications — optimistic vs pessimistic locking? |
-| **Type Safety** | Most specific correct type? DECIMAL (not FLOAT) for financial data? TIMESTAMP WITH TIME ZONE? VARCHAR with limits vs TEXT? UUIDs where globally unique IDs needed? |
-| **Operational & Security** | Slow query logging configured? Backup + restore tested? PII identified, minimized, encrypted? Credentials managed securely? Data retention requirements? |
+| Local, disposable, bounded data | State the local owner, shape, and why simple storage is sufficient. |
+| Shared product data | State writers/readers, lifecycle, invariants, access patterns, and failure/recovery consequence. |
+| Independently consumed or migrated data | Add compatibility window, consumer matrix, data-movement/resume path, and retirement condition. |
+| Personal, regulated, financial, security-sensitive, or destructive data | Add classification, authority, retention/deletion meaning, backup/copy impact, recovery limit, and required specialist/approval route. |
 
----
+When the current datastore satisfies the real invariants and access patterns, prefer keeping it. Evaluate another model only when it materially improves integrity, access, lifecycle, or recovery with acceptable operational cost.
+
+## MODEL INVARIANTS, ACCESS, AND LIFECYCLE
+
+List each invariant in plain language and place enforcement at the strongest practical boundary:
+
+| Invariant type | Typical enforcement |
+| --- | --- |
+| Row-local validity or required value | Schema type, check, not-null, or equivalent datastore constraint. |
+| Cross-writer uniqueness or relationship | Unique, foreign-key, exclusion, transaction, or equivalent authoritative constraint. |
+| Multi-step state transition | Transaction, conditional update/version, or a deliberately handled conflict. |
+| User-facing shape or external policy | Application validation plus an authoritative data/authorization check where needed. |
+| Cross-system copy | Named owner, event/reconciliation rule, and a way to detect divergence. |
+
+Choose normalization, denormalization, document shape, relationship model, and indexes from ownership, update anomalies, aggregate locality, dominant reads/writes, and operational cost. Record duplication and reconciliation when data is intentionally copied. Use specific data types, constraints, and query plans where the selected datastore supports them; do not invent datastore-specific rules for a project that does not use that engine.
+
+Treat identity separately from lifecycle. `active`, `inactive`, `archived`, `tombstoned`, `audited`, `anonymized`, and `erased` have different legal, recovery, and access meanings. Choose the state by data class and requirement; do not call soft deletion a complete privacy, audit, or recovery solution.
+
+## HANDLE CONCURRENCY AND EVOLUTION PROPORTIONALLY
+
+Choose concurrency control from the invariant and expected contention. Use a conditional update/version/ETag, transaction isolation, serialization, lock, or explicit conflict response only when it protects a real shared-state risk. State accepted anomalies or conflict behaviour; do not silently accept lost updates.
+
+For a schema or data change, distinguish these cases:
+
+- A small local, coordinated, reversible change may use an atomic transition if the actual platform guarantees the required ordering and recovery.
+- A change with rolling deployment, independent readers/writers, high volume, long-running backfill, or coexistence requirements may need additive compatibility, staged data movement, reconciliation, and later contraction.
+- A destructive or lossy change needs an explicit restore point or forward-recovery path; a down migration alone is not enough.
+
+Use `database-migration` for a live or consequential execution path. This skill may design and assess; it does not grant approval to mutate data or a production target.
+
+## SELECT EVIDENCE FROM THE REAL FAILURE SURFACE
+
+- Model/invariant change: inspect schema and attempt violating writes through the authoritative boundary.
+- Query/index change: inspect actual query shape/plan where available and compare the relevant workload, not an invented scale target.
+- Concurrent write: exercise an interleaving or conflict case that could violate the invariant.
+- Compatibility/backfill change: verify old/new reader-writer combinations, batch/resume/retry behaviour, reconciliation, and stopping thresholds where applicable.
+- Data lifecycle/deletion change: trace affected copies/backups, retention/erasure meaning, and recovery/audit consequence. Escalate legal ambiguity.
+
+Record what was not tested: representative data, production locking, restore, external reader, or a possible data anomaly. Never turn a green migration command into a claim of safety.
+
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [extended-guidance.md](references/extended-guidance.md) for datastore selection, schema modelling, transactions, query/index analysis, staged migration/backfill, lifecycle/deletion, or recovery decisions.
+- Load [resource-index.md](references/resource-index.md) when a current datastore or migration-platform fact affects the decision.
+- Use `api-design` for a changed external contract, `security` for tenant/access/sensitive-data ambiguity, and `testing` for evidence design.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+```text
+Data owner, writers/readers, lifecycle, and invariant map:
+Chosen model and access-pattern rationale:
+Compatibility/migration or recovery decision:
+Evidence actually available and known limits:
+Required approval or next handoff:
+```
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Name the data owner, writers, consumers, and invariants.
+2. Enforce cross-writer invariants at an authoritative boundary where practical.
+3. Choose model shape and scale work from evidence, not doctrine.
+4. Separate code rollback from data recovery.
+5. Route live, destructive, privacy-sensitive, or consequential changes through the required approval path.

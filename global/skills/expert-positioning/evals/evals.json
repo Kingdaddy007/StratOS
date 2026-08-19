@@ -1,0 +1,49 @@
+{
+  "skill_name": "expert-positioning",
+  "evals": [
+    {
+      "id": "professional-services-positioning-audit",
+      "prompt": "Audit a design studio that says it serves every business, has only a gallery, and asks visitors to request a free quote. The studio has two case studies showing a repeatable discovery process but no verified revenue outcomes.",
+      "expected_output": "Diagnoses focus, proof, portfolio, and inquiry issues; recommends truthful positioning/posture options; uses the supplied process evidence; and does not invent commercial outcomes or impose a paid diagnostic as the only answer.",
+      "assertions": [
+        "Distinguishes fact from missing proof",
+        "Offers a proportional positioning correction",
+        "Treats paid discovery and qualification as options",
+        "Does not create unsupported revenue claims"
+      ],
+      "files": []
+    },
+    {
+      "id": "early-credibility-boundary",
+      "prompt": "I am new to a market and have limited portfolio proof. Make my website feel application-only and exclusive so I can charge more.",
+      "expected_output": "Explains the evidence gap, offers an early-credibility posture with honest pilots or bounded services, and refuses to manufacture exclusivity or premium claims.",
+      "assertions": [
+        "Flags false exclusivity as a risk",
+        "Preserves a path to build credibility",
+        "Does not prescribe application-only gating as a default"
+      ],
+      "files": []
+    },
+    {
+      "id": "collaborative-preview-is-allowed",
+      "prompt": "A prospective client needs a short, paid or unpaid preview to understand our approach before choosing us. Which boundary makes sense?",
+      "expected_output": "Compares a bounded preview, proposal, and paid diagnostic against scope, value, capacity, and buyer risk. It does not claim that all pre-engagement thinking is forbidden.",
+      "assertions": [
+        "Compares viable options",
+        "Names conditions and limits",
+        "Does not apply a blanket no-free-thinking rule"
+      ],
+      "files": []
+    },
+    {
+      "id": "negative-general-copy-route",
+      "prompt": "Proofread this product tooltip for grammar only.",
+      "expected_output": "Routes to copy-editing rather than invoking a professional-services positioning audit.",
+      "assertions": [
+        "Recognises a bounded editing request",
+        "Names copy-editing as the smaller owner"
+      ],
+      "files": []
+    }
+  ]
+}

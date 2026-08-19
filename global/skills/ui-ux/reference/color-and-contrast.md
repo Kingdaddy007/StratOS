@@ -1,123 +1,119 @@
-# Color & Contrast
+# Colour Roles and Verification
 
-## Contents
+Use this reference when colour is selected, changed, audited, tokenised, or
+verified for a product UI, website, component, theme, form, status, chart, or
+brand surface. It is a decision method, not a palette generator.
 
-- [Color Spaces: Use OKLCH](#color-spaces-use-oklch)
-- [Building Functional Palettes](#building-functional-palettes)
-  - [Tinted Neutrals](#tinted-neutrals)
-  - [Palette Structure](#palette-structure)
-  - [The 60-30-10 Rule (Applied Correctly)](#the-60-30-10-rule-applied-correctly)
-- [Contrast & Accessibility](#contrast-accessibility)
-  - [WCAG Requirements](#wcag-requirements)
-  - [Dangerous Color Combinations](#dangerous-color-combinations)
-  - [Never Use Pure Gray or Pure Black](#never-use-pure-gray-or-pure-black)
-  - [Testing](#testing)
-- [Theming: Light & Dark Mode](#theming-light-dark-mode)
-  - [Dark Mode Is Not Inverted Light Mode](#dark-mode-is-not-inverted-light-mode)
-  - [Token Hierarchy](#token-hierarchy)
-- [Alpha Is A Design Smell](#alpha-is-a-design-smell)
+## Inputs
 
-## Color Spaces: Use OKLCH
+Establish the smallest relevant context before proposing a value:
 
-**Stop using HSL.** Use OKLCH (or LCH) instead. It's perceptually uniform, meaning equal steps in lightness *look* equal, unlike HSL where 50% lightness in yellow looks bright while 50% in blue looks dark.
+- medium and user task;
+- existing brand assets, tokens, and constraints;
+- affected states, content, themes, viewports, images, overlays, motion, or
+  material/light conditions;
+- functional or expressive job; and
+- accessibility target and any market/site constraint that materially matters.
 
-The OKLCH function takes three components: `oklch(lightness chroma hue)` where lightness is 0-100%, chroma is roughly 0-0.4, and hue is 0-360. To build a primary color and its lighter / darker variants, hold the chroma+hue roughly constant and vary the lightness, but **reduce chroma as you approach white or black**, because high chroma at extreme lightness looks garish.
+State when an input is missing. Do not infer an audience's response from a
+mood word, a demographic label, or a hue name.
 
-The hue you pick is a brand decision and should not come from a default. Do not reach for blue (hue 250) or warm orange (hue 60) by reflex; those are the dominant AI-design defaults, not the right answer for any specific brand.
+## Decision Method
 
-## Building Functional Palettes
+1. **Purpose.** Name what colour must accomplish: separation, hierarchy,
+   interaction, focus, status, data distinction, atmosphere, brand expression,
+   or another concrete job.
+2. **Role.** Reuse an existing semantic role when it already fits. Propose the
+   smallest new role only when it does not. Name roles by purpose, not raw hue
+   or component location.
+3. **Constraint.** Separate functional uses from expressive uses. Treat text,
+   controls, focus, status, warnings, links, selection, and data as
+   constraint-first. Treat atmosphere, imagery, material, and brand accent as
+   exploratory only while they preserve functional clarity.
+4. **Context.** Check the actual pairing and rendered conditions: theme,
+   state, background, viewport, content length, display, image, overlay,
+   motion, material, or light.
+5. **Verification.** Measure the applicable accessibility constraints and
+   inspect a representative rendered result. Label any remaining judgement as
+   a hypothesis, convention, or unresolved question.
 
-### Tinted Neutrals
+## Semantic Roles
 
-**Pure gray is dead.** A neutral with zero chroma feels lifeless next to a colored brand. Add a tiny chroma value (0.005-0.015) to all your neutrals, hued toward whatever your brand color is. The chroma is small enough not to read as "tinted" consciously, but it creates subconscious cohesion between brand color and UI surfaces.
+Keep the set small. Typical roles include:
 
-The hue you tint toward should come from THIS project's brand, not from a "warm = friendly, cool = tech" formula. If your brand color is teal, your neutrals lean toward teal. If your brand color is amber, they lean toward amber. The point is cohesion with the SPECIFIC brand, not a stock palette.
+| Family | Example roles | Check |
+| --- | --- | --- |
+| Foundation | `surface`, `surface-subtle`, `surface-inverse` | Layer separation and theme behaviour |
+| Content | `text-primary`, `text-secondary`, `text-inverse`, `border-subtle` | Actual foreground/background pairings |
+| Action | `action-primary`, hover, pressed, disabled variants | Discoverability and all relevant states |
+| Focus | `focus-ring`, `focus-offset` | Keyboard-visible focus across backgrounds |
+| Status | error, warning, success, info plus paired content | A non-colour cue for consequential meaning |
+| Data | minimum required series plus labels/patterns/shapes | Distinguishability without hue alone |
+| Expression | brand or display accents | Hierarchy, context, and whole-composition review |
 
-**Avoid** the trap of always tinting toward warm orange or always tinting toward cool blue. Those are the two laziest defaults and they create their own monoculture across projects.
+Use raw colour scales only as implementation inputs. Components should consume
+semantic roles so a theme or brand change does not require scattered manual
+replacement.
 
-### Palette Structure
+## Required Web Checks
 
-A complete system needs:
+For web UI, use [WCAG 2.2](https://www.w3.org/TR/WCAG22/) as the current
+baseline where it applies.
 
-| Role | Purpose | Example |
-|------|---------|---------|
-| **Primary** | Brand, CTAs, key actions | 1 color, 3-5 shades |
-| **Neutral** | Text, backgrounds, borders | 9-11 shade scale |
-| **Semantic** | Success, error, warning, info | 4 colors, 2-3 shades each |
-| **Surface** | Cards, modals, overlays | 2-3 elevation levels |
+- Do not use colour as the only cue for information, action, response, or
+  distinction. Pair consequential meaning with text, iconography, shape,
+  pattern, position, or another perceivable signal.
+- Check real text/background pairings. WCAG 2.2 minimum contrast is 4.5:1 for
+  normal text and 3:1 for large text, subject to its stated exceptions.
+- Check meaningful UI component boundaries, state indicators, focus treatment,
+  and graphical objects at 3:1 where the non-text contrast criterion applies.
+- Check hover, focus, pressed, selected, disabled, busy, error, empty, and
+  success states that exist in the product. A token can pass in one state and
+  fail over an image, gradient, overlay, or different theme.
+- Inspect the rendered result at relevant viewport sizes, content lengths,
+  light/dark themes, keyboard focus, and reduced-colour/CVD conditions when
+  useful. A calculated ratio is evidence, not a complete visual review.
 
-**Skip secondary/tertiary unless you need them.** Most apps work fine with one accent color. Adding more creates decision fatigue and visual noise.
+Do not claim WCAG conformance unless the requested scope, applicable criteria,
+and actual tested result support that claim.
 
-### The 60-30-10 Rule (Applied Correctly)
+## Context-Specific Judgement
 
-This rule is about **visual weight**, not pixel count:
+For brand and marketing work, use colour as one layer alongside typography,
+imagery, spacing, copy, category codes, and proof. Treat statements such as
+“blue creates trust,” “purple creates luxury,” or “red converts better” as
+context-dependent hypotheses, never causal rules.
 
-- **60%**: Neutral backgrounds, white space, base surfaces
-- **30%**: Secondary colors: text, borders, inactive states
-- **10%**: Accent: CTAs, highlights, focus states
+For spatial, cinematic, editorial, print, projection, or material-led work,
+inspect actual scene/display conditions: luminance, salience, light, texture,
+reflectance, glare, viewing distance, motion, and site/cultural context. A web
+contrast ratio does not settle whether a scene works.
 
-The common mistake: using the accent color everywhere because it's "the brand color." Accent colors work *because* they're rare. Overuse kills their power.
+Load [color-evidence-and-context.md](color-evidence-and-context.md) when a
+claim about psychology, culture, audience, print, data visualisation, spatial
+conditions, or an experiment affects the decision.
 
-## Contrast & Accessibility
+## Output
 
-### WCAG Requirements
+Return only what the task needs:
 
-| Content Type | AA Minimum | AAA Target |
-|--------------|------------|------------|
-| Body text | 4.5:1 | 7:1 |
-| Large text (18px+ or 14px bold) | 3:1 | 4.5:1 |
-| UI components, icons | 3:1 | 4.5:1 |
-| Non-essential decorations | None | None |
+| Field | Content |
+| --- | --- |
+| Context | Medium, task, existing system, theme/display constraints |
+| Role decision | Reuse, extend, or remove a semantic role and why |
+| Value mapping | Relevant values and `on-*`/state pairings |
+| Redundant cue | Non-colour communication where meaning is consequential |
+| Verification | Ratios/checks performed, rendered review, and limits |
+| Evidence label | Required, supported, context-dependent, conventional, or unresolved |
+| Next action | Smallest project validation still needed |
 
-**The gotcha**: Placeholder text still needs 4.5:1. That light gray placeholder you see everywhere? Usually fails WCAG.
+## Anti-Patterns
 
-### Dangerous Color Combinations
-
-These commonly fail contrast or cause readability issues:
-
-- Light gray text on white (the #1 accessibility fail)
-- **Gray text on any colored background**: gray looks washed out and dead on color. Use a darker shade of the background color, or transparency
-- Red text on green background (or vice versa): 8% of men can't distinguish these
-- Blue text on red background (vibrates visually)
-- Yellow text on white (almost always fails)
-- Thin light text on images (unpredictable contrast)
-
-### Never Use Pure Gray or Pure Black
-
-Pure gray (`oklch(50% 0 0)`) and pure black (`#000`) don't exist in nature; real shadows and surfaces always have a color cast. Even a chroma of 0.005-0.01 is enough to feel natural without being obviously tinted. (See tinted neutrals example above.)
-
-### Testing
-
-Don't trust your eyes. Use tools:
-
-- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
-- Browser DevTools → Rendering → Emulate vision deficiencies
-- [Polypane](https://polypane.app/) for real-time testing
-
-## Theming: Light & Dark Mode
-
-### Dark Mode Is Not Inverted Light Mode
-
-You can't just swap colors. Dark mode requires different design decisions:
-
-| Light Mode | Dark Mode |
-|------------|-----------|
-| Shadows for depth | Lighter surfaces for depth (no shadows) |
-| Dark text on light | Light text on dark (reduce font weight) |
-| Vibrant accents | Desaturate accents slightly |
-| White backgrounds | Never pure black; use dark gray (oklch 12-18%) |
-
-In dark mode, depth comes from surface lightness, not shadow. Build a 3-step surface scale where higher elevations are lighter (e.g. 15% / 20% / 25% lightness). Use the SAME hue and chroma as your brand color (whatever it is for THIS project; do not reach for blue) and only vary the lightness. Reduce body text weight slightly (e.g. 350 instead of 400) because light text on dark reads as heavier than dark text on light.
-
-### Token Hierarchy
-
-Use two layers: primitive tokens (`--blue-500`) and semantic tokens (`--color-primary: var(--blue-500)`). For dark mode, only redefine the semantic layer; primitives stay the same.
-
-## Alpha Is A Design Smell
-
-Heavy use of transparency (rgba, hsla) usually means an incomplete palette. Alpha creates unpredictable contrast, performance overhead, and inconsistency. Define explicit overlay colors for each context instead. Exception: focus rings and interactive states where see-through is needed.
-
----
-
-**Avoid**: Relying on color alone to convey information. Creating palettes without clear roles for each color. Using pure black (#000) for large areas. Skipping color blindness testing (8% of men affected).
-
+| Anti-Pattern | What It Is | Fix |
+| --- | --- | --- |
+| Palette first | Choosing hues before naming the user or communication job | Start with purpose and semantic role |
+| Hue determinism | Treating a colour/emotion association as universal | State it as a hypothesis and validate in context |
+| Ratio-only approval | Passing a calculator result without inspecting states or rendering | Check actual pairings, states, themes, and the rendered result |
+| Colour-only status | Meaning exists only in red, green, or another hue | Add text, icon, shape, pattern, or placement |
+| Raw-value sprawl | Components consume scattered hex values | Use semantic roles and paired values |
+| Formula as proof | Treating harmony rules as evidence of quality | Use relationships only for exploration, then review the composition |

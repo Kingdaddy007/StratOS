@@ -33,7 +33,7 @@ Use one dossier per prospect. Replace bracketed values; do not invent evidence. 
   "main_gap": "[One concrete failure, not a generic impression]",
   "hero_concept_angle": "[Only required for Elite prospects or after Growth engagement]",
   "outreach_hook": "[Specific observation that proves personalization]",
-  "recommended_action": "[Create concept immediately / Verify manually / Send light outreach / Add to nurture / Do not target]",
+  "recommended_action": "[Prepare concept for review / Verify manually / Prepare light outreach draft for review / Add to a local nurture proposal / Do not target]",
   "notes": "[Risks, uncertainty, and next verification step]"
 }
 ```

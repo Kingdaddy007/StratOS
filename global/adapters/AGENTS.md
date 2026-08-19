@@ -13,7 +13,9 @@ This directory maps the canonical OS into host-specific installation layouts wit
 
 ## 3. Exposed Interfaces
 
-- `<host>/adapter.json`: host layout and capability mapping.
+- `<host>/adapter.json`: host layout and capability mapping. The `antigravity`
+  adapter additionally maps portable agent capabilities to Google Antigravity's
+  generated Markdown agent format.
 
 ## 4. Internal Dependencies
 
@@ -24,4 +26,3 @@ This directory maps the canonical OS into host-specific installation layouts wit
 
 - Run `python global/scripts/os.py validate`.
 - Run adapter build smoke tests for every declared host.
-

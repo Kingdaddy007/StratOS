@@ -1,413 +1,93 @@
 ---
 name: competitor-profiling
-description: 'When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions ''competitor profile,'' ''competitor research,'' ''competitor analysis,'' ''profile this competitor,'' ''analyze competitor,'' ''competitive intelligence,'' ''competitor deep dive,'' ''who are my competitors,'' ''competitor landscape,'' ''competitor dossier,'' ''competitive audit,'' or ''research these competitors.'' Input is a list of competitor URLs. Output is structured competitor profile markdown files.'
+description: >
+  Research, profile, compare, or audit competitors, alternatives, agencies,
+  products, offers, websites, public positioning, pricing, proof, content, or
+  market signals. Trigger on "competitor research", "competitive intelligence",
+  "competitor dossier", "competitive audit", "who are my competitors", "compare
+  these companies", or a request to analyse supplied competitor URLs. Do not use
+  as permission to bypass access controls, scrape personal data, contact a
+  competitor, publish claims, or make legal/compliance conclusions.
 ---
 
 # Competitor Profiling
 
-You are an expert competitive intelligence analyst. Your goal is to take a list of competitor URLs and produce comprehensive, structured competitor profile documents by combining live site scraping with SEO and market data.
+## WHEN TO USE THIS
 
-## Initial Assessment
+- Build a quick scan, focused comparison, deep dossier, or cross-competitor summary from supplied public sources.
+- Analyse competitor positioning, offers, experience, pricing, proof, content, customer language, or market signals.
+- Prepare evidence for product, brand, CRO, sales, or strategic decisions.
 
-**Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered.
+## NEVER DO
 
-Before profiling, confirm:
+- Never require a named scraping, SEO, review, or data vendor. Use the host capabilities that are actually available.
+- Never bypass authentication, paywalls, CAPTCHAs, technical blocks, contractual restrictions, or stated automated-collection restrictions.
+- Never treat robots.txt as authentication, or treat a blocked/unreachable source as permission to continue.
+- Never collect, persist, or expose personal data merely because it is public.
+- Never turn competitor self-description, search rank, a proxy, a repeated claim, or an inference into an independently verified fact.
+- Never contact competitors, publish comparisons, or create other external effects without the required human approval.
 
-1. **Competitor URLs** — the list of competitor website URLs to profile
-2. **Your product** — what you do (if not in product marketing context)
-3. **Depth level** — quick scan (key facts only) or deep profile (full research)
-4. **Focus areas** — any specific dimensions to prioritize (e.g., pricing, positioning, SEO strength, content strategy)
+## QUESTION AND SCOPE
 
-If the user provides URLs and context is available, proceed without asking.
+1. State the decision the research will support, comparison unit, target audience, market/region, freshness requirement, consequence of error, and evidence that could change the decision.
+2. Choose `quick_scan`, `focused_comparison`, or `deep_profile`. Default to the smallest scope that answers the decision; do not default to a full crawl.
+3. Confirm the supplied URLs or entities and whether comparison against the user's offer is wanted. Read active project context and product/brand context when available.
+4. Define the dimensions before collecting: positioning, audience, offer/capability, experience, pricing, proof, content, distribution, operational signals, or another decision-specific dimension.
 
----
+## CAPABILITY-FIRST COLLECTION
 
-## Core Principles
+1. Inspect available read-only capabilities: page fetch, browser observation, search, screenshots/video, document parsing, structured extraction, or user-provided evidence. Record capability, access condition, freshness, and limits.
+2. Use the least intrusive adequate public source. Prefer the competitor's own current page for self-description and an independent source for material claims, reviews, market evidence, or disputed statements.
+3. Map only the pages needed for the question. Typical candidates are homepage, offer/product, pricing, about, case studies, integrations, changelog, help, and relevant public reviews. Do not assume any page exists.
+4. If access fails, record the failure and use an allowed fallback. Do not guess missing pricing, founding date, customers, funding, traffic, or capability.
+5. Preserve a provenance record when the workspace and task permit local output. Do not silently write raw captures, personal data, or expensive tool output to disk.
 
-### 1. Facts Over Opinions
-Every claim in a profile should be traceable to a source — scraped page content, review data, or SEO metrics. Label inferences clearly.
+## EVIDENCE AND CLAIM DISCIPLINE
 
-### 2. Structured and Comparable
-All profiles follow the same template so they can be compared side by side. Consistency matters more than completeness on any single profile.
+Label every material statement as `observation`, `source_reported_claim`, `measured_metric`, `inference`, `estimate`, `hypothesis`, or `unknown`.
 
-### 3. Current Data
-Profiles are snapshots. Always include the date generated. Flag anything that looks stale (e.g., "pricing page last updated 2023").
+- Record exact wording, source URL/artifact, title, source type, publication/update date, access date, extraction method, scope, limitations, confidence, and permitted use.
+- Keep competitor self-description separate from independent evidence. A claim such as "10,000 customers" remains source-reported unless supported by adequate evidence.
+- Do not treat absence from a page as proof of absence. Say `not found in reviewed sources`.
+- Distinguish current, dated, regional, tier-specific, device-specific, and sampled evidence.
+- Use one adequate source for a low-stakes direct observation. Corroborate material, sensitive, contested, external, or difficult-to-reverse claims when feasible.
 
-### 4. Honest Assessment
-Don't exaggerate competitor weaknesses or downplay their strengths. Accurate profiles are useful profiles.
+## FAIR COMPARISON AND SYNTHESIS
 
----
+Compare like with like. For each comparison, record regional, temporal, product-tier, market, date, device, audience, denominator, method, and definition differences before drawing a conclusion.
 
-## Saving Raw Data
+- Describe strengths and weaknesses with evidence and uncertainty; do not write advocacy disguised as analysis.
+- Separate observation from strategic implication. Treat "opportunity" as a hypothesis until tested against the user's context.
+- Compare the competitor's offer with the user's offer only when the user's scope, evidence, and decision criteria are known.
+- Do not use search visibility, backlink counts, review volume, or public claims as a universal proxy for quality, authority, or product truth.
 
-Before synthesizing the profile, persist all raw scrape, SEO, and review data to disk so it can be re-read, audited, or re-used later without re-running expensive API calls.
+## STOP AND APPROVAL ROUTING
 
-**Directory layout** (relative to project root):
-
-```
-competitor-profiles/
-├── raw/
-│   └── <competitor-slug>/
-│       └── <YYYY-MM-DD>/
-│           ├── scrapes/    # one .md file per scraped page (homepage.md, pricing.md, ...)
-│           ├── seo/        # one .json file per DataForSEO call (backlinks-summary.json, ranked-keywords.json, ...)
-│           └── reviews/    # one .md or .json file per review source (g2.md, capterra.md, ...)
-├── <competitor-slug>.md    # final synthesized profile
-└── _summary.md             # cross-competitor summary
-```
-
-Rules:
-
-- `<competitor-slug>` is lowercase, hyphenated (e.g. `responsehub`, `safe-base`)
-- `<YYYY-MM-DD>` is the date the data was pulled — supports re-running and diffing snapshots over time
-- Save each Firecrawl scrape as raw markdown to `scrapes/<page-name>.md`
-- Save each DataForSEO response as raw JSON to `seo/<endpoint-name>.json`
-- Save each review source to `reviews/<source>.md` (cleaned text) or `.json` (raw)
-- Always create the date folder fresh on a new run; never overwrite a prior date's data
-
-The synthesized profile (`<competitor-slug>.md`) should reference the raw data folder it was built from in its `## Raw Data Sources` section.
-
----
-
-## Research Process
-
-### Phase 1: Site Scraping (Firecrawl)
-
-For each competitor URL, scrape key pages to extract positioning, features, pricing, and messaging.
-
-#### Step 1: Map the site
-
-Use **Firecrawl Map** to discover the competitor's site structure and identify key pages:
-
-```
-firecrawl_map → competitor URL
-```
-
-From the map, identify and prioritize these page types:
-- Homepage
-- Pricing page
-- Features / product pages
-- About / company page
-- Blog (top-level, for content strategy signals)
-- Customers / case studies page
-- Integrations page
-- Changelog / what's new (if exists)
-
-#### Step 2: Scrape key pages
-
-Use **Firecrawl Scrape** on each identified page:
-
-```
-firecrawl_scrape → each key page URL
-```
-
-Save each result to `competitor-profiles/raw/<competitor-slug>/<YYYY-MM-DD>/scrapes/<page-name>.md` before extracting fields.
-
-Extract from each page:
-
-| Page | What to Extract |
-|------|----------------|
-| **Homepage** | Headline, subheadline, value proposition, primary CTA, social proof claims, target audience signals |
-| **Pricing** | Tiers, prices, feature breakdown per tier, billing options, free tier/trial details, enterprise pricing signals |
-| **Features** | Feature categories, key capabilities, how they describe each feature, screenshots/demo signals |
-| **About** | Founding story, team size, funding, mission statement, headquarters |
-| **Customers** | Named customers, logos, industries served, case study themes |
-| **Integrations** | Integration count, key integrations, categories |
-| **Changelog** | Release velocity, recent focus areas, product direction signals |
-
-#### Step 3: Scrape competitor reviews (optional but high-value)
-
-Use **Firecrawl Scrape** or **Firecrawl Search** to find:
-- G2 reviews page for the competitor
-- Capterra reviews page
-- Product Hunt launch page
-- TrustRadius profile
-
-Save each scraped review page to `competitor-profiles/raw/<competitor-slug>/<YYYY-MM-DD>/reviews/<source>.md`. Then extract: overall rating, review count, common praise themes, common complaint themes, and 3-5 representative quotes.
-
----
-
-### Phase 2: SEO & Market Data (DataForSEO)
-
-Use DataForSEO MCP tools to gather quantitative competitive intelligence. Save each raw response as JSON to `competitor-profiles/raw/<competitor-slug>/<YYYY-MM-DD>/seo/<endpoint-name>.json` before parsing it into the profile. For the full list of MCP tools used in this skill (Firecrawl + DataForSEO) and example calls, see [references/tool-reference.md](references/tool-reference.md).
-
-#### Domain Authority & Backlinks
-
-Use **backlinks_summary** to get:
-- Domain rank / authority score
-- Total backlinks
-- Referring domains count
-- Spam score
-
-Use **backlinks_referring_domains** for:
-- Top referring domains (quality signals)
-- Link acquisition patterns
-
-#### Keyword & Traffic Intelligence
-
-Use **dataforseo_labs_google_ranked_keywords** to get:
-- Total organic keywords ranking
-- Keywords in top 3, top 10, top 100
-- Estimated organic traffic
-
-Use **dataforseo_labs_google_domain_rank_overview** for:
-- Domain-level organic metrics
-- Estimated traffic value
-- Top keywords by traffic
-
-Use **dataforseo_labs_google_keywords_for_site** to discover:
-- What keywords they target
-- Content gaps vs. your site
-
-#### Competitive Positioning Data
-
-Use **dataforseo_labs_google_competitors_domain** to find:
-- Their closest organic competitors (may reveal competitors you haven't considered)
-- Market overlap data
-
-Use **dataforseo_labs_google_relevant_pages** to find:
-- Their highest-traffic pages
-- Content that drives the most organic value
-
----
-
-### Phase 3: Synthesis
-
-Combine scraped content with SEO data to build the profile. Cross-reference claims (e.g., if they claim "10,000 customers" on site, check if their traffic/backlink profile supports that scale).
-
----
-
+Stop and report unknown, request clarification, or route to review when source access, permission, identity, freshness, comparison basis, or evidence quality is insufficient. Obtain human approval before external publication, high-consequence recommendations, personal-data use, paid or unusual-volume collection, external interaction, or a materially contested claim.
 
 ## REFERENCE LOADING RULES
 
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
-## Output Format
-
-### Profile Document Structure
-
-Generate one markdown file per competitor, saved to a `competitor-profiles/` directory in the project root.
-
-**Filename**: `competitor-profiles/[competitor-name].md`
-
-**For the full profile and summary templates**: See [references/templates.md](references/templates.md)
-
-Each profile follows this structure:
-
-```markdown
-# [Competitor Name] — Competitor Profile
-
-**URL**: [website]
-**Generated**: [date]
-**Depth**: [quick scan / deep profile]
-
----
-
-## At a Glance
-
-| Metric | Value |
-|--------|-------|
-| Tagline | [from homepage] |
-| Founded | [year] |
-| Headquarters | [location] |
-| Team size | [estimate] |
-| Funding | [if known] |
-| Domain rank | [from DataForSEO] |
-| Est. organic traffic | [monthly] |
-| Referring domains | [count] |
-| Organic keywords | [count] |
-
----
-
-## Positioning & Messaging
-
-**Primary value proposition**: [headline + subheadline from homepage]
-
-**Target audience**: [who they're speaking to, based on copy analysis]
-
-**Positioning angle**: [how they position — e.g., "simplicity-first," "enterprise-grade," "all-in-one"]
-
-**Key messaging themes**:
-- [theme 1 — with source page]
-- [theme 2]
-- [theme 3]
-
----
-
-## Product & Features
-
-### Core capabilities
-- [capability 1] — [brief description from their site]
-- [capability 2]
-- ...
-
-### Notable differentiators
-- [what they emphasize as unique]
-
-### Integrations
-- [count] integrations
-- Key: [list top 5-10]
-
-### Product direction signals
-- [based on changelog / recent feature releases]
-
----
-
-## Pricing
-
-| Tier | Price | Key Inclusions |
-|------|-------|---------------|
-| [Free/Starter] | [price] | [what's included] |
-| [Pro/Growth] | [price] | [what's included] |
-| [Enterprise] | [price] | [what's included] |
-
-**Billing**: [monthly/annual, discount for annual]
-**Free trial**: [yes/no, duration]
-**Notable**: [any pricing quirks — per-seat, usage-based, hidden costs]
-
----
-
-## Customers & Social Proof
-
-**Named customers**: [list notable logos]
-**Industries**: [primary industries served]
-**Case study themes**: [what outcomes they highlight]
-**Review ratings**:
-- G2: [rating] ([count] reviews)
-- Capterra: [rating] ([count] reviews)
-
----
-
-## SEO & Content Strategy
-
-**Organic strength**:
-- Estimated monthly organic traffic: [number]
-- Organic keywords (top 10): [count]
-- Organic traffic value: $[estimated]
-
-**Top organic pages** (by estimated traffic):
-1. [page URL] — [keyword] — [est. traffic]
-2. [page URL] — [keyword] — [est. traffic]
-3. [page URL] — [keyword] — [est. traffic]
-
-**Content strategy signals**:
-- Blog post frequency: [estimate]
-- Primary content types: [guides, comparisons, templates, etc.]
-- Content focus areas: [topics they invest in]
-
-**Backlink profile**:
-- Referring domains: [count]
-- Top referring sites: [list 5]
-- Link acquisition pattern: [growing/stable/declining]
-
----
-
-## Strengths & Weaknesses
-
-### Strengths
-- [strength 1 — with evidence source]
-- [strength 2]
-- [strength 3]
-
-### Weaknesses
-- [weakness 1 — with evidence source]
-- [weakness 2]
-- [weakness 3]
-
----
-
-## Competitive Implications for [Your Product]
-
-**Where they're strong vs. us**: [areas where this competitor has an advantage]
-
-**Where we're strong vs. them**: [areas where you have an advantage]
-
-**Opportunities**: [gaps in their offering or positioning we can exploit]
-
-**Threats**: [areas where they're improving or gaining ground]
-
----
-
-## Raw Data Sources
-
-- Homepage scraped: [date]
-- Pricing page scraped: [date]
-- SEO data pulled: [date]
-- Review data pulled: [date, sources]
-```
-
----
-
-### Summary Document
-
-After profiling all competitors, generate a `competitor-profiles/_summary.md` that includes:
-
-1. **Competitor landscape overview** — one paragraph summarizing the competitive field
-2. **Comparison table** — key metrics side by side for all profiled competitors
-3. **Positioning map** — where each competitor sits (e.g., simple↔complex, cheap↔premium)
-4. **Key takeaways** — 3-5 strategic observations from the research
-5. **Gaps and opportunities** — where the market is underserved
-
----
-
-## Quick Scan vs. Deep Profile
-
-### Quick Scan (faster, lower cost)
-- Scrape: homepage + pricing page only
-- SEO: domain rank overview + ranked keywords summary
-- Skip: reviews, technology stack, backlink details
-- Output: abbreviated profile (At a Glance + Positioning + Pricing + SEO summary)
-
-### Deep Profile (comprehensive)
-- Scrape: all key pages + review sites
-- SEO: full backlink analysis + keyword intelligence + competitor discovery
-- Include: technology stack, content strategy analysis, review mining
-- Output: full profile template
-
-Default to **quick scan** unless the user requests deep profiling or specifies a small number of competitors (3 or fewer).
-
----
-
-## Handling Multiple Competitors
-
-When profiling more than one competitor:
-
-1. **Parallelize scraping** — scrape all competitors' homepages simultaneously, then pricing pages, etc.
-2. **Use consistent metrics** — pull the same DataForSEO metrics for every competitor so profiles are comparable
-3. **Build the summary last** — after all individual profiles are complete
-4. **Prioritize by relevance** — if the user has 10+ competitors, suggest profiling the top 5 first based on domain overlap or market similarity
-
----
-
-## Updating Profiles
-
-Profiles are snapshots. When updating:
-
-- Check pricing pages first (most volatile)
-- Re-pull SEO metrics (traffic and rankings shift monthly)
-- Scan changelog for product changes
-- Update the "Generated" date
-- Note what changed since last profile in a `## Change Log` section at the bottom
-
----
-
-## Task-Specific Questions
-
-Only ask if not answered by context or input:
-
-1. What competitor URLs should I profile?
-2. Quick scan or deep profile?
-3. Any specific dimensions to focus on (pricing, SEO, positioning)?
-4. Should I compare findings against your product?
-
----
-
-## Related Skills
-
-- **copywriting**: For creating comparison/alternative pages from these profiles
-- **research-analysis**: For deeper evidence gathering and source comparison
-- **copywriting**: For planning content and messaging from competitive gaps
-- **page-cro**: For search-intent and conversion analysis on comparison pages
-- **sales-enablement**: For turning profiles into battle cards and sales collateral
-- **research-analysis**: For evidence-backed analysis of competitor advertising
-- **product-thinking**: For pricing and packaging tradeoff analysis
+- Load [references/evidence-and-source-record.md](references/evidence-and-source-record.md) for any material claim, collection boundary, source conflict, privacy question, access failure, or comparison decision.
+- Load [references/templates.md](references/templates.md) when producing a profile or cross-competitor summary. Use only sections relevant to the declared scope.
+- Load [references/tool-reference.md](references/tool-reference.md) when selecting host capabilities, fallbacks, capture methods, or provenance-preserving outputs. Do not assume a named provider is installed.
+- Load [references/resource-index.md](references/resource-index.md) to select resources. Do not load the package wholesale.
+
+## OUTPUT SHAPE
+
+Return a decision-useful dossier, not an unsourced data dump.
+
+1. **Research question and scope** - decision, entities, dimensions, market, dates, depth, and limits.
+2. **Source and access record** - sources used, access method, failures, freshness, and permissions.
+3. **Evidence ledger** - material claims with class, source, scope, confidence, and permitted use.
+4. **Profile or comparison** - observations grouped by the selected dimensions.
+5. **Interpretation** - supported implications, hypotheses, competing explanations, and unknowns.
+6. **Decision handoff** - strengths, risks, opportunities to test, next evidence, and approval state.
+
+## NON-NEGOTIABLE CHECKLIST
+
+1. Define the decision, comparison unit, scope, and freshness need.
+2. Use available capabilities without hard-coded provider assumptions.
+3. Respect access, privacy, robots, contractual, and approval boundaries.
+4. Preserve claim-level provenance and evidence class.
+5. Compare like with like and expose limitations.
+6. Report unknowns instead of filling gaps with plausible facts.

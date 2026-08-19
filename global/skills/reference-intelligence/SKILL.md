@@ -47,6 +47,24 @@ Gather:
 
 If brand context is missing, perform source forensics only. Stop before recommending brand adoption.
 
+## HOST EVIDENCE ROUTING
+
+Use the smallest available inspection path. Prefer direct host evidence before
+mediated descriptions:
+
+1. Inspect an Antigravity Browser artifact, user-supplied screenshot, or
+   user-supplied screen recording when the host exposes it.
+2. Mark visible behaviour as `OBSERVED`, preserving page position, timecode, or
+   other source anchor where available.
+3. Mark a transcript, an AI-generated analysis, or an unviewable link as
+   `REPORTED`; mark a missing visual source as `UNKNOWN`.
+4. Consider an optional Gemini multimodal plugin or comparable integration only
+   when it answers a named inspection gap that the direct artifact does not.
+   Treat its output as mediated evidence to verify, not ground truth.
+5. Obtain just-in-time approval before uploading media, calling an API, using an
+   external account, spending money, or creating any external effect. A host
+   capability never supplies that approval.
+
 ## PROCESS
 
 1. **Scope** the questions before inspecting mechanics.
@@ -106,6 +124,11 @@ Load `references/source-forensics.md` whenever analyzing recordings, screenshots
 Load `references/corpus-synthesis.md` when comparing three or more sources, ranking evidence, resolving contradictions, or checking selection and prestige bias.
 
 Load `references/brand-translation-and-handoff.md` when brand context exists and the task requires Keep/Adapt/Reject/Defer decisions, concept inputs, storyboards, production guidance, or implementation plans.
+
+Load `references/local-design-audit-library.md` only when the Spatial pack is
+active and Beloved explicitly wants to use the local Design Audit library,
+compare one of its reports with a new recording or transcript, or choose a
+precedent mechanic for a qualifying Spatial project.
 
 ## OUTPUT SHAPE
 

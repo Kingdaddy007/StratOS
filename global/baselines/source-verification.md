@@ -1,6 +1,6 @@
 # Volatile Source Verification Baseline
 
-Verification date: 2026-07-13
+Verification date: 2026-08-19
 
 ## Rule
 
@@ -10,11 +10,11 @@ Volatile platform, legal, API, pricing, product-limit, and tool-version claims r
 
 | Area | Verified claims | Primary source | Result |
 | --- | --- | --- | --- |
-| Seedance 2.0 | Four input modalities; up to 9 image, 3 video, and 3 audio references; editing and extension; 15-second multi-shot audio-video output; dual-channel audio; authorization requirement for real-person portraits | [ByteDance official launch, 2026-02-12](https://seed.bytedance.com/blog/seedance-2-0-official-launch) | Verified 2026-07-13 |
-| Seedance legal/API/filter narratives | Named-party enforcement causes, public API status, filter block rates, suspension dates, and universal prompt limits | No supporting current ByteDance primary source located in this pass | Unverified; historical only |
-| Deriv Bot | Deriv Bot is a block-based strategy builder; strategies can be saved and imported as XML; Blockly V10 made variable names case-insensitive | [Deriv Help Centre](https://deriv.com/help-centre), [Deriv-admin Blockly V10 notice](https://community.deriv.com/t/important-google-blockly-update-v10-affects-deriv-bot-xml-files/87246) | Verified 2026-07-13 |
-| Deriv XML internals | Exact block IDs, ordering, parser versions, and contract mappings | No stable public first-party schema located in this pass | Verify against a fresh official export and demo-account import |
-| Google Flow / Veo / Gemini Omni | Flow is the creative interface; current Flow help lists Veo 3.1 Lite, Fast, Quality, and Gemini Omni Flash with model-dependent generation/editing features | [Flow model and feature help](https://support.google.com/flow/answer/16352836?hl=en), [Flow launch announcement](https://blog.google/innovation-and-ai/products/google-flow-veo-ai-filmmaking-tool/), [Gemini Omni](https://deepmind.google/models/gemini-omni/) | Verified 2026-07-13; recheck the active account UI before relying on labels, limits, availability, or credits |
+| Google Flow | Flow is a Google interface/workflow surface. Its dated support matrix lists Veo 3.1 - Lite, Fast, Quality, and Gemini Omni Flash with model-dependent controls. Credits, plans, region, feature exposure, and active cost remain account/UI-dependent. | [Flow model matrix](https://support.google.com/flow/answer/16352836?hl=en), [Flow credits](https://support.google.com/flow/answer/16526234?hl=en) | Rechecked 2026-08-19; inspect the active UI before production use. |
+| Seedance 2.0 | The dated 2026-02-12 launch announcement describes four input modalities, 9/3/3 reference counts, editing/extension, 15-second multi-shot audio-video output, dual-channel audio, and real-person authorization. | [Seedance 2.0 official launch](https://seed.bytedance.com/en/blog/official-launch-of-seedance-2-0) | Historical version-specific evidence; not a universal creator/API limit. |
+| Seedance 2.5 | The dated 2026-07-31 launch announcement describes up to 30-second clips, multiple extensions, timestamped editing, and 30/10/10 reference counts. | [Seedance 2.5 launch](https://seed.bytedance.com/en/blog/one-take-creation-flexible-referencing-introducing-seedance-2-5) | Historical version-specific evidence; confirm active surface access and controls. |
+| Seedance creator/API behavior | Surface labels, limits, roles, pricing, access, region, moderation, export, and terms vary across Dreamina/Jimeng/Doubao/CapCut/ModelArk. | [ModelArk documentation](https://docs.byteplus.com/en/docs/ModelArk/2607689) | Active-surface check required. |
+| Legal/API/filter narratives | Universal prompt limits, filter-pass techniques, named-party enforcement causes, fixed endpoint behavior, universal availability, or blanket legal clearance. | No matching current primary evidence established | Unverified; historical only. |
 
 ## Reverification Trigger
 

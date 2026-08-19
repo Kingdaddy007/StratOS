@@ -14,7 +14,7 @@ outputs: [change set, compatibility notes, validation evidence, migration notes]
 verification: [schema checks, reference checks, unresolved-token scan, targeted behavior trace, git diff check]
 failure_paths: [stop on contract conflict, preserve existing files on incomplete migration, report unresolved references]
 resume_contract: task-scoped .agents/workflows/os-maintenance.json using the workflows directory contract
-next_workflows: [review-code, test-strategy]
+next_workflows: [test-strategy, none]
 profiles: [general]
 ---
 
@@ -35,4 +35,3 @@ profiles: [general]
 5. Make the smallest coherent change; never maintain duplicate canonical sources.
 6. Validate schema, references, dispatch behavior, state transitions, and representative dry-run requests.
 7. Deliver files changed, evidence, residual risks, and any required downstream work.
-

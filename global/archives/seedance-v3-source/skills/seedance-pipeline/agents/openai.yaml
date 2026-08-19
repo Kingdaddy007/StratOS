@@ -1,0 +1,4 @@
+interface:
+  display_name: "Seedance Pipeline"
+  short_description: "Verified planning for Seedance integration and local finishing"
+  default_prompt: "Use $seedance-pipeline to plan a source-verified production route without executing external actions."

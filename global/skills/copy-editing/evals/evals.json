@@ -2,86 +2,72 @@
   "skill_name": "copy-editing",
   "evals": [
     {
-      "id": 1,
-      "prompt": "Edit this homepage copy for us: 'Welcome to CloudSync! We are very excited to offer you an innovative, cutting-edge platform that seamlessly integrates with your existing tools. Our powerful solution helps businesses of all sizes optimize their workflows and drive meaningful results. Get started today and experience the difference!'",
-      "expected_output": "Should check for product-marketing-context.md first. Should apply the Seven Sweeps Framework systematically. Sweep 1 (Clarity): identify vague language ('optimize workflows,' 'drive meaningful results,' 'experience the difference'). Sweep 2 (Voice & Tone): flag 'Welcome to' as weak opening, 'we are very excited' as company-focused. Sweep 3 (So What): question what specific value is being offered. Sweep 4 (Prove It): note no proof points, stats, or evidence. Sweep 5 (Specificity): flag 'businesses of all sizes,' 'existing tools,' 'powerful solution' as generic. Sweep 6 (Heightened Emotion): assess emotional impact. Sweep 7 (Zero Risk): check for trust signals. Should provide a rewritten version addressing all issues.",
+      "id": "quick-cta-polish",
+      "prompt": "Quick edit this CTA section without changing the offer: 'Ready to take your business to the next level? Our team of dedicated professionals is standing by to help you achieve your goals. Click here to learn more.'",
+      "expected_output": "Makes a concise clarity and specificity edit, preserves the unknown offer details rather than inventing a value proposition, and explains whether the CTA destination needs confirmation.",
       "assertions": [
-        "Checks for product-marketing-context.md",
-        "Applies Seven Sweeps Framework",
-        "Identifies vague language (Clarity sweep)",
-        "Flags weak opening and company-focused language (Voice & Tone sweep)",
-        "Questions missing value proposition (So What sweep)",
-        "Notes missing proof points (Prove It sweep)",
-        "Flags generic terms (Specificity sweep)",
-        "Provides a rewritten version"
+        "Uses a quick, bounded pass rather than all seven sweeps",
+        "Removes cliché and filler where possible",
+        "Does not invent benefits, proof, or a new offer",
+        "Keeps the meaning boundary visible"
       ],
       "files": []
     },
     {
-      "id": 2,
-      "prompt": "Quick edit on this CTA section: 'Ready to take your business to the next level? Our team of dedicated professionals is standing by to help you achieve your goals. Click here to learn more about how we can help you succeed.'",
-      "expected_output": "Should apply the quick-pass editing checks. Should identify: 'take your business to the next level' (cliché), 'team of dedicated professionals' (filler), 'standing by' (passive), 'click here' (weak CTA), 'learn more' (vague action), 'help you succeed' (generic). Should apply word-level, sentence-level, and paragraph-level checks. Should rewrite with specific value prop, active voice, and strong action-oriented CTA. Should be concise since this was requested as a 'quick edit.'",
+      "id": "testimonial-proof-boundary",
+      "prompt": "Improve this testimonial: 'CloudSync is great. It really helped our company. - John S., CEO.' No customer interview or additional metrics are available.",
+      "expected_output": "Explains that the testimonial can be edited for clarity but cannot be made more specific without the customer’s authorised words or evidence; proposes questions or a labelled template instead of fabricating results.",
       "assertions": [
-        "Identifies clichés and filler phrases",
-        "Flags 'click here' and 'learn more' as weak",
-        "Applies word-level and sentence-level checks",
-        "Rewrites with specific value and strong CTA",
-        "Uses active voice in rewrite",
-        "Keeps response concise for a quick edit"
+        "Preserves attribution and scope",
+        "Does not invent a percentage, company size, or outcome",
+        "Flags the proof limitation",
+        "Suggests a safe next evidence step"
       ],
       "files": []
     },
     {
-      "id": 3,
-      "prompt": "edit this product description, it feels too long and wordy: 'Our comprehensive project management solution provides teams with a robust set of tools that enable them to efficiently plan, execute, and monitor their projects from start to finish. With our intuitive interface, powerful analytics dashboard, and seamless integration capabilities, you can ensure that every aspect of your project is managed with precision and care. Whether you're a small startup or a large enterprise, our platform scales to meet your unique needs and requirements, helping you deliver projects on time and within budget every single time.'",
-      "expected_output": "Should trigger on casual phrasing. Should apply the Clarity and Specificity sweeps primarily. Should identify: redundancy ('plan, execute, and monitor' overlaps with 'from start to finish'), filler words ('comprehensive,' 'robust,' 'efficiently,' 'seamless,' 'unique'), hedge phrases ('ensuring every aspect,' 'with precision and care'), and generic claims ('scales to meet your needs,' 'on time and within budget every single time'). Should cut the copy significantly (probably by 50%+). Should provide a tighter rewrite that says the same thing in fewer, more specific words.",
+      "id": "content-refresh",
+      "prompt": "Refresh this old feature page. It says our product supports 20 integrations, but the product team has not confirmed today’s number. Keep the page’s audience and offer unchanged.",
+      "expected_output": "Uses a refresh pass, preserves the audience and offer, marks the integration number for verification or substitutes safely, and does not silently add new claims.",
       "assertions": [
-        "Triggers on casual phrasing",
-        "Identifies redundancy in the copy",
-        "Identifies filler words and hedge phrases",
-        "Identifies generic claims",
-        "Cuts copy significantly (50%+ reduction)",
-        "Provides tighter rewrite with specific language"
+        "Checks factual freshness",
+        "Does not repeat the stale number as confirmed fact",
+        "Preserves the editing contract",
+        "Identifies the required source check"
       ],
       "files": []
     },
     {
-      "id": 4,
-      "prompt": "Review this testimonial section and improve it: 'CloudSync is great! It really helped our company. The team was very responsive and the product works well. We would recommend it to anyone looking for a solution. - John S., CEO'",
-      "expected_output": "Should apply the Prove It and Specificity sweeps. Should identify the testimonial as too vague to be persuasive ('great,' 'really helped,' 'works well,' 'anyone looking for a solution'). Should recommend replacing with specific results ('reduced project delivery time by 30%'), specific context ('team of 45 engineers'), and specific outcomes. Should suggest questions to ask the customer for a better testimonial. Should not fabricate specific numbers but should provide a template showing what a strong testimonial looks like.",
+      "id": "selective-proof-review",
+      "prompt": "Review only the proof and specificity of this pricing paragraph. Do not change its overall tone or structure.",
+      "expected_output": "Runs only the requested proof/specificity checks, flags unsupported numbers or broad claims, and keeps its suggestions within the stated boundary.",
       "assertions": [
-        "Applies Prove It and Specificity sweeps",
-        "Identifies testimonial as too vague",
-        "Recommends specific results and context",
-        "Suggests questions to get better testimonial",
-        "Does not fabricate specific numbers",
-        "Provides template for strong testimonial"
+        "Does not force emotion, risk-reversal, or a full conversion review",
+        "Checks attribution and scope for material claims",
+        "Preserves tone and structure unless an edit is needed for claim safety"
       ],
       "files": []
     },
     {
-      "id": 5,
-      "prompt": "I need you to apply the 'So What' and 'Zero Risk' sweeps to this pricing page copy: 'Our Pro plan includes unlimited projects, advanced reporting, priority support, and custom integrations. Starting at $99/month.'",
-      "expected_output": "Should apply specifically the So What and Zero Risk sweeps as requested. So What: for each feature, ask 'so what does this mean for the customer?' — unlimited projects (what does that enable?), advanced reporting (what decisions can they make?), priority support (what does that mean in practice? response time?), custom integrations (which ones? what workflow does it enable?). Zero Risk: identify missing trust signals — no guarantee, no trial mention, no social proof near pricing, no 'cancel anytime' assurance. Should provide rewritten copy addressing both sweeps.",
+      "id": "negative-fresh-draft-route",
+      "prompt": "Write fresh homepage copy for our new CRM for real-estate agents.",
+      "expected_output": "Routes to copywriting because no existing source copy is being edited; it does not pretend that a copy edit is sufficient.",
       "assertions": [
-        "Applies So What sweep to each feature",
-        "Translates features to customer benefits",
-        "Applies Zero Risk sweep",
-        "Identifies missing trust signals",
-        "Suggests guarantee, trial, or cancel-anytime language",
-        "Provides rewritten copy addressing both sweeps"
+        "Recognises a fresh draft rather than an edit",
+        "Names copywriting as the owning capability",
+        "Does not create a full page draft within the editing route"
       ],
       "files": []
     },
     {
-      "id": 6,
-      "prompt": "Write fresh homepage copy for our new product. We're launching a CRM for real estate agents.",
-      "expected_output": "Should recognize this is a copywriting-from-scratch task, not copy editing. Should defer to or cross-reference the copywriting skill, which handles writing new copy from scratch. Copy-editing is specifically for improving existing copy. Should make this distinction clear.",
+      "id": "strategic-handoff",
+      "prompt": "Tighten this services page, but change it so we appeal to enterprise buyers instead of independent founders and introduce a new premium offer.",
+      "expected_output": "Separates the requested line edits from the new audience/offer decision and routes the strategic part to expert-positioning or product-thinking before presenting it as an ordinary edit.",
       "assertions": [
-        "Recognizes this as writing new copy, not editing existing copy",
-        "References or defers to copywriting skill",
-        "Explains that copy-editing is for improving existing copy",
-        "Does not attempt to write full page copy from scratch"
+        "Names the audience and offer change",
+        "Does not silently make the strategic decision",
+        "Routes the decision to the appropriate owner",
+        "May provide limited wording alternatives only when labelled as proposed strategy"
       ],
       "files": []
     }

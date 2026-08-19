@@ -128,7 +128,7 @@ Tags: #auth #database #deployment #testing #scope-creep #performance
 
 ### API / Integration
 
-<!-- Entries tagged: #api #websocket #integration #deriv -->
+<!-- Entries tagged: #api #websocket #integration -->
 
 - (none yet)
 

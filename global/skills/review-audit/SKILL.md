@@ -1,290 +1,91 @@
 ---
 name: review-audit
-description: 'Use this skill when evaluating existing code for correctness, security, maintainability, or architectural alignment. Activated when the user asks for a code review, a pull request (PR) review, asks "Is this code good?", "What''s wrong with this?", or needs an audit of a legacy codebase for technical debt or modernization. Also activated at the self-review phase (Phase 7: Critique) of any significant implementation. Examples: "review this PR", "audit this module", "what issues do you see in this code?", "check this before I merge". Do NOT use for implementation work (use coding skill). Always apply security lens during every review.'
+description: 'Use when reviewing a pull request, branch, patch, module, implementation handoff, or legacy area for correctness, security, maintainability, and architecture. Activate for “review this”, “audit this code”, “check before merge”, “what is wrong here”, “review the PR”, or “inspect this diff”. Do not use to implement the change, diagnose an unexplained runtime fault, or authorize a deployment, external action, or destructive operation.'
 ---
 
-# CODE REVIEW & QUALITY AUDITING
+# Review Audit
 
 ## WHEN TO USE THIS
 
-- User asks for a review of a PR or block of code
-- User asks "Is this code good?" or "What's wrong with this?"
-- Auditing a legacy codebase for technical debt or modernization
-- Self-review at the Critique phase of any implementation
+- Review a meaningful implementation change, code branch, or generated output.
+- Run a fresh self-review or Assurance-agent review before a handoff or release decision.
+- Audit a legacy area where correctness, risk, or maintainability is uncertain.
 
 ## NEVER DO
 
-- Approve a PR without checking security boundaries and input validation
-- Leave comments on indentation, quote style, or formatting — that's a linter's job
-- Give feedback without explaining why it matters
-- Review only the happy path without checking error paths and edge cases
-- Use ego-driven or condescending language in feedback
-- Silently redesign or rewrite what's being reviewed — review it, don't replace it
-- Approve massive 1000+ line PRs without flagging the size problem
+- Assume `main`, a three-dot diff, a line-count threshold, or a branch naming convention is the right review scope.
+- Reject a large change only because it is large, or accept a small change merely because it is small.
+- Rewrite the work while claiming to review it.
+- Treat a green test suite as proof that every affected boundary is safe.
+- Approve, deploy, publish, or authorize external effects outside the authority granted by the user and host.
 
----
+## ESTABLISH THE REVIEW QUESTION
 
-## MINDSET
+Before line-level inspection, identify:
 
-Senior engineers treat code review as a collaborative quality gate and knowledge-sharing mechanism, not a punitive exercise.
+```text
+Objective and non-goals:
+Expected behavioural change and preserved behaviour:
+Target/base and actual review comparison:
+Changed modules, contracts, stores, generated outputs, and external effects:
+Highest-risk assumptions and recovery limit:
+Evidence already available and its limits:
+Decision requested:
+```
 
-Focus intensely on structural integrity, logic validation, security boundaries, and architectural alignment. Completely ignore stylistic nitpicking — that is the job of automated linters. Preserve cognitive load for complex edge cases, race conditions, algorithmic performance, and systemic side effects.
+When the target, history, or review scope is unclear, inspect status, history, merge base, and repository tooling before choosing a comparison. Use the comparison that answers the actual question. Record excluded commits, generated outputs, and unrelated changes.
 
-Approach with deep empathy. Understand the "expert blind spot" of the original author. Phrase feedback collaboratively. View confusing code as a lack of shared context, not developer incompetence. A great review leaves the codebase safer and the original author smarter.
+## REVIEW BY RISK, NOT RITUAL
 
----
+| Condition | Review focus |
+| --- | --- |
+| Reversible local edit | Verify the narrow diff and applicable parse, render, lint, or static evidence. Do not invent a full review ceremony. |
+| Local implementation or configuration | Reconstruct the claim, inspect sibling patterns and consumers, test the highest-risk assumption, and assess the evidence scope. |
+| Ordinary feature or changed boundary | Trace the meaningful input, state, output, failure, and consumer path. Check local tests plus integration, contract, or UI evidence where the risk lives. |
+| Legacy or weakly tested code | Separate observed behaviour from desired behaviour. Look for omitted consumers and state what remains unknown. |
+| Auth, sensitive data, public contract, migration, billing, production, or irreversible path | Require negative and boundary evidence, recovery limits, appropriate specialist review, and the required human approval before any external effect. |
 
-## DECISION FRAMEWORK — TRIAGE TABLE
+Review a generated or cross-cutting change by source of truth, determinism, semantic scope, and evidence. Decompose a diff when unrelated concepts hide one another; retain a coherent larger change when split commits would make the real behaviour less inspectable.
 
-Never treat all feedback as equally important. Triage strictly by impact:
+## RUN A FRESH REVIEW PASS
 
-| Issue Category | Impact | Action Required | Priority |
-| --- | --- | --- | --- |
-| **Logic / Security Flaw** | System will crash, state will corrupt, or data can be breached | Request immediate changes. Block the merge. Identify specific exploit paths or failure modes. | 🔴 Critical |
-| **Architectural Misalignment** | Code breaks boundaries, creates circular dependencies, or introduces severe N+1 queries | Suggest structural refactoring. Initiate higher-level design discussion. | 🟠 High |
-| **Maintainability / Readability** | Too complex, naming ambiguous, tests missing or brittle | Specific, non-blocking suggestions phrased as collaborative questions | 🟡 Medium |
-| **Stylistic Deviation** | Tabs vs spaces, quote types, line breaks | Ignore. Recommend the team adopt an automated linter (Prettier, ESLint). | 🔵 Ignore |
+For a nontrivial, cross-boundary, or release-bound change, reconstruct the change surface independently before reading the builder’s conclusion. Inspect callers, consumers, error paths, state transitions, dependency facts, generated sources, and boundary assumptions that could invalidate the claim.
 
----
+Use an Assurance agent or another distinct reviewer when configured and useful. Otherwise run a deliberately fresh review pass that challenges the implementation’s assumptions. Do not make an unavailable second agent a hard blocker for low-risk or reversible work.
 
-## REVIEW & AUDIT LENSES
+## CLASSIFY FINDINGS AND STOP
 
-Apply all ten before and during review:
+Use the standard severity scale:
 
-### 1. Intent and Scope
+| Severity | Meaning | Decision |
+| --- | --- | --- |
+| `critical` | Credible security breach, data loss/corruption, uncontrolled external effect, or total failure of the claim | Block. Escalate immediately. |
+| `high` | Material incorrectness, boundary failure, recovery gap, or architecture violation | Require correction or explicit authorized acceptance. |
+| `medium` | Important maintainability, coverage, reliability, or clarity issue with bounded consequence | Require correction when it materially affects this decision; otherwise record as follow-up. |
+| `low` | Useful non-blocking improvement or polish | Do not let it obscure material findings. |
 
-- What problem is this change trying to solve?
-- Is the scope appropriate to the stated purpose?
-- Does the implementation actually match the intended behavior?
+Stop when the meaningful failure surface has credible evidence, material findings are resolved or explicitly accepted by the authorized person, and residual uncertainty is visible. Do not continue broad cleanup merely to appear thorough.
 
-### 2. Correctness
+## REFERENCE LOADING RULES
 
-- Does the logic do what it claims under expected conditions?
-- Are there edge cases or state transitions that break the claim?
-- Are invariants protected?
-
-### 3. Maintainability
-
-- Is the code easy to understand and change?
-- Are responsibilities clear?
-- Does this introduce hidden coupling or future friction?
-
-### 4. Risk Surface
-
-- What could go wrong in production if this is merged?
-- Does it affect critical paths, shared dependencies, data integrity, or user trust?
-
-### 5. Error and Failure Behavior
-
-- How does the code behave under invalid input, timeouts, dependency failure, or partial failure?
-- Are failures visible, recoverable, or dangerously silent?
-
-### 6. Security and Safety
-
-- Does the change introduce auth/authz gaps, trust-boundary mistakes, sensitive-data exposure, injection risk, or privilege escalation paths?
-
-### 7. Performance and Efficiency
-
-- Is there a meaningful performance regression risk?
-- Are there obvious query, rendering, memory, or network inefficiencies that matter for this use case?
-
-### 8. Test and Verification Quality
-
-- Are the tests meaningful?
-- Do they protect the most important behavior?
-- Is the change verifiable beyond the happy path?
-
-### 9. Consistency with Architecture and Standards
-
-- Does this fit the system's layering, conventions, and contracts?
-- Is it introducing a new pattern without enough justification?
-
-### 10. Change Blast Radius
-
-- If this is wrong, what breaks?
-- Is the change isolated or does it affect multiple flows indirectly?
-
----
-
-## REVIEW HEURISTICS
-
-Always inspect for:
-
-- Unclear naming
-- Mixed responsibilities
-- Wrong-layer logic placement
-- Hidden coupling
-- Duplication of logic or knowledge
-- Missing error handling
-- Missing validation at boundaries
-- Missing or weak tests
-- Broad exception swallowing
-- Risky assumptions
-- Fragile abstractions
-- Architecture drift
-- Unsafe data handling
-- Obvious scaling issues
-- Overcomplication
-- Inconsistent patterns without justification
-
----
-
-## THE CODE SMELL BASELINE (FOWLER)
-
-Always audit against these structural code smells:
-- **Mysterious Name** — Variables or functions whose names do not reveal intent or value.
-- **Duplicated Code** — Identical logic structures present in multiple hunks.
-- **Feature Envy** — A method reaching into another module's data fields more than its own.
-- **Data Clumps** — Sets of variables that constantly travel together and should be typed as a single object.
-- **Primitive Obsession** — Using raw strings or integers instead of small, semantic types.
-- **Shotgun Surgery** — A single logical change requiring edits scattered across many files.
-- **Speculative Generality** — Adding hooks or parameters for imaginary future needs.
-
----
-
-## BEHAVIORAL WORKFLOW
-
-### Step 1 — Understand the Intent
-
-Before reading the code, understand what it's *supposed* to do. If the PR description lacks context, ask for it. You cannot evaluate correctness without knowing the goal.
-
-### Step 1.5 — The Two-Axis Setup (Standards vs Spec)
-
-Code review must evaluate both Standards (code quality/smells) and Spec (functional correctness).
-If reviewing a git branch, always use three-dot diffs (`git diff main...HEAD`) to isolate branch changes from target updates. Never use a two-dot diff.
-
-### Step 2 — Size and Scope Check
-
-If the code block is massive (>400 lines of complex logic), flag it. Massive PRs obscure critical logic errors. Suggest breaking into smaller, reviewable logical units.
-
-### Step 3 — Structural & Architectural Audit
-
-- Does this code belong where it was placed?
-- Does it mix UI logic with business logic?
-- Does it mix pure logic with side-effects (database calls, API requests)?
-- Are the dependencies going in the right direction?
-
-### Step 4 — Logic & Edge Case Audit
-
-- Trace the happy path. Does it work?
-- Trace the error paths: network failure, DB timeout, null input.
-- Look for race conditions or state mutations.
-- Check off-by-one errors in loops or pagination.
-
-### Step 5 — Security Audit
-
-- Are all user inputs validated and sanitized?
-- Are authentication and authorization checked at the boundary?
-- Are any secrets, tokens, or PII exposed or logged?
-- Is it vulnerable to common injection attacks?
-
-### Step 6 — Maintainability Audit
-
-- Is the code self-documenting through good naming?
-- Are functions doing more than one thing?
-- Is there test coverage for the new logic? Are tests actually testing behavior, or just mocking everything?
-
-### Step 7 — Formulate Feedback
-
-- Categorize findings by severity (Critical, High, Medium).
-- For every finding: provide the *Rationale* (why it matters) and a *Suggested Fix*.
-- Use a collaborative, objective tone.
-
-### Step 8 — Before Finalizing, Re-check
-
-- Are the findings truly meaningful?
-- Remove low-value nitpicks that distract from important issues.
-- Are findings prioritized? Are recommendations actionable?
-- Is the tone professional and useful?
-- Am I reviewing — not silently redesigning or rewriting?
-
----
-
-## KEY DIAGNOSTIC QUESTIONS
-
-- **Disaster Scenario:** Can I think of a specific external event, hardware failure, or unexpected input that will break this logic?
-- **Dependency Check:** Does this introduce any hidden compile-time or run-time dependencies that degrade the architecture?
-- **2 AM Test:** If paged at 2 AM for an incident in this code, is it readable enough to understand while exhausted?
-- **Test Validity Check:** If the internal implementation were refactored without changing output, would the tests still pass — or falsely fail because they're tied to the implementation?
-- **State Check:** What happens if two users call this function at the exact same millisecond?
-- **On-Call Check:** Would I be comfortable deploying this if I were on call tonight?
-
----
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Looks Like | Why It's Harmful | Fix |
-| --- | --- | --- | --- |
-| **LGTM Rubber Stamp** | Approving a massive complex PR with "Looks Good To Me" because it's too hard to read | Bypasses the quality gate entirely; allows bugs and architectural decay into production | If a PR is too big to review, reject it and ask the author to split it into smaller logical commits |
-| **Style Pedant** | 15 comments on variable casing and missing semicolons while missing a SQL injection vulnerability | Wastes time, causes friction, distracts from actual structural and security issues | Automate style via CI/CD linters. Humans/AI review logic and architecture. |
-| **Ego-Driven Review** | "Why did you do it this way? This is terrible. Just rewrite it." | Destroys team psychological safety; developers start hiding code and avoiding reviews | Ask questions: "What was the context behind choosing this approach? Have we considered X?" |
-| **Reviewing Implementation, Ignoring Architecture** | Perfectly optimizing a 500-line function that shouldn't exist in this microservice at all | Results in highly optimized spaghetti architecture | Review from outside in: Architecture → Boundaries → Logic → Syntax |
-| **Two-Dot Review** | Running `git diff main HEAD` when main has progressed | Diff includes other people's unrelated commits, polluting the review | Always use `git diff main...HEAD` for accurate branch isolation |
-| **The Blended Report** | Mixing styling critiques with logic errors in one big bulleted list | Major logic errors get lost among minor semicolon arguments | Separate findings strictly into Standards and Spec sections |
-
----
+- Load [change-scope-and-handoff.md](references/change-scope-and-handoff.md) for uncertain branch topology, builder-to-reviewer handoff, generated output, migration/recovery, or a mixed mechanical-and-behavioural diff.
+- Use `testing` to interpret evidence adequacy; do not substitute review comments for tests.
+- Use `security-audit`, `database-migration`, `dependency-upgrade`, or `ship-to-production` only for their actual triggers and approval gates.
 
 ## OUTPUT SHAPE
 
-```markdown
-
-## Summary
-
-Overall assessment: [Approve / Approve with changes / Request major changes]
-Brief summary of what the code does well and the main areas for improvement.
-
-## Findings
-
-### 🔴 Critical (Must Fix)
-
-*Issues that cause crashes, data corruption, or security vulnerabilities.*
-
-### [Issue]
-
-**Why it matters:** [Risk if ignored]
-**Suggested Fix:** [Code snippet or approach]
-
-### 🟠 High (Strongly Recommended)
-
-*Architectural issues, missing error handling, severe maintainability debt.*
-
-### [Issue]
-
-**Why it matters:** [Risk]
-**Suggested Fix:** [Approach]
-
-### 🟡 Medium (Suggestions for Polish)
-
-*Naming, readability, minor refactoring, test additions.*
-
-### [Issue]
-
-**Suggestion:** [How to improve]
-
-## Strengths
-
-*What the author did well — always include this.*
-
-- [Positive observation 1]
-- [Positive observation 2]
-
-## Overall Notes
-
-*Broader observations about patterns or architecture.*
+```text
+Review scope and actual comparison:
+Overall decision: approve | changes required | blocked | residual-risk handoff
+Findings: severity, evidence, consequence, recommended action
+Evidence reviewed and false-confidence limits:
+Resolved, accepted, and unresolved risk:
 ```
-
----
 
 ## NON-NEGOTIABLE CHECKLIST
 
-- [ ] Business intent of the code being reviewed is understood
-- [ ] Security boundaries and input validation explicitly checked
-- [ ] Unhandled edge cases and error states evaluated
-- [ ] Feedback categorized by severity (Critical / High / Medium)
-- [ ] Feedback explains the *why*, not just the *what*
-- [ ] Feedback is phrased objectively and collaboratively
-- [ ] Positive feedback (what was done well) is included
-
----
-
-**Final Rule:** A good review should improve the work more than it increases noise. The best review output is accurate, prioritized, actionable, respectful, and strong enough that the author can clearly see what matters most and why.
+1. Review the intended outcome and actual comparison before judging the diff.
+2. Trace the highest-risk boundary, not only the happy path.
+3. Distinguish mechanical movement from behaviour change and generated output.
+4. Classify findings by consequence and evidence.
+5. Never imply release, deployment, or approval authority that the review does not have.

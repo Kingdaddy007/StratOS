@@ -1,136 +1,76 @@
 ---
 name: refactoring
-description: 'Use this skill when improving code structure without changing external behavior, reducing technical debt, deciding between refactor vs rewrite, or planning legacy system modernization. Activated when the user mentions cleaning up code, reducing complexity, making code maintainable, improving a module that keeps breaking, deleting dead code, or performing a strangler fig migration. Signal phrases: "refactor", "clean this up", "technical debt", "legacy code", "rewrite vs refactor", "too hard to change", "no one understands this module", "we keep breaking this", "make this maintainable", "dead code", "code smell", "this area slows us down", "modernize", "migrate".'
+description: 'Use when changing code structure while intending to preserve observable behaviour, reducing technical debt, extracting a seam, removing dead paths, or deciding between incremental refactor, replacement, and rewrite. Activate for “refactor”, “clean up”, “technical debt”, “make this maintainable”, “dead code”, “modernize”, or “rewrite versus refactor”. Do not use for a known defect or feature change as the primary task (use coding), unexplained failure diagnosis (use debugging), or review-only work (use review-audit).'
 ---
 
-# REFACTORING & TECHNICAL DEBT
+# Refactoring
 
 ## WHEN TO USE THIS
 
-- Refactoring a module, service, component, or function
-- Reducing technical debt in a codebase or system
-- Improving maintainability before or during feature work
-- Deciding whether to refactor or rewrite a module or system
-- Extracting seams or boundaries from a tangled system
-- Planning gradual modernization of a legacy codebase
-- Deleting dead code, unused features, or deprecated functionality
-- Preparing an area for a new feature by improving the surrounding structure
+- Improve structure without intending to change an observable contract.
+- Reduce a named source of maintenance, reliability, delivery, or comprehension cost.
+- Plan an incremental modernization, replacement seam, or rare rewrite decision.
 
 ## NEVER DO
 
-- Refactor without a test harness that verifies behavior is preserved
-- Mix refactoring, bug fixes, and feature work in a single changeset
-- Propose a rewrite without explicitly identifying what undocumented business logic would be lost
-- Let scope creep run unchecked — set a time box before starting
-- Leave old code running alongside new code indefinitely (creates dual maintenance)
-- Fix discovered bugs as part of a refactoring — document them separately
-- Call code "messy" without quantifying the real cost it imposes on delivery
+- Call a behaviour change a refactor.
+- Require a perfect test harness before every low-risk mechanical change.
+- Treat a characterization test as proof that current behaviour is desired behaviour.
+- Combine refactor and repair without exposing the dependency and distinct evidence.
+- Replace a working system merely because its domain is unfamiliar or its code looks old.
+- Leave dual-write or dual-authoritative paths without an explicit, verified retirement plan.
 
----
+## DEFINE THE STRUCTURAL CLAIM
 
-## MINDSET
+State the structural problem, its practical cost, the intended unchanged behaviour, and the smallest scope that reduces the cost. A precise measure is useful when available; do not invent defect rates, time savings, or business impact merely to make the case sound stronger.
 
-You are not a rewriter. You are a surgeon who improves a living system's internal structure without changing what it does for the user — and without killing the patient on the operating table.
+Decide which task is actually present:
 
-Refactoring is not about making code look different. It is about making code easier to understand, safer to modify, and less likely to generate bugs, confusion, and delivery drag over time. A real refactor changes the structure while preserving externally visible behavior. If behavior changes, that is redesign or feature work — not pure refactoring.
+| Task | Required treatment |
+| --- | --- |
+| Mechanical refactor | Preserve behaviour. Select the cheapest credible structural and behaviour evidence. |
+| Refactor plus repair | Separate by default. Combine only when the repair depends on the structural change; label both claims and test both. |
+| Preparatory refactor for a feature | State the feature as a non-goal until its own behavioural change begins. |
+| Replacement or migration | Identify the source of truth, cutover, recovery limit, observability, and retirement condition. |
+| Rewrite proposal | Prove why incremental change or a seam cannot meet the current need; identify undocumented behaviour at risk. |
 
-Refactoring is also a tool for understanding — not just for cleaning. Small, systematic refactorings (renaming, extracting, inlining) are legitimate techniques for building mental models of code you do not yet understand. If you do not understand the code, start by making it more readable through safe, mechanical transformations.
+## CHOOSE EVIDENCE BY RISK AND OBSERVABILITY
 
-Technical debt is a financial instrument: a loan taken on development speed today that must be repaid with interest later. It is not inherently bad — deliberate, well-understood debt can be a rational choice. The problem is unmanaged debt: accumulated unconsciously, never documented, compounding silently until the system can barely move.
+Use `testing` to select evidence. Do not use a single blanket gate.
 
-The expert refactoring engineer:
+- For a reversible rename, move, formatting correction, or dead local branch: inspect references, compile/type-check or parse when applicable, and review the narrow diff.
+- For a behaviour-sensitive or cross-boundary refactor: establish focused regression or characterization evidence where practical, then verify the affected consumers and boundaries.
+- For legacy code with incomplete tests: observe and characterize relevant current behaviour, stage the smallest change, state unknowns, and escalate when critical behaviour cannot be observed credibly.
+- For persistence, authorization, migration, generated code, or externally visible paths: load the applicable conditional guidance and treat recovery as a separate claim from code rollback.
 
-- **Pays down high-interest debt first** — where the debt is costing real delivery speed, reliability, or risk — not where the mess is most visually annoying
-- **Writes characterization tests that lock in the current behavior**, including its bugs and quirks, before changing any structure
-- **Knows that full rewrites take 2–3× longer than estimated**, silently drop years of undocumented business rules, and frequently reproduce the same structural problems in new code
-- **Uses the Strangler Fig pattern** for replacing legacy functionality while the system remains fully operational throughout
-- **Stops when a "spike that should take 2 hours" has consumed 2 days** — that has become a rewrite in disguise
-- **Distinguishes code that is difficult because it is poorly structured** from code that is difficult because the developer lacks domain context — the first needs refactoring, the second needs learning
-- **Quantifies debt in terms the business understands**: deployment velocity, bug rate, onboarding time, incident frequency
-- **Deletes aggressively** — every line removed is a line that never needs to be read, tested, debugged, or maintained again
+## MAKE THE CHANGE REVIEWABLE
 
----
+1. Inspect callers, consumers, contracts, generated sources, and deletion candidates before moving code.
+2. Make changes in coherent slices. A slice may be large when deterministic generation or one cross-cutting semantic change makes it inspectable; line count alone is not a verdict.
+3. Keep mechanical movement, behaviour changes, generated output, and migration effects distinguishable in the diff or handoff.
+4. Remove retired paths only after the replacement is verified against the actual retirement condition. Keep a temporary compatibility path only when its owner, expiry, and data-consistency risk are explicit.
+5. Stop and reassess when the changed surface, recovery limit, or known behaviour differs materially from the initial claim.
 
-## DECISION FRAMEWORK — 8 PRIORITIES (IN ORDER)
-
-### Priority 1 — Behavior
-
-Preservation
-
-Refactoring changes structure. Feature work changes behavior. If behavior must change, that is feature work or a bug fix — not pure refactoring. Distinguish clearly and keep them separate. Mixed changesets make both harder to verify and harder to roll back.
-
-### Priority 2 — Test
-
-Coverage Before Change
-
-If tests exist: verify they pass before refactoring, and after every refactoring step. If tests do NOT exist: write characterization tests first. Characterization tests capture current behavior — including any bugs or quirks. They are not tests of "correct" behavior; they are tests of "current" behavior. Never refactor without this safety net.
-
-### Priority 3 — Refactor
-
-vs Rewrite Decision
-
-| Approach | Risk | When to Use | When NOT to Use |
-| --- | --- | --- | --- |
-| **Incremental Refactor** | Low | Business logic is sound but structure is poor. Code is understandable with effort. Tests exist or can be written. | The architecture is fundamentally incompatible with current requirements. |
-| **Strangler Fig** | Medium | System is too large or entangled to clean safely in place. New functionality can be built alongside the old with traffic routing. | The old system has no clear boundaries or seams where new functionality can be introduced alongside. |
-| **Full Rewrite** | Extreme | Core architecture is fundamentally incompatible with strategic requirements. Technical debt exceeds ~80% — more effort goes to fighting the codebase than building features. All other options genuinely evaluated and rejected. | Almost always. Default to incremental refactoring unless there is overwhelming evidence that the architecture itself — not just the code organization within it — is the fundamental problem. |
-
-### Priority 4 — Scope
-
-Containment
-
-Every refactoring effort must have: a defined scope (which modules, which concerns), a time box (how long before we stop and evaluate), explicit completion criteria (what "done" looks like), and a plan for what happens if scope threatens to expand. If a refactoring effort has consumed 2× its time box without completion, stop and reassess.
-
-### Priority 5 — Debt
-
-Interest Rate
-
-Prioritize debt that imposes repeated, high-frequency cost: frequent source of regressions, slows major feature work disproportionately, causes operator or onboarding confusion, creates production instability, blocks architecture evolution. Messy but low-impact code may be lower priority than less ugly but high-friction code. Refactor in high change frequency + high defect density areas first.
-
-### Priority 6 — Reversibility
-
-Small, incremental refactorings are individually reversible. Large refactorings are difficult or impossible to revert. Prefer small steps that can each be independently deployed and rolled back.
-
-### Priority 7 — Value
-
-Justification
-
-"This code is messy" is not a justification. Quantify the debt: "This module accounts for 40% of our production bugs." "New engineers take 3 weeks to become productive here." "Every feature touching this module takes 3× longer than features in other modules." This transforms refactoring from a developer preference into a business investment with measurable ROI.
-
-### Priority 8 — Opportunity
-
-Cost
-
-Refactoring competes with feature development, bug fixes, and other improvements for engineering capacity. The refactoring that enables the next 5 features to be built 3× faster is high-value. The refactoring that makes code "nicer" in an area the team rarely touches is low-value.
-
----
-
-## CORE PRINCIPLES
-
-1. **Tests Precede Refactoring.** Never alter code structure without a test harness that verifies behavior is preserved. Refactoring without tests is not refactoring — it is gambling with production behavior.
-2. **Behavior Stays. Structure Changes.** Refactoring is behavior-preserving by definition. If you are changing what the code does, you are doing feature work or fixing a bug — not refactoring. Keep these activities separate.
-3. **Incremental Over Big-Bang.** Small, safe, reversible improvements delivered continuously are almost always superior to large, risky rewrites. Each incremental step delivers value and reduces risk independently.
-4. **Refactor to Understand.** Small, automated refactorings — extracting variables, renaming for clarity, breaking up long functions — are legitimate tools for building mental models of unfamiliar code.
-5. **Scope Containment Is Mandatory.** Time-box every refactoring effort. Define explicit completion criteria before starting. An unbounded refactoring is a rewrite that no one authorized.
-6. **Pay Down High-Interest Debt First.** Refactor where the debt is costing real delivery speed, reliability, understanding, or risk — not just where code looks ugly.
-7. **Delete Code Mercilessly.** Dead code, unused features, commented-out blocks, deprecated paths — delete them. Every line of code that exists must be read, understood, maintained, tested, and debugged. The safest code is the code that no longer exists.
-8. **Unfamiliarity Is Not Poor Quality.** Code that is difficult because you have not yet learned the domain context is not the same as code that is difficult because it is poorly structured. Learn first, then decide.
-9. **Quantify Before Proposing.** "This code is messy" does not justify an engineering investment. Quantify the cost: defect rates, development velocity impact, incident frequency, onboarding friction.
-10. **Retire the Old Completely.** When new code replaces old code, the old code must be completely deleted. Running both creates dual maintenance burden, confusion about which system is authoritative, and the risk of data inconsistency.
-11. **Debt Is a Strategic Tradeoff, Not a Moral Failure.** Some debt is acceptable and deliberate. The key is to know where it exists, what it costs, and when the interest justifies paying it down.
-12. **The Wrong Abstraction Is Worse Than Duplication.** Do not refactor duplication into a shared abstraction unless the duplicated instances will always change together for the same reasons. If two blocks serve different concerns that may diverge, leave them duplicated.
-
----
 ## REFERENCE LOADING RULES
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+- Load [extended-guidance.md](references/extended-guidance.md) for legacy code, characterization strategy, migrations, generated output, strangler-style replacement, or a rewrite decision.
+- Use `review-audit` when a structural change needs a fresh independent reasoning pass or review base inspection.
+- Use `security-audit`, `database-migration`, `dependency-upgrade`, or `ship-to-production` only when their actual trigger is present; refactoring does not grant authority for external effects.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+```text
+Structural problem and intended unchanged behaviour:
+Scope, non-goals, and chosen strategy:
+Evidence selected and actual result:
+Recovery/retirement limit:
+Residual uncertainty and required handoff:
+```
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Apply the core workflow above.
-2. Load matching extended guidance for substantive or high-risk work.
-3. Preserve user constraints and verify the result before delivery.
+1. Separate structural and behavioural claims.
+2. Match evidence to the changed failure surface and current observability.
+3. Keep the meaningful diff and retirement condition inspectable.
+4. State unknown legacy behaviour rather than pretending it is covered.
+5. Escalate irreversible, data-sensitive, security-sensitive, or production effects.

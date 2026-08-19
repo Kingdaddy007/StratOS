@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canvas UI"
+  short_description: "Select and safely implement contained Canvas UI effects"
+  default_prompt: "Use $canvas-ui to decide whether a Canvas UI effect is justified here, compare it with DOM/CSS, media, and still alternatives, and define its fallback and approval gates."

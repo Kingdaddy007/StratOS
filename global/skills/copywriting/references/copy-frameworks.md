@@ -2,6 +2,10 @@
 
 Headline formulas, page section types, and structural templates.
 
+## Use as candidates, not prescriptions
+
+Select only a pattern that fits the approved audience, offer, evidence, channel, and communication job. Do not force a founder story, pain sequence, testimonial, guarantee, pricing preview, social proof bar, or final CTA into every asset. Do not use a formula to imply an outcome, statistic, customer result, or promise that has not been confirmed. Follow `../SKILL.md` for claim, proof, accessibility, and authority boundaries.
+
 ## Contents
 - Headline Formulas (outcome-focused, problem-focused, audience-focused, differentiation-focused, proof-focused, additional formulas)
 - Landing Page Section Types (core sections, supporting sections)

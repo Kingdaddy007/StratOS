@@ -1,272 +1,88 @@
 ---
 name: copywriting
-description: 'Use when writing or rewriting persuasive marketing copy for websites, landing pages, pricing pages, product pages, email, or modal messages. Trigger on requests for headlines, CTAs, value propositions, page copy, email copy, or stronger messaging. Use copy-editing when the task is primarily polishing existing prose, and page-cro when structure or conversion diagnosis is the main problem.'
+description: 'Use when creating new or materially rewriting marketing, product, service, website, email, pricing, CTA, or in-product copy. Trigger on headlines, value propositions, page copy, launch copy, email copy, or stronger messaging. Do NOT use for a bounded polish that must preserve existing meaning (use copy-editing), for an unresolved product/positioning decision (use product-thinking or expert-positioning), or for interface/flow diagnosis (use page-cro or ui-ux).'
 ---
 
 # Copywriting
 
-You are an expert conversion copywriter. Your goal is to write marketing copy that is clear, compelling, and drives action.
+## WHEN TO USE THIS
 
-## Before Writing
+- Draft new communication from an approved or adequately understood offer, audience, factual basis, and desired next action.
+- Materially rewrite an existing asset when its message, hierarchy, or expression is intentionally changing.
+- Produce bounded alternatives for a headline, CTA, email, page, proposal, case study, or product message.
 
-**Context Load Order (follow this sequence):**
+## NEVER DO
 
-1. **If `contexts/story.md` exists → read it first. Extract:**
-   - Copy direction: headline strategy, tone, key messages
-   - CTA strategy: what action each section drives toward
-   - Narrative arc: the emotional journey the copy must carry
-   - Section breakdown: what each page section must accomplish
-   Use these as non-negotiable constraints. Do not re-derive.
+- Never invent customer language, testimonials, credentials, results, comparative superiority, scarcity, or a promise the offer cannot deliver.
+- Never treat a copy formula, funnel, founder story, page section, or CTA pattern as compulsory.
+- Never use copy to conceal a weak product, absent proof, unsupported claim, inaccessible interaction, or coercive next step.
+- Never silently decide product scope, pricing, positioning, legal compliance, or a public claim that needs evidence or approval.
+- Never force a full page template onto a short rewrite, email sequence, or in-product task.
 
-2. **If `contexts/positioning-audit.md` exists → read for positioning boundaries, MLE, and CTA gates.**
+## GROUND THE REQUEST
 
-3. **If `contexts/research-brief.md` exists → read for audience, competitors, positioning**
+1. Read applicable `AGENTS.md` files and only the relevant active project truth under `.agents/contexts/` when it exists. Use supplied material before asking repeat questions.
+2. Identify the communication job: new draft, material rewrite, headline/CTA alternative, page, email, proposal, case study, or in-product message.
+3. Establish the smallest necessary set of facts: audience and context, offer/product reality, intended action, approved tone, available proof, constraints, and source material.
+4. Label material inputs as fact, reported statement, interpretation, hypothesis, recommendation, or unknown. Keep a material unknown visible instead of replacing it with plausible-sounding prose.
+5. Load [Meaning and Evidence Foundation](../../reference/meaning-and-evidence-foundation.md) only when the audience, promise, proof, narrative, or claim decision is materially uncertain. Load [Customer, Market, and Demand Evidence](../../reference/customer-market-demand-evidence.md) only when the uncertainty is about customer, market, offer, willingness-to-pay, or demand evidence.
 
-4. **If `PRODUCT.md` exists → read for register, brand personality, anti-references**
+A known, low-consequence headline or CTA rewrite stays direct work. If the requested language requires an unresolved positioning or product decision, provide bounded draft options and route the decision rather than pretending copy can settle it.
 
-5. **Then check for product marketing context:**
-   If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it. Use that context and only ask for information not already covered or specific to this task.
+## SELECT THE DRAFTING DEPTH
 
-6. **Only ask questions for information not covered by the above**
+| Level | Use when | Required work |
+| --- | --- | --- |
+| Direct | The offer, audience, action, and factual basis are clear. | Draft the requested copy and flag only material unknowns. |
+| Deliberate | The page/message hierarchy, differentiation, proof, or audience is unclear. | State the smallest missing decision set, compare credible message directions, and draft only from stated assumptions. |
+| Evidence-gated | A material public, comparative, outcome, regulated, vulnerable-audience, or synthetic-media claim is involved. | Build a claim list with source/limit placeholders and stop before external use that needs approval. |
 
-Gather this context (ask if not provided):
+## BUILD THE MESSAGE
 
-### 1. Page Purpose
-- What type of page? (homepage, landing page, pricing, feature, about)
-- What is the ONE primary action you want visitors to take?
+1. Lead with the most decision-relevant meaning for the audience and context. Prefer clarity over novelty when they conflict.
+2. Connect capabilities to a credible user-relevant consequence. Do not convert a feature into an outcome claim unless evidence supports the outcome.
+3. Choose a structure that serves the task. A page may use a direct explanation, proof-first sequence, problem/solution sequence, comparison, product walkthrough, case study, or another justified form. Use only the sections that earn their place.
+4. Build message hierarchy deliberately: primary promise or subject, supporting explanation, relevant proof, constraints/non-fit when useful, and a truthful next action.
+5. Use customer language only when supplied or responsibly sourced. Do not manufacture quotes or present an AI persona as a customer.
+6. Tune tone to the approved brand, audience, channel, and stakes. Let the offer and evidence carry confidence; avoid generic intensifiers and empty superlatives.
+7. Use a CTA that describes the next honest step and its commitment level. "Learn more" can be appropriate for a genuinely informational secondary action; do not ban it mechanically.
 
-### 2. Audience
-- Who is the ideal customer?
-- What problem are they trying to solve?
-- What objections or hesitations do they have?
-- What language do they use to describe their problem?
+## CLAIM, PROOF, AND ACCESSIBILITY CHECK
 
-### 3. Product/Offer
-- What are you selling or offering?
-- What makes it different from alternatives?
-- What's the key transformation or outcome?
-- Any proof points (numbers, testimonials, case studies)?
+For every material statement, ask:
 
-### 4. Context
-- Where is traffic coming from? (ads, organic, email)
-- What do visitors already know before arriving?
+- What exactly is claimed, for whom, under what conditions, and over what period?
+- Is the source available, authentic, attributable, and in scope for the claim?
+- Is this a fact, an attributed statement, an interpretation, a hypothesis, or proposed copy?
+- Can the reader understand the result without jargon, hidden conditions, or misleading urgency?
 
----
+If proof is missing, soften the wording, add an explicit evidence placeholder, or recommend the information needed. Do not add numbers, customer names, guarantees, or risk reversals that the offer has not actually approved.
 
-## Copywriting Principles
-
-### Clarity Over Cleverness
-If you have to choose between clear and creative, choose clear.
-
-### Benefits Over Features
-Features: What it does. Benefits: What that means for the customer.
-
-### Specificity Over Vagueness
-- Vague: "Save time on your workflow"
-- Specific: "Cut your weekly reporting from 4 hours to 15 minutes"
-
-### Customer Language Over Company Language
-Use words your customers use. Mirror voice-of-customer from reviews, interviews, support tickets.
-
-### One Idea Per Section
-Each section should advance one argument. Build a logical flow down the page.
-
----
-
-## Writing Style Rules
-
-### Core Principles
-
-1. **Simple over complex** — "Use" not "utilize," "help" not "facilitate"
-2. **Specific over vague** — Avoid "streamline," "optimize," "innovative"
-3. **Active over passive** — "We generate reports" not "Reports are generated"
-4. **Confident over qualified** — Remove "almost," "very," "really"
-5. **Show over tell** — Describe the outcome instead of using adverbs
-6. **Honest over sensational** — Fabricated statistics or testimonials erode trust and create legal liability
-
-### Quick Quality Check
-
-- Jargon that could confuse outsiders?
-- Sentences trying to do too much?
-- Passive voice constructions?
-- Exclamation points? (remove them)
-- Marketing buzzwords without substance?
-
-For thorough line-by-line review, use the **copy-editing** skill after your draft.
-
----
-
-## Best Practices
-
-### Be Direct
-Get to the point. Don't bury the value in qualifications.
-
-❌ Slack lets you share files instantly, from documents to images, directly in your conversations
-
-✅ Need to share a screenshot? Send as many documents, images, and audio files as your heart desires.
-
-### Use Rhetorical Questions
-Questions engage readers and make them think about their own situation.
-- "Hate returning stuff to Amazon?"
-- "Tired of chasing approvals?"
-
-### Use Analogies When Helpful
-Analogies make abstract concepts concrete and memorable.
-
-### Pepper in Humor (When Appropriate)
-Puns and wit make copy memorable—but only if it fits the brand and doesn't undermine clarity.
-
----
-
-## Page Structure Framework
-
-### Above the Fold
-
-**Headline**
-- Your single most important message
-- Communicate core value proposition
-- Specific > generic
-
-**Example formulas:**
-- "{Achieve outcome} without {pain point}"
-- "The {category} for {audience}"
-- "Never {unpleasant event} again"
-- "{Question highlighting main pain point}"
-
-**For comprehensive headline formulas**: See [references/copy-frameworks.md](references/copy-frameworks.md)
-
-**For natural transition phrases**: See [references/natural-transitions.md](references/natural-transitions.md)
-
-**Subheadline**
-- Expands on headline
-- Adds specificity
-- 1-2 sentences max
-
-**Primary CTA**
-- Action-oriented button text
-- Communicate what they get: "Start Free Trial" > "Sign Up"
-
-### Core Sections
-
-| Section | Purpose |
-|---------|---------|
-| Social Proof | Build credibility (logos, stats, testimonials) |
-| Problem/Pain | Show you understand their situation |
-| Solution/Benefits | Connect to outcomes (3-5 key benefits) |
-| How It Works | Reduce perceived complexity (3-4 steps) |
-| Objection Handling | FAQ, comparisons, guarantees |
-| Final CTA | Recap value, repeat CTA, risk reversal |
-
-**For detailed section types and page templates**: See [references/copy-frameworks.md](references/copy-frameworks.md)
-
----
-
-## CTA Copy Guidelines
-
-**Weak CTAs (avoid):**
-- Submit, Sign Up, Learn More, Click Here, Get Started
-
-**Strong CTAs (use):**
-- Start Free Trial
-- Get [Specific Thing]
-- See [Product] in Action
-- Create Your First [Thing]
-- Download the Guide
-
-**Formula:** [Action Verb] + [What They Get] + [Qualifier if needed]
-
-Examples:
-- "Start My Free Trial"
-- "Get the Complete Checklist"
-- "See Pricing for My Team"
-
----
-
-## Page-Specific Guidance
-
-### Homepage
-- Serve multiple audiences without being generic
-- Lead with broadest value proposition
-- Provide clear paths for different visitor intents
-
-### Landing Page
-- Single message, single CTA
-- Match headline to ad/traffic source
-- Complete argument on one page
-
-### Pricing Page
-- Help visitors choose the right plan
-- Address "which is right for me?" anxiety
-- Make recommended plan obvious
-
-### Feature Page
-- Connect feature → benefit → outcome
-- Show use cases and examples
-- Clear path to try or buy
-
-### About Page
-- Tell the story of why you exist
-- Connect mission to customer benefit
-- Still include a CTA
-
----
-
-## Voice and Tone
-
-Before writing, establish:
-
-**Formality level:**
-- Casual/conversational
-- Professional but friendly
-- Formal/enterprise
-
-**Brand personality:**
-- Playful or serious?
-- Bold or understated?
-- Technical or accessible?
-
-Maintain consistency, but adjust intensity:
-- Headlines can be bolder
-- Body copy should be clearer
-- CTAs should be action-oriented
-
----
-
+Route material accessibility or interaction barriers to `ui-ux`; conversion-friction or experiment design to `page-cro`; professional-service posture and offer-fit to `expert-positioning`; final polishing to `copy-editing`; buyer materials to `sales-enablement`; and external publication, outreach, or claims to the relevant approval gate.
 
 ## REFERENCE LOADING RULES
 
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
-## Output Format
+- Load [references/copy-frameworks.md](references/copy-frameworks.md) when selecting or comparing a page/message structure, headline pattern, section job, or format-specific candidate. Treat every pattern as a candidate, not a law; preserve the claim and proof rules in this file.
+- Load [references/natural-transitions.md](references/natural-transitions.md) when a long-form page, email sequence, case study, or proposal needs help connecting already-approved ideas. Do not use transitions to hide an evidence gap.
+- Load [references/resource-index.md](references/resource-index.md) first when the needed reference is unclear. Do not load the package wholesale.
 
-When writing copy, provide:
+## OUTPUT SHAPE
 
-### Page Copy
-Organized by section:
-- Headline, Subheadline, CTA
-- Section headers and body copy
-- Secondary CTAs
+For a small request: provide the revised copy, two or three materially different alternatives when useful, and one sentence on any factual limit.
 
-### Annotations
-For key elements, explain:
-- Why you made this choice
-- What principle it applies
+For a substantial draft:
 
-### Alternatives
-For headlines and CTAs, provide 2-3 options:
-- Option A: [copy] — [rationale]
-- Option B: [copy] — [rationale]
+1. **Grounding:** audience/context, communication job, evidence used, and material assumptions.
+2. **Copy:** organised by the requested artefact rather than a compulsory website template.
+3. **Claim notes:** any wording that needs proof, confirmation, or approval before external use.
+4. **Alternatives:** only for genuinely decision-relevant lines or directions.
+5. **Next route:** only when a named uncertainty needs another capability.
 
-### Meta Content (if relevant)
-- Page title (for SEO)
-- Meta description
+## NON-NEGOTIABLE CHECKLIST
 
----
-
-## Related Skills
-
-- **copy-editing**: For polishing existing copy (use after your draft)
-- **page-cro**: If page structure/strategy needs work, not just copy
-- **expert-positioning**: For auditing positioning strategy and refactoring submissive/vendor language (WWP)
-- Handle email copy directly with the same audience, value, proof, and CTA principles; adapt the structure to the requested sequence.
-- **page-cro**: For popup and modal copy
-- **testing**: To test copy variations
+1. Draft only from supplied, verified, attributed, or clearly labelled assumptions.
+2. Keep the chosen hierarchy proportional to the task and channel.
+3. Make the audience, promise, proof, and next action understandable.
+4. Flag unsupported or material claims instead of strengthening them.
+5. Preserve direct work for direct requests; do not manufacture a workshop.
+6. Keep external publication, contact, spend, and public claims behind explicit approval.

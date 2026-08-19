@@ -13,7 +13,8 @@ This directory defines machine-readable contracts for canonical skills, workflow
 
 ## 3. Exposed Interfaces
 
-- `manifest.schema.json`: canonical OS registry.
+- `manifest.schema.json`: canonical OS registry, profiles, resources, and agent registry.
+- `agent.schema.json`: portable canonical agent contract rendered by host adapters.
 - `workflow.schema.json`: active workflow metadata.
 - `workflow-state.schema.json`: resumable task state.
 - `workflow-index.schema.json`: task ID to state-file registry.

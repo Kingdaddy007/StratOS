@@ -1,4 +1,4 @@
 interface:
   display_name: "Research Analysis"
-  short_description: "Guidance for research analysis tasks"
-  default_prompt: "Use $research-analysis to help complete this task with its domain workflow."
+  short_description: "Decision research with source grading, falsification, and stopping rules"
+  default_prompt: "Use $research-analysis to frame the decision, grade evidence, test disconfirming claims, and stop when the next action is clear."

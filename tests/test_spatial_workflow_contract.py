@@ -30,12 +30,16 @@ AFFECTED_SKILLS = (
     "cinematic-showroom-strategy",
 )
 
-HIGH_STAKES_WORKFLOWS = (
-    "workflow-spatial-project-inception.md",
+HIGH_STAKES_WORKFLOWS = ("workflow-spatial-project-inception.md",)
+
+RETIRED_SPATIAL_ROUTE_FILES = (
+    "workflow-reference-intelligence.md",
     "workflow-visual-brainstorm.md",
     "workflow-spatial-concept.md",
     "workflow-storytelling.md",
     "workflow-spatial-design-ui.md",
+    "workflow-impeccable-craft.md",
+    "workflow-impeccable-animate.md",
 )
 
 
@@ -141,12 +145,7 @@ class SpatialWorkflowContractTests(unittest.TestCase):
         roots.extend(
             [
                 GLOBAL / "workflows" / "workflow-spatial-project-inception.md",
-                GLOBAL / "workflows" / "workflow-visual-brainstorm.md",
-                GLOBAL / "workflows" / "workflow-spatial-concept.md",
-                GLOBAL / "workflows" / "workflow-storytelling.md",
-                GLOBAL / "workflows" / "workflow-spatial-design-ui.md",
-                GLOBAL / "workflows" / "workflow-impeccable-craft.md",
-                GLOBAL / "workflows" / "workflow-impeccable-animate.md",
+                GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md",
             ]
         )
         files: list[Path] = []
@@ -173,6 +172,56 @@ class SpatialWorkflowContractTests(unittest.TestCase):
         self.assertIn("Conditional outputs", inception)
         self.assertIn("Create only when required", spatial_skill)
         self.assertIn("Legacy spatial projects", spatial_skill)
+
+    def test_spatial_inception_is_director_led_and_not_a_public_phase_ritual(self) -> None:
+        inception = read(GLOBAL / "workflows" / "workflow-spatial-project-inception.md")
+        studio_director = read(GLOBAL / "agents" / "studio-director" / "AGENT.md")
+        design_director = read(GLOBAL / "agents" / "design-director" / "AGENT.md")
+
+        normalized_inception = " ".join(inception.split())
+        normalized_studio = " ".join(studio_director.split())
+        normalized_design = " ".join(design_director.split())
+
+        self.assertIn("conditional decision lenses and resume support", normalized_inception)
+        self.assertIn("does not need to invoke this workflow", normalized_inception)
+        self.assertIn("not mandatory phases or a public script", normalized_inception)
+        self.assertNotIn("Execute the ten-phase BEVAMPED spatial project workflow", inception)
+        self.assertIn("do not make Beloved invoke a workflow", normalized_studio)
+        self.assertIn("work conversationally", normalized_design)
+        self.assertIn("a Spatial project may need only some of them", normalized_design)
+
+    def test_focused_spatial_phases_are_direct_skills_not_public_workflows(self) -> None:
+        workflow_ids = {record["id"] for record in self.manifest["workflows"]}
+        phase_router = read(
+            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md"
+        )
+        fixture = json.loads(read(REPO_ROOT / "tests" / "fixtures" / "routing.json"))
+        scenarios = {scenario["id"]: scenario for scenario in fixture["scenarios"]}
+
+        for filename in RETIRED_SPATIAL_ROUTE_FILES:
+            self.assertFalse((GLOBAL / "workflows" / filename).exists())
+            self.assertNotIn(filename.removeprefix("workflow-").removesuffix(".md"), workflow_ids)
+        self.assertIn("spatial-project-inception", workflow_ids)
+        self.assertIn("Focused phase routing", phase_router)
+        expected_direct_routes = {
+            "spatial-reference-analysis": "reference-intelligence",
+            "spatial-concept-directions": "spatial-experience-design",
+            "spatial-concept-selection": "spatial-experience-design",
+            "spatial-story-development": "storytelling",
+            "spatial-ui-vertical-slice": "ui-ux",
+            "spatial-motion-design": "cinematic-motion",
+        }
+        for scenario_id, skill_id in expected_direct_routes.items():
+            self.assertEqual("skill", scenarios[scenario_id]["route_kind"])
+            self.assertEqual(skill_id, scenarios[scenario_id]["route"])
+            self.assertEqual(["spatial"], scenarios[scenario_id]["active_packs"])
+            self.assertEqual("read_only", scenarios[scenario_id]["maximum_mutation_class"])
+
+        self.assertIn("Generate three concept territories", phase_router)
+        self.assertIn("Compare and select a territory", phase_router)
+        self.assertIn("Turn an approved blueprint into spatial UI or a vertical slice", phase_router)
+        self.assertIn("one visible rough test and failure condition per territory", phase_router)
+        self.assertIn("risk prototype first", phase_router)
 
     def test_every_affected_skill_resource_is_reachable_from_a_router(self) -> None:
         for name in AFFECTED_SKILLS:

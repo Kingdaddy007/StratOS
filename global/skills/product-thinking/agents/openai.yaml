@@ -1,4 +1,4 @@
 interface:
   display_name: "Product Thinking"
-  short_description: "Guidance for product thinking tasks"
-  default_prompt: "Use $product-thinking to help complete this task with its domain workflow."
+  short_description: "Decide what, whether, and how much to build"
+  default_prompt: "Use $product-thinking to turn this request into a proportionate product decision."

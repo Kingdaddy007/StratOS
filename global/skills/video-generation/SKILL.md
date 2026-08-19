@@ -1,54 +1,59 @@
 ---
 name: video-generation
-description: Use when planning, prompting, routing, or reviewing AI-generated video across Google Flow/Veo/Gemini Omni, Seedance, or another named provider. Do not use for ordinary frontend animation, CSS transitions, or editing a finished video file.
+description: Plan, prompt, direct, compare, or diagnose AI-generated video using Google Flow/Veo/Gemini Omni, Seedance, or another named provider. Use for a video concept, reference-led film, edit/extend task, production brief, provider choice, or failed generation. Do not use for CSS/UI animation, ordinary frontend motion, or editing a finished local video file.
 ---
 
 # Video Generation
 
 ## WHEN TO USE THIS
 
-- The user wants a video concept, shot plan, prompt, storyboard, continuity plan, or model/provider recommendation.
-- The user names Google Flow, Veo, Gemini Omni, Seedance, or another video-generation surface.
-- The user wants to compare a provider’s current model options before drafting a prompt.
+- Plan an AI-video concept, a client asset, a shot sequence, or a provider-aware prompt.
+- Use or compare Google Flow, Veo, Gemini Omni, Seedance, Dreamina, Jimeng, Doubao, CapCut, ModelArk, or another video provider.
+- Diagnose a failed, blocked, low-fidelity, or inconsistent AI-video result without submitting another request.
 
 ## NEVER DO
 
-- Never claim that a platform label, duration, cost, region, or capability is current without checking the active provider surface or a dated primary source.
-- Never treat Flow (an interface) as if it were the same thing as Veo, Gemini Omni, or Seedance (model/provider choices).
-- Never upload references, publish media, spend credits, or contact an external service without a just-in-time approval gate.
-- Never use this skill for CSS/UI motion; route that work to `cinematic-motion`, `motion-library`, or the relevant UI workflow.
+- Never treat a provider interface as a model, a model family as a current account capability, or a dated release claim as a universal rule.
+- Never promise a current model label, duration, price, region, output, edit control, commercial right, or confidentiality treatment without a dated primary source and active-surface check.
+- Never upload an asset, generate media, spend credits, call an API, publish, or deliver media without just-in-time approval.
+- Never use a provider's tags, roles, prompt limit, workaround, or safety behavior as universal video grammar.
 
-## ROUTING
+## ROUTE THE REQUEST
 
-1. Identify the platform/interface, provider, model label, intended output, and constraints.
-2. If the platform is Google Flow, load `references/google-flow.md`; treat the model list as a current snapshot and inspect the user’s active UI.
-3. If the provider is Seedance, load `references/seedance-routing.md` and then the existing `seedance` skill or one of its targeted child skills.
-4. Otherwise ask for the provider documentation or record the capability as unverified before relying on it.
-5. Build the creative brief before writing a final prompt: subject, action, setting, shot, camera, temporal beats, audio, continuity, aspect ratio, duration, and delivery target.
+1. Classify the job: `concept_test`, `reference_led_film`, `edit_extend`, or `troubleshoot`.
+2. Record the provider, surface, exact visible model label or API identifier, account access, region, plan/credits or activation, and visible task controls. Mark missing facts unresolved.
+3. Build a neutral production brief before provider syntax: subject, action, setting, temporal beats, camera, light, sound, continuity anchors, aspect ratio, duration, references, rights owner, confidentiality level, budget, and delivery requirement.
+4. Load only the reference material required by the job. Keep provider facts, creative direction, safety, and delivery concerns separate.
+5. Treat unavailable, contradictory, or undocumented controls as unknown. Offer a smaller verified route or stop for the missing check.
 
 ## REFERENCE LOADING RULES
 
-- Always read this skill’s reference index rules before selecting a provider reference.
-- Load `references/google-flow.md` only for Google Flow, Veo, Gemini Omni, or an “OmniVision” alias.
-- Load `references/seedance-routing.md` only for Seedance or a ByteDance/Dreamina/Jimeng request.
-- Load both when the user is comparing Google and Seedance; keep claims and approval gates separate.
-- Do not load dated provider details for unrelated coding, UI, or post-production tasks.
+Start with [resource-index.md](references/resource-index.md).
+
+- Load [google-flow.md](references/google-flow.md) only for Google Flow, Veo, Gemini Omni, or an unresolved Google-model name.
+- Load [seedance-routing.md](references/seedance-routing.md) only for Seedance or a ByteDance creator/API surface.
+- Load [brief-and-prompt-composition.md](references/brief-and-prompt-composition.md) when clarifying a concept or compiling a provider-aware prompt.
+- Load [reference-and-continuity.md](references/reference-and-continuity.md) for supplied images, video, audio, identity/product fidelity, first/last frames, or multi-shot consistency.
+- Load [shot-motion-and-look.md](references/shot-motion-and-look.md) for camera, action, lighting, visual style, motion, or VFX direction.
+- Load [audio-and-dialogue.md](references/audio-and-dialogue.md) for sound, music, ambience, dialogue, lip-sync, or audio-reference work.
+- Load [evaluation-and-diagnosis.md](references/evaluation-and-diagnosis.md) for a failed output, drift, instability, refusal, or controlled iteration.
+- Load [rights-provenance-and-confidentiality.md](references/rights-provenance-and-confidentiality.md) before uploading sensitive or third-party assets, or planning client delivery.
+- Load [production-handoff-and-automation.md](references/production-handoff-and-automation.md) for API, automation, post-production, export, or delivery planning.
 
 ## OUTPUT SHAPE
 
 Return:
 
-1. Provider/interface and exact model label (or an explicit “verify in current UI” note).
-2. Creative brief and shot-by-shot temporal plan.
-3. Copy-pasteable prompt(s), separated from explanation.
-4. Reference assets and continuity locks.
-5. Verification checklist and any approval needed for upload, generation, publishing, or paid credits.
+1. Resolved route, or the exact active-surface fact still required.
+2. Production brief and measurable success criteria.
+3. Provider-specific adaptation only for confirmed controls; otherwise, a neutral draft.
+4. Reference, continuity, rights, confidentiality, provenance, budget, and approval checks.
+5. Evidence source/date plus an experiment or handoff plan.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-- [ ] Interface, provider, and model are not conflated.
-- [ ] Current or volatile claims have a primary source/date or are marked unverified.
-- [ ] Camera movement, subject motion, duration, and audio intent are explicit.
-- [ ] Character/product/environment continuity is locked where needed.
-- [ ] External uploads, paid generation, publishing, and other mutations stop for approval.
-- [ ] Final output is usable without requiring the user to infer missing fields.
+1. Separate provider, surface, exact model, job, and verified capability.
+2. Keep provider facts dated and surface-scoped.
+3. Load references by need, never as an all-at-once checklist.
+4. Treat visual, audio, continuity, and edit quality as review criteria, not guarantees.
+5. Stop before external, paid, or publication effects.
