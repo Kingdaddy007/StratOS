@@ -233,9 +233,11 @@ they do not override the live manifest. Trading remains outside V4.
 ## Phase 8 - Host integration and real-task drills
 
 **Status: generated-payload gate passed for General, Spatial, Media, and Growth.
-No live payload, hook, permission, or global installation has been applied.**
+The native Antigravity global installer is implemented and has been verified
+locally with a Full-profile install. Hooks and extra permissions remain off.**
 
 - Generate a native Google Antigravity payload first, then compatible Gemini, Codex, Cursor, Windsurf, and OpenCode payloads.
+- Verify the native global discovery paths in a fresh Antigravity project after restarting the host.
 - Test General-only, Spatial, Media, Growth, and justified mixed-pack tasks.
 - Run a small safe task, a multi-boundary product task, a diagnosis-only task, and a high-impact approval-gated task.
 - Confirm that a pack does not leak into unrelated work and that a custom agent/worker cannot exceed its authority.
@@ -256,7 +258,7 @@ model. See [Antigravity agent host-probe research](v4-antigravity-agent-host-pro
 ## What happens next
 
 The next user-visible scope is the representative pilot: first run the private
-fixture, then send one safe real task through the generated Antigravity General
+fixture, then send one safe real task through the installed Antigravity General
 payload and one qualified Spatial or Media task if needed. Record what helped,
 what added ceremony, and what failed before changing more skills. Do not
 reactivate Trading, reopen all skills blindly, or let an optional pack become a

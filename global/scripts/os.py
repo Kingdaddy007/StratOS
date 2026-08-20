@@ -14,6 +14,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import sys
 import tempfile
 import time
@@ -694,6 +695,36 @@ def validate_adapters(repo_root: Path) -> list[dict[str, str]]:
                             "agent_tool_map must cover every canonical capability",
                         )
                     )
+            global_install = adapter.get("global_install")
+            required_global_fields = {
+                "root_name",
+                "instruction_target",
+                "router_target",
+                "user_profile_target",
+                "skills_target",
+                "workflows_target",
+                "agents_target",
+                "payload_target",
+            }
+            if host == "antigravity":
+                if not isinstance(global_install, dict):
+                    problems.append(
+                        issue(
+                            "adapter-global-install",
+                            path.relative_to(repo_root),
+                            "antigravity adapter must declare global_install targets",
+                        )
+                    )
+                else:
+                    missing_global_fields = required_global_fields - set(global_install)
+                    if missing_global_fields:
+                        problems.append(
+                            issue(
+                                "adapter-global-install",
+                                path.relative_to(repo_root),
+                                f"missing {sorted(missing_global_fields)}",
+                            )
+                        )
         capabilities = adapter.get("capabilities", {})
         for capability in (
             "read_file",
@@ -1556,6 +1587,79 @@ def resolve_install_root(target: Path) -> Path:
     return install_root
 
 
+def resolve_antigravity_global_home(target: Path) -> Path:
+    """Validate the native Antigravity global customization root."""
+    raw = target.expanduser()
+    # Check the user-supplied path before resolve(); resolving first would hide
+    # a symlink or junction and could redirect the install outside the named
+    # .gemini directory.
+    probe = raw
+    while True:
+        if probe.exists():
+            _ensure_not_reparse(probe)
+        if probe.parent == probe:
+            break
+        probe = probe.parent
+    base = raw.resolve()
+    home = Path.home().resolve()
+    anchor = Path(base.anchor).resolve()
+    if base in {home, anchor}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root target; select the .gemini directory"
+        )
+    if base.name.lower() != ".gemini":
+        raise InstallationRefused(
+            "Native Antigravity global installation requires a target ending in .gemini"
+        )
+    if base.parent == anchor:
+        raise InstallationRefused(
+            "Refusing to install directly below the filesystem root"
+        )
+    return base
+
+
+def directory_digest(directory: Path) -> str:
+    """Return a stable digest for a directory's relative files and contents."""
+    digest = hashlib.sha256()
+    for relative, source in sorted(file_map(directory).items()):
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(bytes.fromhex(sha256_file(source)))
+    return digest.hexdigest()
+
+
+def entry_digest(path: Path) -> str:
+    """Return the digest used to prove that an entry is still installer-owned."""
+    return directory_digest(path) if path.is_dir() else sha256_file(path)
+
+
+def _ensure_not_reparse(path: Path) -> None:
+    if path.is_symlink():
+        raise InstallationRefused(f"Refusing symlink target: {path}")
+    try:
+        attributes = path.stat().st_file_attributes
+    except (AttributeError, FileNotFoundError):
+        attributes = 0
+    if attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0):
+        raise InstallationRefused(f"Refusing reparse-point target: {path}")
+
+
+def _replace_entry(source: Path, destination: Path) -> None:
+    """Atomically move a staged file or directory using Windows-safe paths."""
+    os.replace(filesystem_path(source), filesystem_path(destination))
+
+
+def _remove_entry(path: Path) -> None:
+    """Remove a staged/activated entry without following reparse points."""
+    if path.is_dir() and not path.is_symlink():
+        shutil.rmtree(filesystem_path(path), ignore_errors=True)
+    else:
+        try:
+            os.unlink(filesystem_path(path))
+        except FileNotFoundError:
+            pass
+
+
 def installation_changes(payload: Path, install_root: Path) -> dict[str, list[str]]:
     source_files = file_map(payload)
     target_files = file_map(install_root)
@@ -1627,6 +1731,298 @@ def install_payload(
         shutil.rmtree(stage, ignore_errors=True)
         if activated_existing and backup.exists() and not install_root.exists():
             backup.replace(install_root)
+        raise
+
+
+def antigravity_global_file_map(
+    payload: Path,
+    gemini_home: Path,
+    adapter: dict[str, Any],
+) -> dict[Path, Path]:
+    """Map a generated Antigravity payload to native global discovery paths."""
+    global_install = adapter.get("global_install")
+    if not isinstance(global_install, dict):
+        raise InstallationRefused(
+            "Antigravity adapter does not declare native global installation targets"
+        )
+
+    mapping: dict[Path, Path] = {}
+
+    def add(source: Path, target: Path) -> None:
+        if not source.exists():
+            return
+        if target in mapping.values():
+            raise InstallationRefused(f"Duplicate Antigravity global target: {target}")
+        mapping[source] = target
+
+    add(
+        payload / adapter["instruction_target"],
+        gemini_home / global_install["instruction_target"],
+    )
+    add(
+        payload / adapter["content_root"] / "GLOBAL_MEMORY.md",
+        gemini_home / global_install["router_target"],
+    )
+    add(
+        payload / "USER_PROFILE.md",
+        gemini_home / global_install["user_profile_target"],
+    )
+
+    content_root = payload / adapter["content_root"]
+    for source_name, target_name in (
+        ("skills", "skills_target"),
+        ("workflows", "workflows_target"),
+        ("agents", "agents_target"),
+    ):
+        source_root = content_root / adapter[f"{source_name}_target"]
+        target_root = gemini_home / global_install[target_name]
+        if not source_root.exists():
+            continue
+        for source in sorted(source_root.iterdir()):
+            add(source, target_root / source.name)
+
+    # Do not map the complete generated payload into the global namespace.
+    # It contains deep reference trees which can cross Windows path limits and
+    # would duplicate the direct skill/workflow registries. The native host
+    # discovers those registries from the direct targets above. A shallow
+    # installation record is written separately by install_antigravity_global.
+    return mapping
+
+
+def antigravity_global_changes(
+    payload: Path,
+    gemini_home: Path,
+    adapter: dict[str, Any],
+) -> dict[str, list[str]]:
+    mapping = antigravity_global_file_map(payload, gemini_home, adapter)
+    additions: list[str] = []
+    replacements: list[str] = []
+    unchanged: list[str] = []
+    for source, target in mapping.items():
+        label = target.relative_to(gemini_home).as_posix()
+        if not target.exists():
+            additions.append(label)
+        elif source.is_file() and target.is_file() and sha256_file(source) == sha256_file(target):
+            unchanged.append(label)
+        elif source.is_dir() and target.is_dir() and directory_digest(source) == directory_digest(target):
+            unchanged.append(label)
+        else:
+            replacements.append(label)
+    global_install = adapter["global_install"]
+    managed_namespace = gemini_home / global_install["payload_target"]
+    active_record_path = managed_namespace / "active.json"
+    current_targets = {
+        target.relative_to(gemini_home).as_posix() for target in mapping.values()
+    }
+    stale_targets: list[str] = []
+    if active_record_path.exists():
+        active_record = load_json(active_record_path)
+        previous_targets = active_record.get("direct_targets")
+        if not isinstance(previous_targets, list) or not all(
+            isinstance(item, str) for item in previous_targets
+        ):
+            raise InstallationRefused(
+                f"Invalid Antigravity installation record: {active_record_path}"
+            )
+        previous_digests = active_record.get("direct_digests", {})
+        if not isinstance(previous_digests, dict) or not all(
+            isinstance(key, str) and isinstance(value, str)
+            for key, value in previous_digests.items()
+        ):
+            raise InstallationRefused(
+                f"Invalid Antigravity ownership record: {active_record_path}"
+            )
+        # Only prune entries that the installer previously owned in its own
+        # registries. Unrelated global skills, workflows, and agents are never
+        # inferred or removed.
+        managed_prefixes = ("config/skills/", "config/workflows/", "config/agents/")
+        stale_targets = sorted(
+            item
+            for item in previous_targets
+            if item not in current_targets
+            and item.startswith(managed_prefixes)
+            and (gemini_home / Path(item)).exists()
+            and previous_digests.get(item) == entry_digest(gemini_home / Path(item))
+        )
+    return {
+        "add": sorted(additions),
+        "replace": sorted(replacements),
+        "remove": stale_targets,
+        "unchanged": sorted(unchanged),
+    }
+
+
+def install_antigravity_global(
+    payload: Path,
+    target: Path,
+    dry_run: bool,
+    assume_yes: bool,
+) -> dict[str, Any]:
+    """Install only V4-owned files into Antigravity's native global locations."""
+    payload = payload.resolve()
+    if not payload.is_dir():
+        raise InstallationRefused(f"Payload does not exist: {payload}")
+    adapter = load_json(payload / "adapter.json")
+    if adapter.get("host") != "antigravity":
+        raise InstallationRefused("Native global installation requires an antigravity payload")
+    gemini_home = resolve_antigravity_global_home(target)
+    mapping = antigravity_global_file_map(payload, gemini_home, adapter)
+    changes = antigravity_global_changes(payload, gemini_home, adapter)
+    global_install = adapter["global_install"]
+    managed_namespace = gemini_home / global_install["payload_target"]
+    active_record_path = managed_namespace / "active.json"
+    profile_key = "general"
+    profile_path = payload / "profile.json"
+    if profile_path.exists():
+        profile = load_json(profile_path)
+        profile_key = profile.get("profile_key", profile_key)
+    managed_profile = managed_namespace / profile_key
+    result: dict[str, Any] = {
+        "status": "dry-run" if dry_run else "pending",
+        "host": "antigravity",
+        "target": str(gemini_home),
+        "managed_namespace": str(managed_namespace),
+        "managed_record": str(managed_profile / "installation.json"),
+        "changes": changes,
+        "backup": None,
+        "direct_discovery": {
+            "agents": str(gemini_home / global_install["agents_target"]),
+            "skills": str(gemini_home / global_install["skills_target"]),
+            "workflows": str(gemini_home / global_install["workflows_target"]),
+            "rule": str(gemini_home / global_install["instruction_target"]),
+        },
+    }
+    if dry_run:
+        return result
+    if not assume_yes:
+        raise InstallationRefused(
+            "Native Antigravity global installation requires explicit confirmation; "
+            "rerun with --yes after reviewing --dry-run"
+        )
+
+    backup_root = gemini_home / ".antigravity-backups" / utc_timestamp()
+    stage_root = gemini_home / f".antigravity-global-stage-{uuid.uuid4().hex}"
+    activated: list[tuple[Path, Path | None]] = []
+    try:
+        _ensure_not_reparse(gemini_home) if gemini_home.exists() else None
+        stage_root.mkdir(parents=True, exist_ok=False)
+        staged_pairs: list[tuple[Path, Path]] = []
+        unchanged = set(changes["unchanged"])
+        for source, destination in mapping.items():
+            label = destination.relative_to(gemini_home).as_posix()
+            if label in unchanged:
+                continue
+            if destination.exists():
+                _ensure_not_reparse(destination)
+            staged = stage_root / destination.relative_to(gemini_home)
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            copy_entry(source, staged)
+            staged_pairs.append((staged, destination))
+
+        for staged, destination in staged_pairs:
+            backup_path: Path | None = None
+            if destination.exists():
+                backup_path = backup_root / destination.relative_to(gemini_home)
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(destination, backup_path)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(staged, destination)
+            activated.append((destination, backup_path))
+
+        # Retire only entries recorded by an earlier Anti-Gravity install when
+        # switching from Full to General (or another smaller profile). Every
+        # retired entry is moved into the same rollback backup; nothing is
+        # deleted and unrelated global entries are outside this list.
+        for relative in changes.get("remove", []):
+            destination = gemini_home / Path(relative)
+            if not destination.exists():
+                continue
+            _ensure_not_reparse(destination)
+            backup_path = backup_root / destination.relative_to(gemini_home)
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(destination, backup_path)
+            activated.append((destination, backup_path))
+
+        # Keep only shallow provenance in the managed namespace. The canonical
+        # repository remains the source of truth; direct native paths above are
+        # what Antigravity discovers. Avoid copying the complete payload here.
+        managed_stage = stage_root / "managed" / profile_key
+        managed_stage.mkdir(parents=True, exist_ok=True)
+        for metadata_name in ("adapter.json", "manifest.json", "profile.json"):
+            source = payload / metadata_name
+            if source.exists():
+                copy_entry(source, managed_stage / metadata_name)
+        managed_backup: Path | None = None
+        if managed_profile.exists():
+            _ensure_not_reparse(managed_profile)
+            managed_backup = backup_root / managed_profile.relative_to(gemini_home)
+            managed_backup.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(managed_profile, managed_backup)
+        managed_profile.parent.mkdir(parents=True, exist_ok=True)
+        _replace_entry(managed_stage, managed_profile)
+        activated.append((managed_profile, managed_backup))
+        record = {
+            "schema_version": 1,
+            "host": "antigravity",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "payload_profile": str(managed_profile.relative_to(managed_namespace)),
+            "target": str(gemini_home),
+            "direct_targets": sorted(
+                str(destination.relative_to(gemini_home)).replace("\\", "/")
+                for source, destination in mapping.items()
+                if source != payload
+            ),
+            "direct_digests": {
+                str(destination.relative_to(gemini_home)).replace("\\", "/"): entry_digest(
+                    destination
+                )
+                for source, destination in mapping.items()
+                if source != payload
+            },
+            "removed_targets": list(changes.get("remove", [])),
+            "active_record": str(active_record_path),
+            "backup": str(backup_root) if backup_root.exists() else None,
+        }
+        write_json_atomic(managed_profile / "installation.json", record)
+
+        active_stage = stage_root / "managed" / "active.json"
+        write_json_atomic(active_stage, record)
+        active_backup: Path | None = None
+        if active_record_path.exists():
+            _ensure_not_reparse(active_record_path)
+            active_backup = backup_root / active_record_path.relative_to(gemini_home)
+            active_backup.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(active_record_path, active_backup)
+        active_record_path.parent.mkdir(parents=True, exist_ok=True)
+        _replace_entry(active_stage, active_record_path)
+        activated.append((active_record_path, active_backup))
+
+        required = [
+            gemini_home / global_install["instruction_target"],
+            gemini_home / global_install["router_target"],
+        ]
+        required.extend(
+            destination / "agent.md"
+            for source, destination in mapping.items()
+            if source.parent.name == adapter["agents_target"]
+        )
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        result["backup"] = str(backup_root) if backup_root.exists() else None
+        result["status"] = "installed"
+        return result
+    except Exception:
+        for destination, backup_path in reversed(activated):
+            if destination.exists():
+                _remove_entry(destination)
+            if backup_path and backup_path.exists():
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(backup_path, destination)
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
         raise
 
 
@@ -1828,6 +2224,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="For host=codex, install into Codex discovery locations plus a rollback namespace",
     )
+    install_parser.add_argument(
+        "--antigravity-global",
+        action="store_true",
+        help="For host=antigravity, install into native global discovery locations plus a rollback namespace",
+    )
     return parser
 
 
@@ -1847,6 +2248,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "install":
             if args.codex_global and args.host != "codex":
                 raise InstallationRefused("--codex-global is only valid with --host codex")
+            if args.antigravity_global and args.host != "antigravity":
+                raise InstallationRefused(
+                    "--antigravity-global is only valid with --host antigravity"
+                )
+            if args.codex_global and args.antigravity_global:
+                raise InstallationRefused(
+                    "Choose only one host-specific global installation mode"
+                )
             selected_profile, selected_packs, selected_option = resolve_install_option(
                 REPO_ROOT,
                 args.option,
@@ -1864,6 +2273,8 @@ def main(argv: list[str] | None = None) -> int:
                     result = (
                         install_codex_global(payload, args.target, True, False)
                         if args.codex_global
+                        else install_antigravity_global(payload, args.target, True, False)
+                        if args.antigravity_global
                         else install_payload(payload, args.target, args.host, True, False)
                     )
             else:
@@ -1871,6 +2282,8 @@ def main(argv: list[str] | None = None) -> int:
                 result = (
                     install_codex_global(payload, args.target, False, args.yes)
                     if args.codex_global
+                    else install_antigravity_global(payload, args.target, False, args.yes)
+                    if args.antigravity_global
                     else install_payload(payload, args.target, args.host, False, args.yes)
                 )
             result["installation_option"] = selected_option

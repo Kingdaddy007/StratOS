@@ -93,9 +93,179 @@ class InstallerSafetyTests(unittest.TestCase):
                 assume_yes=False,
             )
 
+    def test_antigravity_global_dry_run_reports_native_targets_without_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "build"
+            payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            gemini_home = Path(directory) / ".gemini"
+            gemini_home.mkdir()
+            sentinel = gemini_home / "unrelated.json"
+            sentinel.write_text("keep", encoding="utf-8")
+
+            result = self.os_cli.install_antigravity_global(
+                payload=payload,
+                target=gemini_home,
+                dry_run=True,
+                assume_yes=False,
+            )
+
+            self.assertEqual("dry-run", result["status"])
+            self.assertTrue(
+                result["direct_discovery"]["agents"].endswith(
+                    str(Path(".gemini") / "config" / "agents")
+                )
+            )
+            self.assertIn("GEMINI.md", result["changes"]["add"])
+            self.assertTrue(sentinel.exists())
+            self.assertFalse((gemini_home / "config" / "agents").exists())
+
+    def test_antigravity_global_install_preserves_unrelated_entries_and_backups(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "build"
+            payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            gemini_home = Path(directory) / ".gemini"
+            unrelated = gemini_home / "config" / "skills" / "unrelated"
+            unrelated.mkdir(parents=True)
+            (unrelated / "SKILL.md").write_text("keep", encoding="utf-8")
+            existing_agent = gemini_home / "config" / "agents" / "staff-engineer"
+            existing_agent.mkdir(parents=True)
+            (existing_agent / "agent.md").write_text("old", encoding="utf-8")
+
+            result = self.os_cli.install_antigravity_global(
+                payload=payload,
+                target=gemini_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+
+            self.assertEqual("installed", result["status"])
+            self.assertTrue((gemini_home / "GEMINI.md").exists())
+            self.assertTrue(
+                (gemini_home / "config" / "agents" / "staff-engineer" / "agent.md").exists()
+            )
+            self.assertTrue((unrelated / "SKILL.md").exists())
+            self.assertEqual(
+                "old",
+                (
+                    Path(result["backup"])
+                    / "config"
+                    / "agents"
+                    / "staff-engineer"
+                    / "agent.md"
+                ).read_text(encoding="utf-8"),
+            )
+            record = next(
+                (gemini_home / "config" / "antigravity-os").rglob("installation.json")
+            )
+            self.assertEqual("antigravity", json.loads(record.read_text(encoding="utf-8"))["host"])
+
+    def test_antigravity_global_requires_gemini_home_target(self) -> None:
+        with self.assertRaises(self.os_cli.InstallationRefused):
+            self.os_cli.resolve_antigravity_global_home(self.root / "shared-rules")
+
+    def test_profile_switch_prunes_only_previously_owned_optional_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "build"
+            full_payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                packs=("spatial", "media", "growth"),
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            general_payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            gemini_home = Path(directory) / ".gemini"
+            self.os_cli.install_antigravity_global(
+                payload=full_payload,
+                target=gemini_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            unrelated = gemini_home / "config" / "skills" / "unrelated"
+            unrelated.mkdir(parents=True)
+            (unrelated / "SKILL.md").write_text("keep", encoding="utf-8")
+
+            preview = self.os_cli.install_antigravity_global(
+                payload=general_payload,
+                target=gemini_home,
+                dry_run=True,
+                assume_yes=False,
+            )
+            self.assertIn("config/skills/spatial-experience-design", preview["changes"]["remove"])
+
+            result = self.os_cli.install_antigravity_global(
+                payload=general_payload,
+                target=gemini_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            self.assertEqual("installed", result["status"])
+            self.assertFalse(
+                (gemini_home / "config" / "skills" / "spatial-experience-design").exists()
+            )
+            self.assertTrue((unrelated / "SKILL.md").exists())
+            self.assertTrue(result["changes"]["remove"])
+
     def test_home_directory_is_refused_as_base_target(self) -> None:
         with self.assertRaises(self.os_cli.InstallationRefused):
             self.os_cli.resolve_install_root(Path.home())
+
+    def test_profile_switch_preserves_modified_owned_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "build"
+            full_payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                packs=("spatial", "media", "growth"),
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            general_payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="general",
+                repo_root=REPO_ROOT,
+                output_root=output,
+            )
+            gemini_home = Path(directory) / ".gemini"
+            self.os_cli.install_antigravity_global(
+                payload=full_payload,
+                target=gemini_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            local_skill = gemini_home / "config" / "skills" / "spatial-experience-design" / "SKILL.md"
+            local_skill.write_text(local_skill.read_text(encoding="utf-8") + "\nlocal edit\n", encoding="utf-8")
+
+            preview = self.os_cli.install_antigravity_global(
+                payload=general_payload,
+                target=gemini_home,
+                dry_run=True,
+                assume_yes=False,
+            )
+            self.assertNotIn("config/skills/spatial-experience-design", preview["changes"]["remove"])
+            self.os_cli.install_antigravity_global(
+                payload=general_payload,
+                target=gemini_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            self.assertTrue(local_skill.exists())
+            self.assertIn("local edit", local_skill.read_text(encoding="utf-8"))
 
     def test_general_install_option_keeps_optional_packs_dormant(self) -> None:
         profile, packs, option = self.os_cli.resolve_install_option(

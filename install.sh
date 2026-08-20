@@ -7,6 +7,7 @@ GLOBAL_CONFIG=""
 IDE=""
 HOST_ID=""
 INSTALL_OPTION=""
+NATIVE_GLOBAL=false
 DRY_RUN=false
 ASSUME_YES=false
 TARGET=""
@@ -21,10 +22,12 @@ warn() { printf '  WARN  %s\n' "$1" >&2; }
 
 usage() {
     cat <<'EOF'
-Usage: ./install.sh [--ide 1-6] [--host HOST] [--global-config PARENT] [--option general|full] [--dry-run] [--yes]
+Usage: ./install.sh [--ide 1-7] [--host HOST] [--global-config TARGET] [--option general|full] [--dry-run] [--yes]
 
 The installer always writes to a dedicated directory named "antigravity".
---global-config is a parent directory unless it already ends in /antigravity.
+For --host antigravity, use the native global target ~/.gemini; agents go to
+~/.gemini/config/agents and skills go to ~/.gemini/config/skills.
+Other hosts use --global-config as a parent directory unless it already ends in /antigravity.
 If --option is omitted, the installer asks whether to install General or Full.
 EOF
 }
@@ -77,44 +80,70 @@ add_namespace() {
 
 select_target() {
     if [[ -n "$GLOBAL_CONFIG" ]]; then
-        [[ -n "$HOST_ID" ]] || { warn 'Custom/global config targets require --host gemini|codex|cursor|windsurf|opencode.'; return 1; }
+        [[ -n "$HOST_ID" ]] || { warn 'Custom/global config targets require --host antigravity|gemini|codex|cursor|windsurf|opencode.'; return 1; }
+        if [[ "$HOST_ID" == 'antigravity' ]]; then
+            NATIVE_GLOBAL=true
+            SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
+            return
+        fi
         SELECTED_TARGET="$(add_namespace "$GLOBAL_CONFIG")"
+        return
+    fi
+
+    if [[ -n "$HOST_ID" && -z "$IDE" ]]; then
+        case "$HOST_ID" in
+            antigravity) NATIVE_GLOBAL=true; SELECTED_TARGET="$HOME/.gemini" ;;
+            gemini) SELECTED_TARGET="$HOME/.gemini/antigravity" ;;
+            codex) SELECTED_TARGET="$HOME/.codex/antigravity" ;;
+            cursor) SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
+            windsurf) SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
+            opencode) SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
+            *) warn "Unsupported host '$HOST_ID'."; return 1 ;;
+        esac
         return
     fi
 
     if [[ -z "$IDE" ]]; then
         cat <<'EOF'
 Choose a host:
-  [1] Gemini     -> ~/.gemini/antigravity
-  [2] Codex      -> ~/.codex/antigravity
-  [3] Cursor     -> ~/.cursor/rules/antigravity
-  [4] Windsurf   -> ~/.codeium/windsurf/memories/antigravity
-  [5] OpenCode   -> ~/.config/opencode/antigravity
-  [6] Custom parent directory
+  [1] Antigravity 2.0 (native global) -> ~/.gemini
+  [2] Gemini compatibility namespace -> ~/.gemini/antigravity
+  [3] Codex                         -> ~/.codex/antigravity
+  [4] Cursor                        -> ~/.cursor/rules/antigravity
+  [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
+  [6] OpenCode                      -> ~/.config/opencode/antigravity
+  [7] Custom parent directory
 EOF
-        read -r -p 'Enter 1-6: ' IDE
+        read -r -p 'Enter 1-7: ' IDE
     fi
 
     case "$IDE" in
-        1) HOST_ID='gemini'; SELECTED_TARGET="$HOME/.gemini/antigravity" ;;
-        2) HOST_ID='codex'; SELECTED_TARGET="$HOME/.codex/antigravity" ;;
-        3) HOST_ID='cursor'; SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
-        4) HOST_ID='windsurf'; SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
-        5) HOST_ID='opencode'; SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
-        6)
+        1) HOST_ID='antigravity'; NATIVE_GLOBAL=true; SELECTED_TARGET="$HOME/.gemini" ;;
+        2) HOST_ID='gemini'; SELECTED_TARGET="$HOME/.gemini/antigravity" ;;
+        3) HOST_ID='codex'; SELECTED_TARGET="$HOME/.codex/antigravity" ;;
+        4) HOST_ID='cursor'; SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
+        5) HOST_ID='windsurf'; SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
+        6) HOST_ID='opencode'; SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
+        7)
             local custom_parent
             if [[ -z "$HOST_ID" ]]; then
-                read -r -p 'Supported host (gemini, codex, cursor, windsurf, opencode): ' HOST_ID
+                read -r -p 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode): ' HOST_ID
+            fi
+            if [[ "$HOST_ID" == 'antigravity' ]]; then
+                NATIVE_GLOBAL=true
+                read -r -p 'Enter the .gemini directory: ' custom_parent
+                SELECTED_TARGET="$(expand_path "$custom_parent")"
+                return
             fi
             read -r -p 'Parent directory for the antigravity namespace: ' custom_parent
             SELECTED_TARGET="$(add_namespace "$custom_parent")" ;;
-        *) warn "Unknown host choice '$IDE'. Use 1-6."; return 1 ;;
+        *) warn "Unknown host choice '$IDE'. Use 1-7."; return 1 ;;
     esac
 }
 
 assert_supported_host() {
-    case "$HOST_ID" in gemini|codex|cursor|windsurf|opencode) return 0 ;; esac
-    warn "Unsupported host '$HOST_ID'. Use gemini, codex, cursor, windsurf, or opencode."
+    case "$HOST_ID" in antigravity|gemini|codex|cursor|windsurf|opencode) return 0 ;; esac
+    warn "Unsupported host '$HOST_ID'. Use antigravity, gemini, codex, cursor, windsurf, or opencode."
     return 1
 }
 
@@ -236,6 +265,32 @@ select_target
 assert_supported_host
 select_install_option
 TARGET="$(expand_path "$SELECTED_TARGET")"
+
+if [[ "$HOST_ID" == 'antigravity' && "$NATIVE_GLOBAL" != true ]]; then
+    NATIVE_GLOBAL=true
+fi
+if [[ "$NATIVE_GLOBAL" == true && "$HOST_ID" != 'antigravity' ]]; then
+    warn '--native global installation is only valid for host antigravity.'
+    exit 2
+fi
+
+if [[ "$NATIVE_GLOBAL" == true ]]; then
+    find_python || {
+        warn 'Native Antigravity global installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+        exit 1
+    }
+    if [[ "$DRY_RUN" != true && "$ASSUME_YES" != true ]]; then
+        read -r -p "Install into native Antigravity global locations under '$TARGET'? Type INSTALL to continue: " CONFIRMATION
+        [[ "$CONFIRMATION" == 'INSTALL' ]] || { warn 'Installation cancelled. No files were changed.'; exit 0; }
+        ASSUME_YES=true
+    fi
+    CLI="$SCRIPT_ROOT/global/scripts/os.py"
+    GLOBAL_ARGS=("$CLI" install --host antigravity --target "$TARGET" --option "$INSTALL_OPTION" --antigravity-global)
+    if [[ "$DRY_RUN" == true ]]; then GLOBAL_ARGS+=(--dry-run); else GLOBAL_ARGS+=(--yes); fi
+    "${PYTHON[@]}" "${GLOBAL_ARGS[@]}"
+    exit $?
+fi
+
 resolve_host_payload
 assert_safe_target "$TARGET"
 PARENT="${TARGET%/*}"

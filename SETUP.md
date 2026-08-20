@@ -1,18 +1,19 @@
-# Anti-Gravity OS 3 Setup
+# Anti-Gravity OS V4 Setup
 
 Installation is a user-authorized operation. Reading this document does not authorize an AI assistant to modify global configuration.
 
 ## Supported hosts
 
-| Installer choice | Host | Default namespace |
+| Installer choice | Host | Default location |
 | --- | --- | --- |
-| 1 | Gemini | `~/.gemini/antigravity` |
-| 2 | Codex | `~/.codex/antigravity` |
-| 3 | Cursor | `~/.cursor/rules/antigravity` |
-| 4 | Windsurf | `~/.codeium/windsurf/memories/antigravity` |
-| 5 | OpenCode | `~/.config/opencode/antigravity` |
+| 1 | Google Antigravity 2.0 | `~/.gemini/GEMINI.md`, `~/.gemini/config/` |
+| 2 | Gemini compatibility | `~/.gemini/antigravity` |
+| 3 | Codex | `~/.codex/antigravity` and Codex global files |
+| 4 | Cursor | `~/.cursor/rules/antigravity` |
+| 5 | Windsurf | `~/.codeium/windsurf/memories/antigravity` |
+| 6 | OpenCode | `~/.config/opencode/antigravity` |
 
-Each host receives a generated adapter payload. Canonical `global/` source is never installed directly.
+Each host receives a generated adapter payload. Canonical `global/` source is never installed directly. Antigravity's native global path is different from the Gemini compatibility namespace.
 
 ## Safe setup sequence
 
@@ -35,27 +36,48 @@ The counts come from `global/manifest.yaml`, so they stay current when the
 registry changes. Use `--option general` or `--option full` for scripts and
 CI. An omitted option keeps the existing non-interactive default: General.
 
-The installer may replace only the dedicated `antigravity` namespace. It never clears its shared parent. An existing namespace is staged and backed up under `.antigravity-backups/`; unrelated files in the parent remain untouched. Failed activation restores the backup.
+The installer may replace only the dedicated `antigravity` namespace for compatibility hosts. Native Antigravity writes only its declared global files and directories. It never clears a shared parent. Existing matching entries are staged and backed up under `.antigravity-backups/`; unrelated files remain untouched. When changing from Full to General, only entries listed in the installer's own previous record are moved to the backup. Failed activation restores the backup.
 
 ## Windows
 
-### Gemini
+### Google Antigravity 2.0
 
-Gemini uses the generated `GEMINI.md` adapter payload. Preview and approve the normal namespaced install:
+Use the native global path when you want the custom-agent drop-down in new
+projects:
 
 ```powershell
-.\install.ps1 -IDE 1 -DryRun
-.\install.ps1 -IDE 1 -Yes
+.\install.ps1 -TargetHost antigravity -InstallOption general -DryRun
+.\install.ps1 -TargetHost antigravity -InstallOption general -Yes
+```
+
+This installs the rule at `~/.gemini/GEMINI.md`, agents at
+`~/.gemini/config/agents/`, skills at `~/.gemini/config/skills/`, and workflows
+at `~/.gemini/config/workflows/`.
+
+Start a fresh Antigravity conversation after installation so it reloads the
+global configuration. For normal Anti-Gravity OS work, select
+`studio-director` from the agent menu. `Main Agent` is Antigravity's built-in
+default, while `studio-director` is the custom Anti-Gravity OS coordinator.
+
+### Gemini compatibility
+
+Gemini compatibility uses a generated `GEMINI.md` payload in a namespaced
+directory:
+
+```powershell
+.\install.ps1 -TargetHost gemini -InstallOption general -DryRun
+.\install.ps1 -TargetHost gemini -InstallOption general -Yes
 ```
 
 The canonical source remains in the repository; Gemini receives a generated copy under its `antigravity` namespace.
 
-```powershell
-# Preview; no target files are written
-.\install.ps1 -IDE 2 -DryRun
+### Codex compatibility namespace
 
-# Install Codex after reviewing the preview
-.\install.ps1 -IDE 2 -Yes
+Preview and approve the namespaced Codex payload:
+
+```powershell
+.\install.ps1 -TargetHost codex -InstallOption general -DryRun
+.\install.ps1 -TargetHost codex -InstallOption general -Yes
 ```
 
 For a custom parent, identify the host explicitly:
@@ -69,8 +91,8 @@ For a custom parent, identify the host explicitly:
 
 ```bash
 chmod +x install.sh
-./install.sh --ide 1 --dry-run
-./install.sh --ide 1 --yes
+./install.sh --host antigravity --option general --dry-run
+./install.sh --host antigravity --option general --yes
 ```
 
 For a custom parent:
@@ -94,9 +116,9 @@ If neither a prebuilt payload nor Python is available, installation stops withou
 
 ```bash
 python global/scripts/os.py validate
-python global/scripts/os.py build --host gemini
-python global/scripts/os.py install --host gemini --target ~/.gemini --dry-run
-python global/scripts/os.py install --host gemini --target ~/.gemini --yes
+python global/scripts/os.py build --host antigravity
+python global/scripts/os.py install --host antigravity --target ~/.gemini --option general --antigravity-global --dry-run
+python global/scripts/os.py install --host antigravity --target ~/.gemini --option general --antigravity-global --yes
 ```
 
 ### Codex global governance
@@ -117,7 +139,10 @@ Use `--profile spatial` only for interior, showroom, gallery, luxury-home, furni
 
 The adapter's `content_root`, `instruction_target`, `skills_target`, and `workflows_target` determine the exact layout. For example:
 
-- Gemini installs `GEMINI.md` with canonical content at the namespace root.
+- Native Antigravity installs `GEMINI.md` at `~/.gemini/` and discovers agents,
+  skills, and workflows from `~/.gemini/config/`.
+- Gemini compatibility installs `GEMINI.md` with canonical content at its
+  generated namespace root.
 - Codex installs `AGENTS.md` at the namespace root and canonical content under `.agents/`.
 - Cursor, Windsurf, and OpenCode use their adapter-declared instruction and discovery paths.
 

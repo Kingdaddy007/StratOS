@@ -1,6 +1,7 @@
-# Migrating to Anti-Gravity OS 3
+# Migrating to Anti-Gravity OS V4
 
-Version 3 replaces duplicated, host-coupled configuration with canonical source and generated adapters.
+Version 4 replaces duplicated, host-coupled configuration with canonical source,
+generated adapters, profiles, and native Antigravity custom-agent discovery.
 
 ## Before migration
 
@@ -11,12 +12,13 @@ Version 3 replaces duplicated, host-coupled configuration with canonical source 
 
 ## Path changes
 
-| Previous path | Version 3 path |
+| Previous path | Version 4 path |
 | --- | --- |
 | `global/contexts/` | `global/context_templates/` |
 | `.agents/workflow-state.json` | `.agents/workflows/<task-id>.json` |
 | `global/global_workflows/` | generated host workflow directory |
 | spatial content as global default | optional `spatial` profile |
+| compatibility `~/.gemini/antigravity` for native Antigravity | native `~/.gemini/GEMINI.md` plus `~/.gemini/config/agents`, `skills`, and `workflows` |
 
 The old `global/contexts/` path contains a compatibility notice for one release. Duplicate workflow source is not retained.
 
@@ -28,13 +30,21 @@ Host-specific fields belong in adapters or generated metadata, not canonical fro
 
 ## Installation behavior
 
-The installer no longer clears a host configuration directory. It writes to `<selected-target>/antigravity`, stages the new payload, moves any existing Anti-Gravity namespace to `.antigravity-backups/`, and activates atomically.
+The installer no longer clears a host configuration directory. Compatibility
+hosts receive a namespaced payload. Native Antigravity receives only the
+declared global rule, agents, skills, and workflows. It stages changes, backs
+up matching entries under `.antigravity-backups/`, and activates atomically.
+When a recorded Anti-Gravity profile is reduced, only its recorded entries are
+moved to the backup; unrelated host files are preserved.
 
 If migration fails after backup creation, the previous namespace is restored.
 
 ## Git history
 
-Machine-specific project registrations have been removed from the current tree. Version 3 does not rewrite Git history automatically. Repository owners who need historical removal should perform a separately reviewed history-sanitization operation and rotate any exposed credentials or permissions.
+Machine-specific project registrations have been removed from the current tree.
+Version 4 does not rewrite Git history automatically. Repository owners who need
+historical removal should perform a separately reviewed history-sanitization
+operation and rotate any exposed credentials or permissions.
 
 ## Validation
 

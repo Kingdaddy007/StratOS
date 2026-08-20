@@ -18,6 +18,9 @@ This directory contains deterministic development, validation, build, and verifi
   compatible single-pack shorthand; `--packs` safely composes Media, Growth,
   and Spatial with the implicit General base. Interactive installs ask for the
   General or Full option; automation can use `--option general|full`.
+  `--antigravity-global` installs an Antigravity payload into the host's native
+  global rule, agent, skill, and workflow discovery paths while preserving a
+  namespaced rollback copy.
 - `verify.py`: project baseline verification runner; it does not declare deployment readiness.
 - `checks/`: focused baseline scanners used by `verify.py`.
 

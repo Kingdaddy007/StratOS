@@ -7,6 +7,16 @@
   "skills_target": "skills",
   "workflows_target": "workflows",
   "agents_target": "agents",
+  "global_install": {
+    "root_name": ".gemini",
+    "instruction_target": "GEMINI.md",
+    "router_target": "GLOBAL_MEMORY.md",
+    "user_profile_target": "USER_PROFILE.md",
+    "skills_target": "config/skills",
+    "workflows_target": "config/workflows",
+    "agents_target": "config/agents",
+    "payload_target": "config/antigravity-os"
+  },
   "agent_format": "antigravity-markdown",
   "agent_tool_map": {
     "read_file": "view_file",

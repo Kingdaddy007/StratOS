@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Anti-Gravity OS Studio Map</title>
+  <desc id="desc">A visual map showing one human working with a Studio Director, five specialist leads, and governed skills, workflow, context, evidence, and approval layers.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#071326"/>
+      <stop offset="0.5" stop-color="#0b2040"/>
+      <stop offset="1" stop-color="#110d32"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#20d6ff"/>
+      <stop offset="1" stop-color="#7867ff"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" x2="1">
+      <stop stop-color="#27d6ff" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#6bdcff"/>
+      <stop offset="1" stop-color="#8a69ff" stop-opacity="0.16"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="11" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#010817" flood-opacity="0.48"/>
+    </filter>
+    <style>
+      .kicker{font:600 20px 'Segoe UI',Arial,sans-serif;letter-spacing:5px;fill:#75defa}
+      .title{font:700 58px 'Segoe UI',Arial,sans-serif;letter-spacing:1px;fill:#f6f9ff}
+      .sub{font:400 22px 'Segoe UI',Arial,sans-serif;fill:#b4c6df}
+      .node{font:700 18px 'Segoe UI',Arial,sans-serif;fill:#edf8ff}
+      .small{font:400 15px 'Segoe UI',Arial,sans-serif;fill:#a9bed7}
+      .label{font:600 16px 'Segoe UI',Arial,sans-serif;fill:#ccefff}
+    </style>
+  </defs>
+  <rect width="1600" height="900" rx="34" fill="url(#bg)"/>
+  <path d="M0 148H1600M0 300H1600M0 452H1600M0 604H1600M0 756H1600" stroke="#55bce7" stroke-opacity="0.08"/>
+  <path d="M156 0V900M388 0V900M620 0V900M852 0V900M1084 0V900M1316 0V900M1548 0V900" stroke="#55bce7" stroke-opacity="0.06"/>
+  <text x="800" y="78" text-anchor="middle" class="kicker">PERSONAL AI PRODUCT STUDIO</text>
+  <text x="800" y="142" text-anchor="middle" class="title">ANTI-GRAVITY OS</text>
+  <text x="800" y="180" text-anchor="middle" class="sub">One human directs the work. The system adds the right help at the right time.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="662" y="226" width="276" height="78" rx="22" fill="#102d50" stroke="#44dcff" stroke-width="2"/>
+    <circle cx="711" cy="265" r="20" fill="#1bd6ff" filter="url(#glow)"/>
+    <path d="M704 266h14M711 259v14" stroke="#071326" stroke-width="3" stroke-linecap="round"/>
+    <text x="746" y="260" class="node">YOU</text>
+    <text x="746" y="282" class="small">Goal · taste · approval</text>
+  </g>
+  <path d="M800 304V368" stroke="url(#line)" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="800" cy="335" r="7" fill="#4de1ff" filter="url(#glow)"/>
+
+  <g filter="url(#shadow)">
+    <circle cx="800" cy="458" r="110" fill="#0d2b56" stroke="url(#core)" stroke-width="4"/>
+    <circle cx="800" cy="458" r="88" fill="#102f5c" stroke="#60e2ff" stroke-opacity="0.52"/>
+    <circle cx="800" cy="404" r="17" fill="#3ee1ff" filter="url(#glow)"/>
+    <path d="M786 423c0-18 28-18 28 0v20c0 8-6 14-14 14s-14-6-14-14z" fill="#dff9ff" opacity="0.95"/>
+    <text x="800" y="486" text-anchor="middle" class="node">STUDIO DIRECTOR</text>
+    <text x="800" y="510" text-anchor="middle" class="small">Understands · routes · integrates</text>
+  </g>
+
+  <g stroke="url(#line)" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M704 510L378 592"/>
+    <path d="M751 552L604 656"/>
+    <path d="M849 552L996 656"/>
+    <path d="M896 510L1222 592"/>
+    <path d="M800 568V662"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="180" y="566" width="270" height="94" rx="20" fill="#112d51" stroke="#3cd7ff" stroke-opacity="0.8"/>
+    <text x="315" y="605" text-anchor="middle" class="node">PRODUCT STRATEGY</text>
+    <text x="315" y="630" text-anchor="middle" class="small">Value · scope · direction</text>
+
+    <rect x="462" y="640" width="276" height="94" rx="20" fill="#112d51" stroke="#52cfff" stroke-opacity="0.8"/>
+    <text x="600" y="679" text-anchor="middle" class="node">SYSTEMS ARCHITECT</text>
+    <text x="600" y="704" text-anchor="middle" class="small">Boundaries · data · contracts</text>
+
+    <rect x="862" y="640" width="276" height="94" rx="20" fill="#18284f" stroke="#8f70ff" stroke-opacity="0.82"/>
+    <text x="1000" y="679" text-anchor="middle" class="node">DESIGN DIRECTOR</text>
+    <text x="1000" y="704" text-anchor="middle" class="small">UX · taste · accessibility</text>
+
+    <rect x="1150" y="566" width="270" height="94" rx="20" fill="#18284f" stroke="#9071ff" stroke-opacity="0.82"/>
+    <text x="1285" y="605" text-anchor="middle" class="node">STAFF ENGINEER</text>
+    <text x="1285" y="630" text-anchor="middle" class="small">Build · fix · integrate</text>
+
+    <rect x="662" y="662" width="276" height="94" rx="20" fill="#12364d" stroke="#42e5be" stroke-opacity="0.88"/>
+    <text x="800" y="701" text-anchor="middle" class="node">QUALITY ASSURANCE</text>
+    <text x="800" y="726" text-anchor="middle" class="small">Evidence · risk · independent check</text>
+  </g>
+
+  <g transform="translate(182 794)">
+    <rect width="1236" height="70" rx="18" fill="#0a203d" stroke="#5abdea" stroke-opacity="0.34"/>
+    <text x="132" y="43" text-anchor="middle" class="label">SKILLS &amp; REFERENCES</text>
+    <path d="M270 17v36M528 17v36M790 17v36M1010 17v36" stroke="#62d8fb" stroke-opacity="0.34"/>
+    <text x="398" y="43" text-anchor="middle" class="label">PROJECT CONTEXT</text>
+    <text x="660" y="43" text-anchor="middle" class="label">WORKFLOWS</text>
+    <text x="900" y="43" text-anchor="middle" class="label">EVIDENCE</text>
+    <text x="1123" y="43" text-anchor="middle" class="label">APPROVAL GATES</text>
+  </g>
+</svg>

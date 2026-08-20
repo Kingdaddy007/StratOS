@@ -162,7 +162,7 @@ generated Antigravity payload
       anti-gravity-growth/             # only when selected
 ```
 
-The live Antigravity installation may be workspace-scoped (`.agents/agents/...`) or global (`~/.gemini/config/agents/...`), as selected by the installer. The canonical source remains in this repository; `dist/antigravity/` is generated output.
+The live Antigravity installation may be workspace-scoped (`.agents/agents/...`) or global (`~/.gemini/config/agents/...`), as selected by the installer. The native global installer also places the rule at `~/.gemini/GEMINI.md`, skills at `~/.gemini/config/skills/`, and workflows at `~/.gemini/config/workflows/`. It keeps a shallow provenance record under `~/.gemini/config/antigravity-os/`; it does not duplicate the deep reference tree there. Direct targets are backed up before replacement, and the canonical source remains in this repository; `dist/antigravity/` is generated output.
 
 The existing `gemini` adapter is a compatibility lane for Gemini-style policy/skills. It is **not** an adequate substitute for the new native `antigravity` adapter, because it does not represent custom agents, project scoping, or Antigravity's native subagent model. The Phase 5 manifest migration must add `antigravity` without deleting the existing Gemini compatibility target.
 
@@ -204,7 +204,10 @@ Before a generated Antigravity payload is declared usable, test it in a disposab
 
 Phase 4 now completes the *design decision*: reusable custom agents are a first-class Antigravity layer, but always-running departmental bots are not.
 
-Phase 5 has now created the canonical `global/agents/` source, migrated the manifest, and added a generated Antigravity payload. It still has not installed anything globally or created hooks; both require their own host probe and explicit installation approval.
+Phase 5 created the canonical `global/agents/` source, migrated the manifest,
+and added a generated Antigravity payload. The native global installer is now
+implemented and has been verified locally; hooks are still not enabled and a
+fresh-host UI smoke test remains before publication.
 
 ## Sources verified on 2026-08-18
 

@@ -1,97 +1,107 @@
 # Start Here — Anti-Gravity OS V4
 
-## What this is
+Anti-Gravity OS helps you direct AI like a small, careful product studio.
 
-Anti-Gravity is a **personal AI Product Studio**. It helps one person direct
-capable AI to understand, design, build, check, and improve a product without
-forcing every task through a giant prompt or a fake company roleplay.
+You bring the goal, client context, taste, and approval for real-world actions.
+The system helps the agent choose the right depth of work, specialist help,
+skills, evidence, and safety checks.
 
-It does not replace your judgement. You set the goal and approve important
-effects. The system helps choose the right depth of thinking and checking.
-
-## The simple picture
+## The five-minute mental model
 
 ```text
-You set the goal
-        ↓
-Studio Director understands the job
-        ↓
-It works directly or calls the right lead
-        ↓
-Skills give focused help; workflows add useful gates
-        ↓
-Evidence is checked; you approve consequential actions
+You explain the outcome you want.
+          ↓
+Studio Director understands the task.
+          ↓
+It works directly or calls one useful specialist.
+          ↓
+Skills and references add focused help.
+          ↓
+The result is checked. You approve real-world effects.
 ```
 
-## The main pieces
+This is not a permanent swarm. A small question should get a small answer. A
+large or risky job gets more structure only where it helps.
 
-| Name | Plain meaning |
+## The first important choice
+
+In Antigravity's agent menu, choose **studio-director** for normal
+Anti-Gravity OS work.
+
+| Name you see | What it means |
 | --- | --- |
-| `global/GEMINI.md` | The main agent. It tells the Studio Director how to behave, stay safe, and decide when to involve help. |
-| `global/GLOBAL_MEMORY.md` | The router. It tells the main agent which lead, skill, workflow, or pack fits the task. |
-| `global/manifest.yaml` | The exact inventory. It is the source of truth for what exists and which pack it belongs to. |
-| `global/agents/` | The five on-demand specialist leads plus the Studio Director. |
-| `global/skills/` | Focused expert playbooks. A skill is used only when it helps. |
-| `global/workflows/` | Useful routes and gates. They are not mandatory checklists. |
-| `global/reference/` and skill references | Deeper information loaded only when needed. |
-| `.agents/contexts/` in a real project | Current facts about that one client or product. It is not global memory. |
+| `Main Agent` | Antigravity's built-in generic agent. It is not one of our six agents. |
+| `studio-director` | The custom Anti-Gravity OS entry point. This is your best default. |
+| `product-strategy-lead`, `systems-architect`, `design-director`, `staff-engineer`, `assurance-quality-lead` | Specialist agents. Studio Director can call them when their distinct judgement helps. |
+| `GEMINI.md` | The global policy file. It is not an agent and cannot send messages. |
+| `GLOBAL_MEMORY.md` | The routing index. It is not an agent and it does not contain client facts. |
 
-## The six agents
+## What to say when you start
 
-| Agent | Use it when you need |
+Give the agent five things when you know them:
+
+1. **Goal** — what you want to achieve.
+2. **Context** — client, product, existing project, links, screenshots, or files.
+3. **Constraints** — deadline, stack, budget, things to avoid, or non-negotiables.
+4. **Success** — what a good result must prove or feel like.
+5. **Authority** — whether you want explanation only, a plan, local edits, or a prepared release.
+
+Example:
+
+```text
+I am building a website for an interior-design studio.
+Here are the client site, logo, and reference video: [links/files].
+The site should feel calm, editorial, and high-end. Do not build yet.
+First explain what you understand, what you need to learn, and the best first
+step. Use the Spatial material only if it really helps.
+```
+
+## What you do manually
+
+The AI cannot replace these decisions:
+
+- whether a client story, brand direction, or visual idea feels right;
+- what private information is safe to give it;
+- product priorities, real deadlines, and budget;
+- approval to deploy, publish, send, spend, delete, or change production;
+- access to accounts, files, and client information that it cannot see.
+
+You do **not** need to remember every skill name. Give good context and say
+what result you want. Studio Director should select the smallest useful skill,
+reference, workflow, or specialist.
+
+## The profiles
+
+| Profile | Use it for |
 | --- | --- |
-| Studio Director | The best default. It sizes the task and chooses the smallest useful route. |
-| Product & Strategy Lead | Product ideas, client understanding, scope, market, positioning, growth decisions. |
-| Systems Architect | Data, APIs, boundaries, reliability, migrations, technical trade-offs. |
-| Design Director | UX, interface states, accessible design, visual direction, spatial/media decisions. |
-| Staff Engineer | Building, fixing, integrating, refactoring, and local tests. |
-| Assurance & Quality Lead | Independent checking, security, regression risk, and proof. |
+| General | Software, SaaS, product thinking, UX, testing, debugging, security, and ordinary work. This is the default. |
+| Spatial | Luxury interior, showroom, furniture, decor, staging, gallery, and cinematic website work. |
+| Media | Image or video planning, reference direction, provider-aware prompts, and film treatment work. |
+| Growth | Positioning, offers, copy, research, conversion, prospecting, and sales material. |
 
-They are not all used for every task. A small change can be handled directly.
+The agent should not load every profile for every task.
 
-## Packs
+## Four request modes
 
-`general` is always active. The other packs add specialist material only when
-the job needs it:
-
-| Pack | For |
+| Say this | What it means |
 | --- | --- |
-| `spatial` | Cinematic/showroom/interior/architecture-adjacent website work. |
-| `media` | AI image or video planning and provider-aware generation guidance. |
-| `growth` | Positioning, offers, copy, conversion, prospecting, and sales material. |
+| “Diagnose this. Do not edit files.” | Read-only investigation. |
+| “Give me options and recommend one. Do not implement yet.” | A proposal, not a change. |
+| “Implement the approved plan and run the focused tests.” | Local work is authorized. |
+| “Prepare this for release. Stop before deployment.” | It may prepare evidence but must stop for approval. |
 
-## What exists now
+## Signs something needs attention
 
-The canonical manifest currently contains **48 skills**, **17 workflows**, and
-**6 reusable agents**.
+| What you notice | What to do |
+| --- | --- |
+| You cannot see `studio-director` after a fresh Antigravity start. | Check the global install with `SETUP.md`, then restart Antigravity. |
+| The input says `Main Agent` when you expect the OS role. | Open the agent menu and select `studio-director`. |
+| The agent gives a generic answer without reading the project. | Say: “Inspect the relevant files and references first. State the evidence you used.” |
+| The agent assumes client facts or hides uncertainty. | Say: “Separate facts, assumptions, unknowns, and your recommendation.” |
+| The agent suggests deployment, publishing, or spending without pausing. | Stop it. Those actions require your explicit approval. |
+| A visual or website reference matters. | Attach screenshots, a recording, URL, or transcript and ask it to analyse the reference before copying it. |
 
-- General: 29 skills and 14 workflows.
-- Spatial: 10 skills and 1 workflow.
-- Media: 2 skills and no standalone workflow; video work routes through the
-  `video-generation` skill.
-- Growth: 8 skills and 2 guarded commercial workflows.
+## The next document
 
-For the exact current list, read `global/manifest.yaml`. Do not rely on old
-folders, generated copies, or a previous installation.
-
-## Before using it in a real project
-
-1. Start with the **Studio Director**.
-2. Give the project name, goal, constraints, links/files, and what success
-   looks like.
-3. Let it choose direct work or the smallest relevant lead/skill/route.
-4. Approve only actions with real outside consequences: spend, publish, send,
-   deploy, change production data, or delete important data.
-
-## Important distinction
-
-A skill can give planning or prompt guidance without giving the agent a real
-external account or button. For example, `video-generation` can plan a film or
-write a provider-aware prompt. It cannot spend credits or generate a video
-until you have provider access and approve that action.
-
-## Where this is today
-
-The canonical V4 source is being completed and tested in this repository.
-Generated host payloads are disposable test output until Beloved explicitly
-approves a global installation or repository release.
+Read [`USER_MANUAL.md`](USER_MANUAL.md) for everyday prompts, project context,
+how specialists work, and how to tell whether the system is helping.

@@ -2,18 +2,20 @@
 # Examples:
 #   .\install.ps1 -IDE 1 -InstallOption general -DryRun
 #   .\install.ps1 -IDE 1 -InstallOption full -Yes
+#   .\install.ps1 -TargetHost antigravity -GlobalConfig $HOME\.gemini -Yes
 #   .\install.ps1 -GlobalConfig C:\path\to\config-parent -Yes
 
 [CmdletBinding()]
 param(
     [string]$GlobalConfig,
     [string]$IDE,
-    [ValidateSet('gemini', 'codex', 'cursor', 'windsurf', 'opencode')]
+    [ValidateSet('antigravity', 'gemini', 'codex', 'cursor', 'windsurf', 'opencode')]
     [string]$TargetHost,
     [ValidateSet('general', 'full')]
     [string]$InstallOption,
     [switch]$DryRun,
-    [switch]$Yes
+    [switch]$Yes,
+    [switch]$AntigravityGlobal
 )
 
 $ErrorActionPreference = 'Stop'
@@ -45,33 +47,55 @@ function Add-Namespace([string]$Path) {
 function Select-InstallTarget {
     if ($GlobalConfig) {
         if (-not $TargetHost) {
-            throw 'Custom/global config targets require -TargetHost gemini|codex|cursor|windsurf|opencode.'
+            throw 'Custom/global config targets require -TargetHost antigravity|gemini|codex|cursor|windsurf|opencode.'
+        }
+        if ($TargetHost -eq 'antigravity') {
+            $script:AntigravityGlobal = $true
+            return Get-FullPath $GlobalConfig
         }
         return Add-Namespace $GlobalConfig
+    }
+
+    if ($TargetHost -and -not $IDE) {
+        switch ($TargetHost) {
+            'antigravity' { $script:AntigravityGlobal = $true; return Join-Path $env:USERPROFILE '.gemini' }
+            'gemini' { return Join-Path $env:USERPROFILE '.gemini\antigravity' }
+            'codex' { return Join-Path $env:USERPROFILE '.codex\antigravity' }
+            'cursor' { return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
+            'windsurf' { return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
+            'opencode' { return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
+            default { throw "Unsupported host '$TargetHost'." }
+        }
     }
 
     if (-not $IDE) {
         Write-Host @"
 Choose a host:
-  [1] Gemini     -> ~/.gemini/antigravity
-  [2] Codex      -> ~/.codex/antigravity
-  [3] Cursor     -> ~/.cursor/rules/antigravity
-  [4] Windsurf   -> ~/.codeium/windsurf/memories/antigravity
-  [5] OpenCode   -> ~/.config/opencode/antigravity
-  [6] Custom parent directory
+  [1] Antigravity 2.0 (native global) -> ~/.gemini
+  [2] Gemini compatibility namespace -> ~/.gemini/antigravity
+  [3] Codex                         -> ~/.codex/antigravity
+  [4] Cursor                        -> ~/.cursor/rules/antigravity
+  [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
+  [6] OpenCode                      -> ~/.config/opencode/antigravity
+  [7] Custom parent directory
 "@
-        $script:IDE = Read-Host 'Enter 1-6'
+        $script:IDE = Read-Host 'Enter 1-7'
     }
 
     switch ($IDE.Trim()) {
-        '1' { $script:TargetHost = 'gemini'; return Join-Path $env:USERPROFILE '.gemini\antigravity' }
-        '2' { $script:TargetHost = 'codex'; return Join-Path $env:USERPROFILE '.codex\antigravity' }
-        '3' { $script:TargetHost = 'cursor'; return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
-        '4' { $script:TargetHost = 'windsurf'; return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
-        '5' { $script:TargetHost = 'opencode'; return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
-        '6' {
+        '1' { $script:TargetHost = 'antigravity'; $script:AntigravityGlobal = $true; return Join-Path $env:USERPROFILE '.gemini' }
+        '2' { $script:TargetHost = 'gemini'; return Join-Path $env:USERPROFILE '.gemini\antigravity' }
+        '3' { $script:TargetHost = 'codex'; return Join-Path $env:USERPROFILE '.codex\antigravity' }
+        '4' { $script:TargetHost = 'cursor'; return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
+        '5' { $script:TargetHost = 'windsurf'; return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
+        '6' { $script:TargetHost = 'opencode'; return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
+        '7' {
             if (-not $TargetHost) {
-                $script:TargetHost = (Read-Host 'Supported host (gemini, codex, cursor, windsurf, opencode)').Trim().ToLowerInvariant()
+                $script:TargetHost = (Read-Host 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode)').Trim().ToLowerInvariant()
+            }
+            if ($TargetHost -eq 'antigravity') {
+                $script:AntigravityGlobal = $true
+                return Get-FullPath (Read-Host 'Enter the .gemini directory')
             }
             if ($TargetHost -notin @('gemini', 'codex', 'cursor', 'windsurf', 'opencode')) {
                 throw "Unsupported host '$TargetHost'."
@@ -218,6 +242,30 @@ function Configure-PortableUris([string]$Directory) {
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $target = Get-FullPath (Select-InstallTarget)
 $InstallOption = Select-InstallOption
+
+if ($AntigravityGlobal -and $TargetHost -ne 'antigravity') {
+    throw '-AntigravityGlobal is only valid with -TargetHost antigravity.'
+}
+if ($TargetHost -eq 'antigravity') {
+    $script:AntigravityGlobal = $true
+}
+
+if ($script:AntigravityGlobal) {
+    $python = Get-PythonInvocation
+    if (-not $python) {
+        throw 'Native Antigravity global installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+    }
+    $cli = Join-Path $scriptRoot 'global\scripts\os.py'
+    $arguments = @($python.Prefix) + @(
+        $cli, 'install', '--host', 'antigravity', '--target', $target,
+        '--option', $InstallOption, '--antigravity-global'
+    )
+    if ($DryRun) { $arguments += '--dry-run' }
+    elseif ($Yes) { $arguments += '--yes' }
+    & $python.File @arguments
+    exit $LASTEXITCODE
+}
+
 $payloadInfo = Resolve-HostPayload -HostId $TargetHost -PreviewOnly:$DryRun -Option $InstallOption
 $installSource = Get-FullPath $payloadInfo.Path
 Assert-SafeTarget -Target $target -Source $installSource
