@@ -16,7 +16,8 @@ This directory contains deterministic development, validation, build, and verifi
 
 - `os.py`: `validate`, `build`, and `install` development CLI. `--profile` is the
   compatible single-pack shorthand; `--packs` safely composes Media, Growth,
-  and Spatial with the implicit General base.
+  and Spatial with the implicit General base. Interactive installs ask for the
+  General or Full option; automation can use `--option general|full`.
 - `verify.py`: project baseline verification runner; it does not declare deployment readiness.
 - `checks/`: focused baseline scanners used by `verify.py`.
 

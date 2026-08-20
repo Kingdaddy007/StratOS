@@ -27,6 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 GLOBAL_ROOT = REPO_ROOT / "global"
 MANIFEST_PATH = GLOBAL_ROOT / "manifest.yaml"
 SUPPORTED_HOSTS = ("antigravity", "gemini", "codex", "cursor", "windsurf", "opencode")
+INSTALL_OPTIONS = ("general", "full")
 ANTIGRAVITY_RULE_MAX_CHARACTERS = 12_000
 MUTATION_CLASSES = (
     "read_only",
@@ -1172,6 +1173,71 @@ def resolve_pack_selection(
     return ("general", *ordered_packs), ordered_packs
 
 
+def install_option_counts(repo_root: Path = REPO_ROOT) -> dict[str, int]:
+    """Return live manifest counts used by the interactive install question."""
+    manifest = load_manifest(repo_root)
+    skills = manifest.get("skills", [])
+    return {
+        "agents": len(manifest.get("agents", [])),
+        "workflows": len(manifest.get("workflows", [])),
+        "general_skills": sum("general" in entry.get("profiles", []) for entry in skills),
+        "all_skills": len(skills),
+    }
+
+
+def resolve_install_option(
+    repo_root: Path,
+    option: str | None,
+    profile: str,
+    packs: Iterable[str],
+    interactive: bool | None = None,
+) -> tuple[str, list[str], str]:
+    """Resolve General or Full selection before a payload is built or installed."""
+    supplied_packs = list(packs)
+    if option is not None and option not in INSTALL_OPTIONS:
+        raise InstallationRefused(
+            f"Unknown installation option {option!r}; use general or full"
+        )
+    if option is not None and (profile != "general" or supplied_packs):
+        raise InstallationRefused(
+            "--option cannot be combined with --profile or --packs"
+        )
+
+    if option is None and (profile != "general" or supplied_packs):
+        return profile, supplied_packs, "custom"
+
+    if interactive is None:
+        interactive = sys.stdin.isatty()
+    if option is None and interactive:
+        counts = install_option_counts(repo_root)
+        print(
+            "\nYour Installation Options:\n"
+            f"  [1] General Profile — installs {counts['agents']} custom agents, "
+            f"{counts['workflows']} workflows, and {counts['general_skills']} "
+            "General-profile skills. Spatial, Media, and Growth remain dormant.\n"
+            f"  [2] Full System — installs {counts['agents']} custom agents, "
+            f"{counts['workflows']} workflows, and all {counts['all_skills']} "
+            "registered skills, including Spatial, Media, and Growth."
+        )
+        choice = input("Choose 1 or 2 [1]: ").strip() or "1"
+        if choice not in {"1", "2"}:
+            raise InstallationRefused("Choose 1 for General or 2 for Full System")
+        option = "general" if choice == "1" else "full"
+
+    if option in {None, "general"}:
+        return "general", [], "general"
+
+    manifest = load_manifest(repo_root)
+    optional_packs = [
+        profile_id
+        for profile_id in manifest.get("profiles", [])
+        if profile_id != "general"
+        and manifest.get("profile_definitions", {}).get(profile_id, {}).get("kind")
+        == "pack"
+    ]
+    return "general", optional_packs, "full"
+
+
 def profile_key(active_packs: Iterable[str]) -> str:
     packs = tuple(active_packs)
     return "general" if not packs else "+".join(packs)
@@ -1749,6 +1815,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Comma-separated optional packs; may be repeated",
     )
+    install_parser.add_argument(
+        "--option",
+        choices=INSTALL_OPTIONS,
+        help="Installation choice; omit in a terminal to be asked General or Full",
+    )
     install_parser.add_argument("--target", required=True, type=Path)
     install_parser.add_argument("--dry-run", action="store_true")
     install_parser.add_argument("--yes", action="store_true")
@@ -1776,12 +1847,18 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "install":
             if args.codex_global and args.host != "codex":
                 raise InstallationRefused("--codex-global is only valid with --host codex")
+            selected_profile, selected_packs, selected_option = resolve_install_option(
+                REPO_ROOT,
+                args.option,
+                args.profile,
+                args.packs,
+            )
             if args.dry_run:
                 with tempfile.TemporaryDirectory(prefix="antigravity-dry-run-") as directory:
                     payload = build_payload(
                         args.host,
-                        args.profile,
-                        args.packs,
+                        selected_profile,
+                        selected_packs,
                         output_root=Path(directory),
                     )
                     result = (
@@ -1790,12 +1867,13 @@ def main(argv: list[str] | None = None) -> int:
                         else install_payload(payload, args.target, args.host, True, False)
                     )
             else:
-                payload = build_payload(args.host, args.profile, args.packs)
+                payload = build_payload(args.host, selected_profile, selected_packs)
                 result = (
                     install_codex_global(payload, args.target, False, args.yes)
                     if args.codex_global
                     else install_payload(payload, args.target, args.host, False, args.yes)
                 )
+            result["installation_option"] = selected_option
             print(json.dumps(result, indent=2))
             return 0
     except AntiGravityError as exc:

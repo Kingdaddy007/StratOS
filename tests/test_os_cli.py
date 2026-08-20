@@ -97,6 +97,55 @@ class InstallerSafetyTests(unittest.TestCase):
         with self.assertRaises(self.os_cli.InstallationRefused):
             self.os_cli.resolve_install_root(Path.home())
 
+    def test_general_install_option_keeps_optional_packs_dormant(self) -> None:
+        profile, packs, option = self.os_cli.resolve_install_option(
+            REPO_ROOT,
+            "general",
+            "general",
+            [],
+            interactive=False,
+        )
+
+        self.assertEqual("general", profile)
+        self.assertEqual([], packs)
+        self.assertEqual("general", option)
+
+    def test_full_install_option_composes_all_manifest_packs(self) -> None:
+        profile, packs, option = self.os_cli.resolve_install_option(
+            REPO_ROOT,
+            "full",
+            "general",
+            [],
+            interactive=False,
+        )
+
+        self.assertEqual("general", profile)
+        self.assertEqual(["spatial", "media", "growth"], packs)
+        self.assertEqual("full", option)
+
+    def test_install_option_does_not_break_explicit_legacy_selection(self) -> None:
+        profile, packs, option = self.os_cli.resolve_install_option(
+            REPO_ROOT,
+            None,
+            "spatial",
+            [],
+            interactive=False,
+        )
+
+        self.assertEqual("spatial", profile)
+        self.assertEqual([], packs)
+        self.assertEqual("custom", option)
+
+    def test_install_option_rejects_mixed_option_and_pack_flags(self) -> None:
+        with self.assertRaises(self.os_cli.InstallationRefused):
+            self.os_cli.resolve_install_option(
+                REPO_ROOT,
+                "full",
+                "general",
+                ["spatial"],
+                interactive=False,
+            )
+
 
 class PayloadActivationTests(unittest.TestCase):
     def setUp(self) -> None:

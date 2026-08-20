@@ -108,23 +108,35 @@ Build a host payload:
 python global/scripts/os.py build --host codex
 ```
 
+Before installation, choose the size of the system:
+
+```text
+Option A — General Profile: 6 custom agents, 17 workflows, and the current
+General-profile skills. Spatial, Media, and Growth stay dormant.
+Option B — Full System: 6 custom agents, 17 workflows, and all registered
+skills, including Spatial, Media, and Growth.
+```
+
+The interactive installers ask this question when no option is supplied. For
+automation, choose it explicitly with `--option general` or `--option full`.
+
 Preview installation before writing anything:
 
 ```bash
-python global/scripts/os.py install --host codex --target ~/.codex --dry-run
+python global/scripts/os.py install --host codex --target ~/.codex --option general --dry-run
 ```
 
 After reviewing the additions, replacements, backup, and skipped files:
 
 ```bash
-python global/scripts/os.py install --host codex --target ~/.codex --yes
+python global/scripts/os.py install --host codex --target ~/.codex --option general --yes
 ```
 
 For a global Codex layout, use the explicit global flag. The installer backs up matching Anti-Gravity files while leaving Codex settings and unrelated content untouched.
 
 ```bash
-python global/scripts/os.py install --host codex --target ~/.codex --codex-global --dry-run
-python global/scripts/os.py install --host codex --target ~/.codex --codex-global --yes
+python global/scripts/os.py install --host codex --target ~/.codex --option general --codex-global --dry-run
+python global/scripts/os.py install --host codex --target ~/.codex --option general --codex-global --yes
 ```
 
 Select the spatial profile only for qualifying spatial work:

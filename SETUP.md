@@ -22,6 +22,19 @@ Each host receives a generated adapter payload. Canonical `global/` source is ne
 4. Approve the real installation explicitly.
 5. Verify the adapter-declared instruction file exists after activation.
 
+## Installation options
+
+Every interactive install asks which system to install:
+
+- **Option A — General Profile:** 6 custom agents, 17 workflows, and the
+  current General-profile skills. Spatial, Media, and Growth stay dormant.
+- **Option B — Full System:** 6 custom agents, 17 workflows, and all
+  registered skills, including Spatial, Media, and Growth.
+
+The counts come from `global/manifest.yaml`, so they stay current when the
+registry changes. Use `--option general` or `--option full` for scripts and
+CI. An omitted option keeps the existing non-interactive default: General.
+
 The installer may replace only the dedicated `antigravity` namespace. It never clears its shared parent. An existing namespace is staged and backed up under `.antigravity-backups/`; unrelated files in the parent remain untouched. Failed activation restores the backup.
 
 ## Windows

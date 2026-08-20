@@ -6,6 +6,7 @@ set -Eeuo pipefail
 GLOBAL_CONFIG=""
 IDE=""
 HOST_ID=""
+INSTALL_OPTION=""
 DRY_RUN=false
 ASSUME_YES=false
 TARGET=""
@@ -20,10 +21,11 @@ warn() { printf '  WARN  %s\n' "$1" >&2; }
 
 usage() {
     cat <<'EOF'
-Usage: ./install.sh [--ide 1-6] [--host HOST] [--global-config PARENT] [--dry-run] [--yes]
+Usage: ./install.sh [--ide 1-6] [--host HOST] [--global-config PARENT] [--option general|full] [--dry-run] [--yes]
 
 The installer always writes to a dedicated directory named "antigravity".
 --global-config is a parent directory unless it already ends in /antigravity.
+If --option is omitted, the installer asks whether to install General or Full.
 EOF
 }
 
@@ -38,6 +40,9 @@ while (($#)); do
         --host)
             [[ $# -ge 2 ]] || { warn '--host needs a value'; exit 2; }
             HOST_ID="$2"; shift 2 ;;
+        --option)
+            [[ $# -ge 2 ]] || { warn '--option needs a value'; exit 2; }
+            INSTALL_OPTION="$2"; shift 2 ;;
         --dry-run) DRY_RUN=true; shift ;;
         --yes) ASSUME_YES=true; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -120,7 +125,12 @@ find_python() {
 }
 
 resolve_host_payload() {
-    INSTALL_SOURCE="$SCRIPT_ROOT/dist/$HOST_ID"
+    local profile_key='general'
+    if [[ "$INSTALL_OPTION" == 'full' ]]; then profile_key='general+spatial+media+growth'; fi
+    INSTALL_SOURCE="$SCRIPT_ROOT/dist/$HOST_ID/$profile_key"
+    if [[ ! -f "$INSTALL_SOURCE/adapter.json" && -f "$SCRIPT_ROOT/dist/$HOST_ID/adapter.json" ]]; then
+        INSTALL_SOURCE="$SCRIPT_ROOT/dist/$HOST_ID"
+    fi
     PENDING_BUILD=false
     if [[ -f "$INSTALL_SOURCE/adapter.json" ]]; then return 0; fi
     if ! find_python; then
@@ -128,11 +138,47 @@ resolve_host_payload() {
         return 1
     fi
     if [[ "$DRY_RUN" == true ]]; then PENDING_BUILD=true; return 0; fi
-    "${PYTHON[@]}" "$SCRIPT_ROOT/global/scripts/os.py" build --host "$HOST_ID"
+    local build_args=("$SCRIPT_ROOT/global/scripts/os.py" build --host "$HOST_ID" --profile general)
+    if [[ "$INSTALL_OPTION" == 'full' ]]; then build_args+=(--packs spatial,media,growth); fi
+    "${PYTHON[@]}" "${build_args[@]}"
     [[ -f "$INSTALL_SOURCE/adapter.json" ]] || {
         warn "Failed to build the $HOST_ID payload. Run validation or use a release package containing dist/$HOST_ID."
         return 1
     }
+}
+
+select_install_option() {
+    if [[ -n "$INSTALL_OPTION" ]]; then
+        case "$INSTALL_OPTION" in general|full) return 0 ;; esac
+        warn "Unsupported installation option '$INSTALL_OPTION'. Use general or full."
+        return 1
+    fi
+
+    local counts=''
+    local general_description='installs the core General-profile skills'
+    local full_description='installs all registered skills'
+    if command -v python3 >/dev/null 2>&1; then
+        counts="$(python3 -c 'import json,sys; m=json.load(open(sys.argv[1], encoding="utf-8")); s=m.get("skills", []); print(len(m.get("agents", [])), len(m.get("workflows", [])), sum("general" in x.get("profiles", []) for x in s), len(s))' "$SCRIPT_ROOT/global/manifest.yaml" 2>/dev/null || true)"
+    fi
+    if [[ -n "$counts" ]]; then
+        read -r agent_count workflow_count general_skill_count all_skill_count <<< "$counts"
+        general_description="installs $agent_count custom agents, $workflow_count workflows, and $general_skill_count General-profile skills"
+        full_description="installs $agent_count custom agents, $workflow_count workflows, and all $all_skill_count registered skills"
+    fi
+
+    cat <<EOF
+
+Your Installation Options:
+  [1] General Profile - $general_description. Spatial, Media, and Growth remain dormant.
+  [2] Full System - $full_description, including Spatial, Media, and Growth.
+EOF
+    read -r -p 'Choose 1 or 2 [1]: ' choice
+    choice="${choice:-1}"
+    case "$choice" in
+        1) INSTALL_OPTION='general' ;;
+        2) INSTALL_OPTION='full' ;;
+        *) warn 'Choose 1 for General or 2 for Full System.'; return 1 ;;
+    esac
 }
 
 assert_safe_target() {
@@ -188,6 +234,7 @@ rollback() {
 SELECTED_TARGET=""
 select_target
 assert_supported_host
+select_install_option
 TARGET="$(expand_path "$SELECTED_TARGET")"
 resolve_host_payload
 assert_safe_target "$TARGET"

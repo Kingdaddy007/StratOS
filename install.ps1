@@ -1,7 +1,7 @@
 # Anti-Gravity OS - safe Windows installer
 # Examples:
-#   .\install.ps1 -IDE 1 -DryRun
-#   .\install.ps1 -IDE 1 -Yes
+#   .\install.ps1 -IDE 1 -InstallOption general -DryRun
+#   .\install.ps1 -IDE 1 -InstallOption full -Yes
 #   .\install.ps1 -GlobalConfig C:\path\to\config-parent -Yes
 
 [CmdletBinding()]
@@ -10,6 +10,8 @@ param(
     [string]$IDE,
     [ValidateSet('gemini', 'codex', 'cursor', 'windsurf', 'opencode')]
     [string]$TargetHost,
+    [ValidateSet('general', 'full')]
+    [string]$InstallOption,
     [switch]$DryRun,
     [switch]$Yes
 )
@@ -94,8 +96,51 @@ function Get-PythonInvocation {
     return $null
 }
 
-function Resolve-HostPayload([string]$HostId, [switch]$PreviewOnly) {
-    $prebuilt = Join-Path $scriptRoot (Join-Path 'dist' $HostId)
+function Get-ManifestCounts {
+    $manifestPath = Join-Path $scriptRoot 'global\manifest.yaml'
+    if (-not (Test-Path -LiteralPath $manifestPath)) {
+        throw "Manifest not found: $manifestPath"
+    }
+    $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $generalSkills = @($manifest.skills | Where-Object { $_.profiles -contains 'general' }).Count
+    return [pscustomobject]@{
+        Agents = @($manifest.agents).Count
+        Workflows = @($manifest.workflows).Count
+        GeneralSkills = $generalSkills
+        AllSkills = @($manifest.skills).Count
+    }
+}
+
+function Select-InstallOption {
+    if ($InstallOption) {
+        return $InstallOption
+    }
+
+    $counts = Get-ManifestCounts
+    Write-Host @"
+
+Your Installation Options:
+  [1] General Profile - installs $($counts.Agents) custom agents, $($counts.Workflows) workflows, and $($counts.GeneralSkills) General-profile skills. Spatial, Media, and Growth remain dormant.
+  [2] Full System - installs $($counts.Agents) custom agents, $($counts.Workflows) workflows, and all $($counts.AllSkills) registered skills, including Spatial, Media, and Growth.
+"@
+    $choice = (Read-Host 'Choose 1 or 2 [1]').Trim()
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = '1' }
+    switch ($choice) {
+        '1' { return 'general' }
+        '2' { return 'full' }
+        default { throw 'Choose 1 for General or 2 for Full System.' }
+    }
+}
+
+function Resolve-HostPayload([string]$HostId, [switch]$PreviewOnly, [string]$Option) {
+    $profileKey = if ($Option -eq 'full') { 'general+spatial+media+growth' } else { 'general' }
+    $prebuilt = Join-Path $scriptRoot (Join-Path (Join-Path 'dist' $HostId) $profileKey)
+    if (-not (Test-Path -LiteralPath (Join-Path $prebuilt 'adapter.json'))) {
+        $legacyPayload = Join-Path $scriptRoot (Join-Path 'dist' $HostId)
+        if (Test-Path -LiteralPath (Join-Path $legacyPayload 'adapter.json')) {
+            $prebuilt = $legacyPayload
+        }
+    }
     if (Test-Path -LiteralPath (Join-Path $prebuilt 'adapter.json')) {
         return @{ Path = $prebuilt; Built = $false; PendingBuild = $false }
     }
@@ -109,7 +154,10 @@ function Resolve-HostPayload([string]$HostId, [switch]$PreviewOnly) {
     }
 
     $cli = Join-Path $scriptRoot 'global\scripts\os.py'
-    $arguments = @($python.Prefix) + @($cli, 'build', '--host', $HostId)
+    $arguments = @($python.Prefix) + @($cli, 'build', '--host', $HostId, '--profile', 'general')
+    if ($Option -eq 'full') {
+        $arguments += @('--packs', 'spatial,media,growth')
+    }
     & $python.File @arguments
     if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath (Join-Path $prebuilt 'adapter.json'))) {
         throw "Failed to build the $HostId host payload. Run the repository validator, or use a release package containing dist/$HostId."
@@ -169,7 +217,8 @@ function Configure-PortableUris([string]$Directory) {
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $target = Get-FullPath (Select-InstallTarget)
-$payloadInfo = Resolve-HostPayload -HostId $TargetHost -PreviewOnly:$DryRun
+$InstallOption = Select-InstallOption
+$payloadInfo = Resolve-HostPayload -HostId $TargetHost -PreviewOnly:$DryRun -Option $InstallOption
 $installSource = Get-FullPath $payloadInfo.Path
 Assert-SafeTarget -Target $target -Source $installSource
 $parent = Split-Path -Parent $target
@@ -181,6 +230,7 @@ $sourceFileCount = if (Test-Path -LiteralPath $installSource) { (Get-ChildItem -
 
 Write-Step 'Installation plan'
 Write-Host "  Host: $TargetHost"
+Write-Host "  Installation option: $InstallOption"
 Write-Host "  Payload: $installSource"
 if ($payloadInfo.PendingBuild) { Write-Host '  Payload action: build with global/scripts/os.py after approval' }
 Write-Host "  Target: $target"
@@ -216,7 +266,7 @@ try {
         Copy-DirectoryContents -Source $target -Destination $stage
     }
     if ($payloadInfo.PendingBuild) {
-        $payloadInfo = Resolve-HostPayload -HostId $TargetHost
+        $payloadInfo = Resolve-HostPayload -HostId $TargetHost -Option $InstallOption
         $installSource = Get-FullPath $payloadInfo.Path
     }
     Copy-DirectoryContents -Source $installSource -Destination $stage
