@@ -6,7 +6,7 @@
 
 **A governed operating layer for building serious work with AI agents.**
 
-[![CI](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/Antigravity-OS/actions/workflows/ci.yml)
+[![CI](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/badge/release-4.0.0-38bdf8)
 ![Agents](https://img.shields.io/badge/custom%20agents-6-8b5cf6)
 ![Skills](https://img.shields.io/badge/skills-48-22d3ee)
@@ -131,7 +131,7 @@ you can make, it should say so plainly instead of pretending.
 Use the installer from a cloned repository. It always supports a dry run first.
 
 ```powershell
-git clone https://github.com/Kingdaddy007/Antigravity-OS.git
+git clone https://github.com/Kingdaddy007/StratOS.git
 cd Antigravity-OS
 .\install.ps1 -TargetHost antigravity -InstallOption general -DryRun
 ```
