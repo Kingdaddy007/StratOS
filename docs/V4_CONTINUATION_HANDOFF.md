@@ -485,6 +485,6 @@ The eventual goal is to bring the same governed Anti-Gravity OS into Codex corre
 
 ## 14. Handoff state
 
-This document records the V4 state before the next evidence intake. No new research, transcript, agent rule, or skill upgrade has been incorporated by this handoff itself.
+This document records the V4 state before the next evidence intake. It does not itself incorporate later evidence. The first subsequent evidence decision and canonical upgrade are recorded in [V4 Unlazy Evidence Decision Ledger](v4-unlazy-evidence-decision-ledger.md).
 
-The next correct action is **Phase A: receive and evaluate the new material**. The next task must not skip straight to a global Codex installation.
+The continuation remains in **Phase A for any additional supplied material**. The Unlazy evidence has been evaluated and incorporated through the linked ledger, but the next task must not skip straight to a global Codex installation.

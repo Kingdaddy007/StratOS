@@ -19,6 +19,13 @@ behaviour and authority contract. It is not itself a host installation file.
 - Every role uses the installed `GLOBAL_MEMORY.md` routing index to select the
   smallest relevant skill, reference, and workflow. A tool list is a capability
   ceiling, not permission or a reason to use a tool.
+- The Studio Director owns the parent route. A specialist follows an assigned
+  route inside its charter or reports that another route is needed; it does not
+  silently replace the parent workflow.
+- An assigned workflow or acceptance gate narrows a specialist charter. The
+  specialist returns candidate evidence and limitations; the accountable parent
+  resolves integration and final gate status. Host adapters must preserve this
+  boundary in generated agent instructions.
 - They must not contain host tool names, user-private facts, credentials, live
   project assumptions, or authority that exceeds the root policy.
 - A host adapter renders its own agent format from this source. Generated agent

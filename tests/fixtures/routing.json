@@ -26,6 +26,42 @@
       "approval_required": false
     },
     {
+      "id": "automatic-independent-dispatch",
+      "request": "Implement these approved independent changes in disjoint files, and integrate each result only after its own evidence is checked.",
+      "route_kind": "workflow",
+      "route": "task-dispatch",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": ["studio_support", "staff_engineering"],
+      "mode": "implement",
+      "maximum_mutation_class": "local_edit",
+      "approval_required": false
+    },
+    {
+      "id": "automatic-evidence-strategy",
+      "request": "Before changing the tests, decide what evidence and failure cases would credibly prove this API and cache-boundary change.",
+      "route_kind": "workflow",
+      "route": "test-strategy",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": ["staff_engineering", "assurance_quality"],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "automatic-material-verification",
+      "request": "The material feature is implemented; independently check its acceptance claims, actual evidence, and remaining uncertainty without deploying it.",
+      "route_kind": "workflow",
+      "route": "verify-project",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": ["assurance_quality"],
+      "mode": "diagnose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
       "id": "production-deployment",
       "request": "Deploy this release to production.",
       "route_kind": "workflow",

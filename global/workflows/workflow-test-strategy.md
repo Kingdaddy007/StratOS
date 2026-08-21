@@ -1,6 +1,6 @@
 ---
 id: test-strategy
-version: 2
+version: 3
 status: active
 intent: Turn a specific change or claim into the smallest credible, maintainable evidence plan without confusing a planned test suite with a release conclusion.
 use_when: [a change needs test or verification planning, an agent must add or review tests, a regression needs durable protection, a test suite is weak or flaky, or a material boundary needs evidence selection]
@@ -10,7 +10,7 @@ required_resources: [applicable AGENTS.md files, testing skill, project test/bui
 mutation_class: local_edit
 approval_gates: [propose and review remain read-only, require explicit implement authority before adding or changing tests, require security-audit before treating sensitive security behavior as verified, require ship-to-production just-in-time approval for any production release or external effect]
 states: [received, scoped, risk-mapped, planned, approval-gated, implementing, executed, evaluated, closed, stopped]
-outputs: [claim and risk statement, behavior/boundary inventory, selected evidence and oracle plan, fixture/dependency plan, test changes when authorized, executed evidence, unverified claims, handoffs]
+outputs: [claim and risk statement, behavior/boundary inventory, selected evidence and oracle plan, optional structured acceptance gates for substantial resumable work, fixture/dependency plan, test changes when authorized, executed evidence, unverified claims, handoffs]
 verification: [assert observable behavior or invariants, record environment and actual execution, include appropriate negative/failure cases, classify flaky or blocked results honestly, check the claim rather than a coverage target]
 failure_paths: [stop on unclear claim, absent authority, unsafe/live dependency, invalid oracle, non-representative environment, security boundary, unresolvable flakiness, or evidence plan whose maintenance cost exceeds its credible value]
 resume_contract: task-scoped .agents/workflows/<task-id>.json following the workflows directory contract
@@ -46,6 +46,22 @@ Neither this workflow nor a passing test suite authorizes a release, production 
 6. **Plan execution and interpretation.** State commands/environments only after discovery, the expected evidence artifact, classification of product/harness/infrastructure/flaky results, and the conclusion that each outcome permits.
 7. **Implement only behind the gate.** In `implement` mode, make the smallest test change that protects the relevant contract. For a diagnosed bug, demonstrate failure-before/failure-after when feasible; otherwise record the limit.
 
+## Structured acceptance gates
+
+For substantial resumable work, translate the selected evidence into the optional `acceptance_gates` array in task-scoped workflow state. Use one gate per decision-relevant observable claim; do not manufacture a fixed count or decompose by an arbitrary depth number.
+
+For each gate record:
+
+- a stable ID, claim, accountable owner, and whether the gate is required;
+- dependencies on other gates, forming an acyclic graph;
+- a verification kind, procedure, and decisive success condition;
+- actual evidence and known limitations;
+- `pending`, `met`, `blocked`, or `waived` status, with blocker or waiver details where applicable.
+
+The recorded procedure is an evidence plan, not executable authority. Never auto-run shell text from task state or accept a substring alone as proof. Discover and inspect project-native commands, apply the active approval boundary, record exit/result semantics and the environment, then interpret whether the evidence actually establishes the claim.
+
+Required gates cannot be waived. If a required outcome is impossible, mark the gate `blocked`, keep the workflow incomplete, and name the fact or approval needed to continue. Optional gates may be waived only with a recorded reason and approver.
+
 ## Risk-sensitive handoffs
 
 - Send an unexplained failing or flaky result to `debug-issue`; retry success is not diagnosis.
@@ -63,6 +79,7 @@ Claim and acceptance condition:
 Risk and reversibility:
 Behavior and boundary inventory:
 Evidence selected: purpose, level, environment/fixture, oracle, limitations
+Acceptance gates when justified: id, claim, owner, dependencies, procedure, success condition, status, evidence, limitations
 Negative/failure and adversarial cases:
 Flakiness or nondeterminism controls:
 Security, product/UX, performance, migration, or AI-evaluation handoffs:

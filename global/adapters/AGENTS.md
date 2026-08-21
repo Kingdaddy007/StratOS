@@ -15,7 +15,8 @@ This directory maps the canonical OS into host-specific installation layouts wit
 
 - `<host>/adapter.json`: host layout and capability mapping. The `antigravity`
   adapter additionally maps portable agent capabilities to Google Antigravity's
-  generated Markdown agent format.
+  generated Markdown agent format and declares both global and workspace-native
+  discovery targets.
 
 ## 4. Internal Dependencies
 

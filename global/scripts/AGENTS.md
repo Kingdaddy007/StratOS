@@ -20,7 +20,11 @@ This directory contains deterministic development, validation, build, and verifi
   General or Full option; automation can use `--option general|full`.
   `--antigravity-global` installs an Antigravity payload into the host's native
   global rule, agent, skill, and workflow discovery paths while preserving a
-  namespaced rollback copy.
+  namespaced rollback copy. `--antigravity-workspace` activates the same
+  generated policy and resources in one existing project without changing
+  GEMINI_HOME. `--codex-global` activates global Codex policy,
+  skills, and custom-agent TOMLs; `--codex-workspace` activates them in one
+  existing project without changing CODEX_HOME.
 - `verify.py`: project baseline verification runner; it does not declare deployment readiness.
 - `checks/`: focused baseline scanners used by `verify.py`.
 

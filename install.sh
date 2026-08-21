@@ -7,6 +7,8 @@ GLOBAL_CONFIG=""
 IDE=""
 HOST_ID=""
 INSTALL_OPTION=""
+INSTALL_SCOPE=""
+WORKSPACE_PATH=""
 NATIVE_GLOBAL=false
 DRY_RUN=false
 ASSUME_YES=false
@@ -22,11 +24,12 @@ warn() { printf '  WARN  %s\n' "$1" >&2; }
 
 usage() {
     cat <<'EOF'
-Usage: ./install.sh [--ide 1-7] [--host HOST] [--global-config TARGET] [--option general|full] [--dry-run] [--yes]
+Usage: ./install.sh [--ide 1-7] [--host HOST] [--global-config TARGET] [--scope global|workspace] [--workspace PATH] [--option general|full] [--dry-run] [--yes]
 
-The installer always writes to a dedicated directory named "antigravity".
+Compatibility-host installs write to a dedicated directory named "antigravity".
 For --host antigravity, use the native global target ~/.gemini; agents go to
 ~/.gemini/config/agents and skills go to ~/.gemini/config/skills.
+Antigravity and Codex support --scope global and --scope workspace (one project).
 Other hosts use --global-config as a parent directory unless it already ends in /antigravity.
 If --option is omitted, the installer asks whether to install General or Full.
 EOF
@@ -46,6 +49,12 @@ while (($#)); do
         --option)
             [[ $# -ge 2 ]] || { warn '--option needs a value'; exit 2; }
             INSTALL_OPTION="$2"; shift 2 ;;
+        --scope)
+            [[ $# -ge 2 ]] || { warn '--scope needs a value'; exit 2; }
+            INSTALL_SCOPE="$2"; shift 2 ;;
+        --workspace)
+            [[ $# -ge 2 ]] || { warn '--workspace needs a value'; exit 2; }
+            WORKSPACE_PATH="$2"; shift 2 ;;
         --dry-run) DRY_RUN=true; shift ;;
         --yes) ASSUME_YES=true; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -86,6 +95,10 @@ select_target() {
             SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
             return
         fi
+        if [[ "$HOST_ID" == 'codex' ]]; then
+            SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
+            return
+        fi
         SELECTED_TARGET="$(add_namespace "$GLOBAL_CONFIG")"
         return
     fi
@@ -94,7 +107,7 @@ select_target() {
         case "$HOST_ID" in
             antigravity) NATIVE_GLOBAL=true; SELECTED_TARGET="$HOME/.gemini" ;;
             gemini) SELECTED_TARGET="$HOME/.gemini/antigravity" ;;
-            codex) SELECTED_TARGET="$HOME/.codex/antigravity" ;;
+            codex) SELECTED_TARGET="$HOME/.codex" ;;
             cursor) SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
             windsurf) SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
             opencode) SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
@@ -106,9 +119,9 @@ select_target() {
     if [[ -z "$IDE" ]]; then
         cat <<'EOF'
 Choose a host:
-  [1] Antigravity 2.0 (native global) -> ~/.gemini
+  [1] Antigravity 2.0                -> ~/.gemini (global) or a project workspace
   [2] Gemini compatibility namespace -> ~/.gemini/antigravity
-  [3] Codex                         -> ~/.codex/antigravity
+  [3] Codex                         -> ~/.codex (global) or a project workspace
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
@@ -120,7 +133,7 @@ EOF
     case "$IDE" in
         1) HOST_ID='antigravity'; NATIVE_GLOBAL=true; SELECTED_TARGET="$HOME/.gemini" ;;
         2) HOST_ID='gemini'; SELECTED_TARGET="$HOME/.gemini/antigravity" ;;
-        3) HOST_ID='codex'; SELECTED_TARGET="$HOME/.codex/antigravity" ;;
+        3) HOST_ID='codex'; SELECTED_TARGET="$HOME/.codex" ;;
         4) HOST_ID='cursor'; SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
         5) HOST_ID='windsurf'; SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
         6) HOST_ID='opencode'; SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
@@ -135,9 +148,47 @@ EOF
                 SELECTED_TARGET="$(expand_path "$custom_parent")"
                 return
             fi
+            if [[ "$HOST_ID" == 'codex' ]]; then
+                read -r -p 'Enter the .codex directory for a global install: ' custom_parent
+                SELECTED_TARGET="$(expand_path "$custom_parent")"
+                return
+            fi
             read -r -p 'Parent directory for the antigravity namespace: ' custom_parent
             SELECTED_TARGET="$(add_namespace "$custom_parent")" ;;
         *) warn "Unknown host choice '$IDE'. Use 1-7."; return 1 ;;
+    esac
+}
+
+select_install_scope() {
+    if [[ -n "$INSTALL_SCOPE" ]]; then
+        case "$INSTALL_SCOPE" in global|workspace) ;; *) warn 'Unsupported scope. Use global or workspace.'; return 1 ;; esac
+        if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' && "$INSTALL_SCOPE" == 'workspace' ]]; then
+            warn 'Workspace installation is currently supported for Antigravity and Codex only.'
+            return 1
+        fi
+        return
+    fi
+    if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' ]]; then
+        INSTALL_SCOPE='global'
+        return
+    fi
+    if [[ "$ASSUME_YES" == true || ! -t 0 ]]; then
+        INSTALL_SCOPE='global'
+        return
+    fi
+    cat <<'EOF'
+
+Installation scope:
+  [1] Global    - use this V4 setup across your projects.
+  [2] Workspace - test or use it in one project only; global host configuration is unchanged.
+EOF
+    local choice
+    read -r -p 'Choose 1 or 2 [1]: ' choice
+    choice="${choice:-1}"
+    case "$choice" in
+        1) INSTALL_SCOPE='global' ;;
+        2) INSTALL_SCOPE='workspace' ;;
+        *) warn 'Choose 1 for Global or 2 for Workspace.'; return 1 ;;
     esac
 }
 
@@ -191,8 +242,10 @@ select_install_option() {
     fi
     if [[ -n "$counts" ]]; then
         read -r agent_count workflow_count general_skill_count all_skill_count <<< "$counts"
-        general_description="installs $agent_count custom agents, $workflow_count workflows, and $general_skill_count General-profile skills"
-        full_description="installs $agent_count custom agents, $workflow_count workflows, and all $all_skill_count registered skills"
+        local agent_description="$agent_count custom agents"
+        if [[ "$HOST_ID" == 'codex' ]]; then agent_description="$agent_count canonical roles (5 specialist Codex agents)"; fi
+        general_description="installs $agent_description, $workflow_count workflows, and $general_skill_count General-profile skills"
+        full_description="installs $agent_description, $workflow_count workflows, and all $all_skill_count registered skills"
     fi
 
     cat <<EOF
@@ -263,31 +316,56 @@ rollback() {
 SELECTED_TARGET=""
 select_target
 assert_supported_host
+select_install_scope
 select_install_option
-TARGET="$(expand_path "$SELECTED_TARGET")"
+if [[ "$INSTALL_SCOPE" == 'workspace' ]] && [[ "$HOST_ID" == 'antigravity' || "$HOST_ID" == 'codex' ]]; then
+    [[ -z "$GLOBAL_CONFIG" ]] || { warn '--global-config is a global target. Use --workspace for a workspace installation.'; exit 2; }
+    TARGET="$(expand_path "${WORKSPACE_PATH:-$PWD}")"
+else
+    TARGET="$(expand_path "$SELECTED_TARGET")"
+fi
 
-if [[ "$HOST_ID" == 'antigravity' && "$NATIVE_GLOBAL" != true ]]; then
-    NATIVE_GLOBAL=true
+if [[ "$HOST_ID" == 'antigravity' ]]; then
+    if [[ "$INSTALL_SCOPE" == 'global' ]]; then NATIVE_GLOBAL=true; else NATIVE_GLOBAL=false; fi
 fi
 if [[ "$NATIVE_GLOBAL" == true && "$HOST_ID" != 'antigravity' ]]; then
     warn '--native global installation is only valid for host antigravity.'
     exit 2
 fi
 
-if [[ "$NATIVE_GLOBAL" == true ]]; then
+if [[ "$HOST_ID" == 'antigravity' ]]; then
     find_python || {
-        warn 'Native Antigravity global installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+        warn 'Native Antigravity installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
         exit 1
     }
     if [[ "$DRY_RUN" != true && "$ASSUME_YES" != true ]]; then
-        read -r -p "Install into native Antigravity global locations under '$TARGET'? Type INSTALL to continue: " CONFIRMATION
+        read -r -p "Install into Antigravity $INSTALL_SCOPE target '$TARGET'? Type INSTALL to continue: " CONFIRMATION
         [[ "$CONFIRMATION" == 'INSTALL' ]] || { warn 'Installation cancelled. No files were changed.'; exit 0; }
         ASSUME_YES=true
     fi
     CLI="$SCRIPT_ROOT/global/scripts/os.py"
-    GLOBAL_ARGS=("$CLI" install --host antigravity --target "$TARGET" --option "$INSTALL_OPTION" --antigravity-global)
+    GLOBAL_ARGS=("$CLI" install --host antigravity --target "$TARGET" --option "$INSTALL_OPTION")
+    if [[ "$INSTALL_SCOPE" == 'workspace' ]]; then GLOBAL_ARGS+=(--antigravity-workspace); else GLOBAL_ARGS+=(--antigravity-global); fi
     if [[ "$DRY_RUN" == true ]]; then GLOBAL_ARGS+=(--dry-run); else GLOBAL_ARGS+=(--yes); fi
     "${PYTHON[@]}" "${GLOBAL_ARGS[@]}"
+    exit $?
+fi
+
+if [[ "$HOST_ID" == 'codex' ]]; then
+    find_python || {
+        warn 'Native Codex installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+        exit 1
+    }
+    if [[ "$DRY_RUN" != true && "$ASSUME_YES" != true ]]; then
+        read -r -p "Install into Codex $INSTALL_SCOPE target '$TARGET'? Type INSTALL to continue: " CONFIRMATION
+        [[ "$CONFIRMATION" == 'INSTALL' ]] || { warn 'Installation cancelled. No files were changed.'; exit 0; }
+        ASSUME_YES=true
+    fi
+    CLI="$SCRIPT_ROOT/global/scripts/os.py"
+    CODEX_ARGS=("$CLI" install --host codex --target "$TARGET" --option "$INSTALL_OPTION")
+    if [[ "$INSTALL_SCOPE" == 'workspace' ]]; then CODEX_ARGS+=(--codex-workspace); else CODEX_ARGS+=(--codex-global); fi
+    if [[ "$DRY_RUN" == true ]]; then CODEX_ARGS+=(--dry-run); else CODEX_ARGS+=(--yes); fi
+    "${PYTHON[@]}" "${CODEX_ARGS[@]}"
     exit $?
 fi
 

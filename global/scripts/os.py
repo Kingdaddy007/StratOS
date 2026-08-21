@@ -20,7 +20,7 @@ import tempfile
 import time
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable
 
 
@@ -181,6 +181,206 @@ def exclusive_file_lock(path: Path, timeout_seconds: float = 5.0):
         path.unlink(missing_ok=True)
 
 
+def validate_acceptance_gates(state: dict[str, Any]) -> None:
+    """Validate optional acceptance gates without executing their procedures."""
+    if "acceptance_gates" not in state:
+        return
+    gates = state["acceptance_gates"]
+    if not isinstance(gates, list):
+        raise ValueError("acceptance_gates must be an array")
+
+    required_fields = {
+        "id",
+        "claim",
+        "owner",
+        "required",
+        "status",
+        "depends_on",
+        "verification",
+        "evidence",
+        "limitations",
+        "blocker",
+        "waiver",
+    }
+    verification_fields = {"kind", "procedure", "success_condition"}
+    valid_statuses = {"pending", "met", "blocked", "waived"}
+    valid_kinds = {"command", "test", "inspection", "review"}
+    gates_by_id: dict[str, dict[str, Any]] = {}
+
+    for position, gate in enumerate(gates):
+        if not isinstance(gate, dict):
+            raise ValueError(f"acceptance_gates[{position}] must be an object")
+        missing = required_fields - set(gate)
+        unknown = set(gate) - required_fields
+        if missing:
+            raise ValueError(
+                f"acceptance_gates[{position}] is missing: {', '.join(sorted(missing))}"
+            )
+        if unknown:
+            raise ValueError(
+                f"acceptance_gates[{position}] has unknown fields: "
+                + ", ".join(sorted(unknown))
+            )
+
+        gate_id = gate["id"]
+        if not isinstance(gate_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", gate_id):
+            raise ValueError(
+                f"acceptance_gates[{position}].id must contain only letters, digits, dot, underscore, or hyphen"
+            )
+        if gate_id in gates_by_id:
+            raise ValueError(f"Duplicate acceptance gate id: {gate_id}")
+        gates_by_id[gate_id] = gate
+
+        for field in ("claim", "owner"):
+            if not isinstance(gate[field], str) or not gate[field].strip():
+                raise ValueError(f"acceptance gate {gate_id}.{field} must be a non-empty string")
+        if not isinstance(gate["required"], bool):
+            raise ValueError(f"acceptance gate {gate_id}.required must be a boolean")
+        if gate["status"] not in valid_statuses:
+            raise ValueError(f"acceptance gate {gate_id} has unsupported status")
+
+        dependencies = gate["depends_on"]
+        if (
+            not isinstance(dependencies, list)
+            or not all(isinstance(item, str) and re.fullmatch(r"[A-Za-z0-9._-]+", item) for item in dependencies)
+            or len(set(dependencies)) != len(dependencies)
+        ):
+            raise ValueError(
+                f"acceptance gate {gate_id}.depends_on must contain unique valid gate ids"
+            )
+
+        verification = gate["verification"]
+        if not isinstance(verification, dict):
+            raise ValueError(f"acceptance gate {gate_id}.verification must be an object")
+        missing_verification = verification_fields - set(verification)
+        unknown_verification = set(verification) - verification_fields
+        if missing_verification or unknown_verification:
+            raise ValueError(
+                f"acceptance gate {gate_id}.verification must contain exactly "
+                "kind, procedure, and success_condition"
+            )
+        if verification["kind"] not in valid_kinds:
+            raise ValueError(f"acceptance gate {gate_id} has unsupported verification kind")
+        for field in ("procedure", "success_condition"):
+            if not isinstance(verification[field], str) or not verification[field].strip():
+                raise ValueError(
+                    f"acceptance gate {gate_id}.verification.{field} must be a non-empty string"
+                )
+
+        evidence = gate["evidence"]
+        if not isinstance(evidence, list) or not all(isinstance(item, dict) for item in evidence):
+            raise ValueError(f"acceptance gate {gate_id}.evidence must be an array of objects")
+        evidence_fields = {"result", "source", "observed_at"}
+        for evidence_position, item in enumerate(evidence):
+            if "result" not in item or set(item) - evidence_fields:
+                raise ValueError(
+                    f"acceptance gate {gate_id}.evidence[{evidence_position}] must contain "
+                    "result and may contain only source and observed_at"
+                )
+            if not all(isinstance(value, str) and value.strip() for value in item.values()):
+                raise ValueError(
+                    f"acceptance gate {gate_id}.evidence[{evidence_position}] values must be non-empty strings"
+                )
+            observed_at = item.get("observed_at")
+            if observed_at is not None:
+                try:
+                    observed_time = datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
+                except ValueError as error:
+                    raise ValueError(
+                        f"acceptance gate {gate_id}.evidence[{evidence_position}].observed_at "
+                        "must be an ISO 8601 timestamp"
+                    ) from error
+                if observed_time.tzinfo is None:
+                    raise ValueError(
+                        f"acceptance gate {gate_id}.evidence[{evidence_position}].observed_at "
+                        "must include a timezone"
+                    )
+        limitations = gate["limitations"]
+        if not isinstance(limitations, list) or not all(
+            isinstance(item, str) for item in limitations
+        ):
+            raise ValueError(f"acceptance gate {gate_id}.limitations must be an array of strings")
+        blocker = gate["blocker"]
+        if blocker is not None and (not isinstance(blocker, str) or not blocker.strip()):
+            raise ValueError(f"acceptance gate {gate_id}.blocker must be null or non-empty")
+
+        waiver = gate["waiver"]
+        if waiver is not None:
+            if not isinstance(waiver, dict) or set(waiver) != {"reason", "approved_by"}:
+                raise ValueError(
+                    f"acceptance gate {gate_id}.waiver must contain reason and approved_by"
+                )
+            if not all(isinstance(value, str) and value.strip() for value in waiver.values()):
+                raise ValueError(f"acceptance gate {gate_id}.waiver values must be non-empty")
+
+        status = gate["status"]
+        if status == "met" and not evidence:
+            raise ValueError(f"acceptance gate {gate_id} cannot be met without evidence")
+        if status == "blocked" and blocker is None:
+            raise ValueError(f"acceptance gate {gate_id} cannot be blocked without a blocker")
+        if status != "blocked" and blocker is not None:
+            raise ValueError(f"acceptance gate {gate_id} has a blocker but is not blocked")
+        if status == "waived":
+            if gate["required"]:
+                raise ValueError(f"Required acceptance gate {gate_id} cannot be waived")
+            if waiver is None:
+                raise ValueError(f"acceptance gate {gate_id} cannot be waived without approval")
+        elif waiver is not None:
+            raise ValueError(f"acceptance gate {gate_id} has a waiver but is not waived")
+
+    for gate_id, gate in gates_by_id.items():
+        for dependency in gate["depends_on"]:
+            if dependency not in gates_by_id:
+                raise ValueError(
+                    f"acceptance gate {gate_id} depends on unknown gate {dependency}"
+                )
+            if dependency == gate_id:
+                raise ValueError(f"acceptance gate {gate_id} cannot depend on itself")
+
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(gate_id: str) -> None:
+        if gate_id in visiting:
+            raise ValueError("acceptance_gates dependencies must be acyclic")
+        if gate_id in visited:
+            return
+        visiting.add(gate_id)
+        for dependency in gates_by_id[gate_id]["depends_on"]:
+            visit(dependency)
+        visiting.remove(gate_id)
+        visited.add(gate_id)
+
+    for gate_id in gates_by_id:
+        visit(gate_id)
+
+    for gate_id, gate in gates_by_id.items():
+        if gate["status"] != "met":
+            continue
+        unresolved_dependencies = [
+            dependency
+            for dependency in gate["depends_on"]
+            if gates_by_id[dependency]["status"] != "met"
+        ]
+        if unresolved_dependencies:
+            raise ValueError(
+                f"acceptance gate {gate_id} cannot be met before its dependencies: "
+                + ", ".join(unresolved_dependencies)
+            )
+
+    if state.get("status") == "complete":
+        unresolved = [
+            gate_id
+            for gate_id, gate in gates_by_id.items()
+            if gate["status"] not in {"met", "waived"}
+        ]
+        if unresolved:
+            raise ValueError(
+                "A complete workflow state cannot contain unresolved acceptance gates: "
+                + ", ".join(unresolved)
+            )
+
+
 def write_workflow_state(workspace: Path, state: dict[str, Any]) -> Path:
     required = {
         "schema_version",
@@ -209,6 +409,7 @@ def write_workflow_state(workspace: Path, state: dict[str, Any]) -> Path:
         raise ValueError("task_id must contain only letters, digits, dot, underscore, or hyphen")
     if state["schema_version"] != 1:
         raise ValueError("Unsupported workflow state schema_version")
+    validate_acceptance_gates(state)
 
     state_directory = workspace.resolve() / ".agents" / "workflows"
     state_path = state_directory / f"{task_id}.json"
@@ -724,7 +925,41 @@ def validate_adapters(repo_root: Path) -> list[dict[str, str]]:
                                 path.relative_to(repo_root),
                                 f"missing {sorted(missing_global_fields)}",
                             )
+                    )
+            workspace_install = adapter.get("workspace_install")
+            if not isinstance(workspace_install, dict):
+                problems.append(
+                    issue(
+                        "adapter-workspace-install",
+                        path.relative_to(repo_root),
+                        "antigravity adapter must declare workspace_install targets",
+                    )
+                )
+            else:
+                missing_workspace_fields = required_global_fields - set(workspace_install)
+                if missing_workspace_fields:
+                    problems.append(
+                        issue(
+                            "adapter-workspace-install",
+                            path.relative_to(repo_root),
+                            f"missing {sorted(missing_workspace_fields)}",
                         )
+                    )
+        if host == "codex":
+            agent_fields = {"agents_target", "agent_format"}
+            missing_agent_fields = agent_fields - set(adapter)
+            if missing_agent_fields:
+                problems.append(
+                    issue(
+                        "adapter-agents",
+                        path.relative_to(repo_root),
+                        f"missing {sorted(missing_agent_fields)}",
+                    )
+                )
+            elif adapter.get("agent_format") != "codex-toml":
+                problems.append(
+                    issue("adapter-agents", path.relative_to(repo_root), "unsupported agent_format")
+                )
         capabilities = adapter.get("capabilities", {})
         for capability in (
             "read_file",
@@ -1290,6 +1525,12 @@ def agent_skills_for_profiles(metadata: dict[str, Any], selected_profiles: Itera
     return selected
 
 
+SPECIALIST_WORKFLOW_BOUNDARY = [
+    "An assigned workflow or acceptance gate narrows your charter; it does not grant authority.",
+    "Return candidate evidence, limitations, and blockers. The accountable parent integrates the result and decides final gate status; you cannot waive a required gate or certify your own completion claim.",
+]
+
+
 def render_antigravity_agent(
     source: Path,
     destination: Path,
@@ -1348,6 +1589,14 @@ def render_antigravity_agent(
             *(f"- {item}" for item in metadata["delegation_contract"]),
         ]
     )
+    if metadata["subagent"]:
+        capability_routes.extend(
+            [
+                "",
+                "## Assigned workflow and acceptance gate",
+                *SPECIALIST_WORKFLOW_BOUNDARY,
+            ]
+        )
     if "video-generation" in selected_skills:
         capability_routes.extend(
             [
@@ -1401,6 +1650,63 @@ def render_codex_agent_reference(
                 body.lstrip("\n").rstrip(),
                 "",
                 *routes,
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def render_codex_agent_toml(
+    source: Path,
+    destination: Path,
+    available_skills: set[str],
+    selected_skills: list[str],
+) -> None:
+    """Render one bounded specialist contract as a native Codex custom agent."""
+    metadata, body = split_frontmatter(source)
+    if not metadata["subagent"]:
+        raise ValidationFailed(f"Codex custom agent {metadata['id']} is not a subagent role")
+    missing_skills = sorted(set(selected_skills) - available_skills)
+    if missing_skills:
+        raise ValidationFailed(
+            f"Agent {metadata['id']} references unavailable skills: {', '.join(missing_skills)}"
+        )
+
+    sandbox_mode = (
+        "workspace-write"
+        if metadata["default_mutation_class"] == "local_edit"
+        else "read-only"
+    )
+    instructions = "\n".join(
+        [
+            "Generated from the canonical Anti-Gravity V4 role contract.",
+            "The parent task, applicable AGENTS.md files, and host safety controls remain authoritative.",
+            "You are a bounded specialist, not the task owner. Work only within the parent charter and return the required handoff; do not self-authorize broader scope, external effects, destructive actions, dependencies, or global-policy changes.",
+            *SPECIALIST_WORKFLOW_BOUNDARY,
+            "",
+            body.lstrip("\n").rstrip(),
+            "",
+            "## Available capability routes",
+            "Select only the route that matches the charter. A route is not permission.",
+            *(f"- `{skill_id}`" for skill_id in selected_skills),
+            "",
+            "## Required specialist return",
+            *(f"- {item}" for item in metadata["return_contract"]),
+            "",
+            "## Delegation contract",
+            *(f"- {item}" for item in metadata["delegation_contract"]),
+        ]
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        "\n".join(
+            [
+                "# Generated Codex custom agent. Edit the canonical global/agents contract instead.",
+                f"name = {json.dumps(metadata['name'])}",
+                f"description = {json.dumps(metadata['description'])}",
+                f"sandbox_mode = {json.dumps(sandbox_mode)}",
+                f"developer_instructions = {json.dumps(instructions)}",
                 "",
             ]
         ),
@@ -1517,11 +1823,8 @@ def build_payload(
                     available_skills,
                     agent_skills_for_profiles(metadata, selected_profiles),
                 )
-        elif host == "codex":
-            # Codex does not expose the same host-selectable custom-agent format
-            # as Antigravity. Ship profile-filtered role references for the main
-            # Codex policy to consult without representing them as native agents.
-            agent_root = content_root / "agents"
+        elif adapter.get("agent_format") == "codex-toml":
+            agent_root = content_root / adapter["agents_target"]
             available_skills = {
                 entry["id"]
                 for entry in manifest["skills"]
@@ -1534,12 +1837,24 @@ def build_payload(
                     continue
                 source = repo_root / entry["path"] / "AGENT.md"
                 metadata, _ = split_frontmatter(source)
-                render_codex_agent_reference(
-                    source,
-                    agent_root / entry["id"] / "agent.md",
-                    available_skills,
-                    agent_skills_for_profiles(metadata, selected_profiles),
-                )
+                selected_agent_skills = agent_skills_for_profiles(metadata, selected_profiles)
+                if metadata["subagent"]:
+                    render_codex_agent_toml(
+                        source,
+                        agent_root / f"{entry['id']}.toml",
+                        available_skills,
+                        selected_agent_skills,
+                    )
+                else:
+                    # Codex's main task is governed by AGENTS.md. Keep the Studio
+                    # Director contract as a generated reference rather than
+                    # misrepresenting it as a spawnable worker.
+                    render_codex_agent_reference(
+                        source,
+                        agent_root / entry["id"] / "agent.md",
+                        available_skills,
+                        selected_agent_skills,
+                    )
 
         copy_entry(repo_root / "global" / "manifest.yaml", stage / "manifest.json")
         copy_entry(
@@ -1636,12 +1951,81 @@ def entry_digest(path: Path) -> str:
 def _ensure_not_reparse(path: Path) -> None:
     if path.is_symlink():
         raise InstallationRefused(f"Refusing symlink target: {path}")
+    if hasattr(path, "is_junction") and path.is_junction():
+        raise InstallationRefused(f"Refusing reparse-point target: {path}")
     try:
         attributes = path.stat().st_file_attributes
     except (AttributeError, FileNotFoundError):
         attributes = 0
     if attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0):
         raise InstallationRefused(f"Refusing reparse-point target: {path}")
+
+
+def _absolute_without_resolving(path: Path) -> Path:
+    """Return an absolute lexical path while preserving symlink/junction identity."""
+    return Path(os.path.abspath(os.fspath(path.expanduser())))
+
+
+def ensure_existing_path_chain_not_reparse(path: Path) -> None:
+    """Reject any existing symlink or junction from a path through its anchor."""
+    probe = _absolute_without_resolving(path)
+    while True:
+        if probe.exists() or probe.is_symlink():
+            _ensure_not_reparse(probe)
+        if probe.parent == probe:
+            break
+        probe = probe.parent
+
+
+def ensure_workspace_destination(workspace: Path, destination: Path, context: str) -> Path:
+    """Validate containment and all existing path components before a workspace write."""
+    workspace_root = workspace.resolve()
+    lexical_destination = _absolute_without_resolving(destination)
+    try:
+        relative = lexical_destination.relative_to(workspace_root)
+    except ValueError as error:
+        raise InstallationRefused(
+            f"{context} is outside the selected workspace: {lexical_destination}"
+        ) from error
+
+    current = workspace_root
+    if current.exists() or current.is_symlink():
+        _ensure_not_reparse(current)
+    for part in relative.parts:
+        current = current / part
+        if current.exists() or current.is_symlink():
+            _ensure_not_reparse(current)
+    if not current.resolve(strict=False).is_relative_to(workspace_root):
+        raise InstallationRefused(f"{context} escaped the selected workspace: {current}")
+    return current
+
+
+def workspace_record_target(workspace: Path, label: str, record_path: Path) -> Path:
+    """Resolve one installer-owned record label without allowing it to escape."""
+    posix_path = PurePosixPath(label)
+    windows_path = PureWindowsPath(label)
+    normalized = posix_path.as_posix()
+    if (
+        not label
+        or "\x00" in label
+        or "\\" in label
+        or normalized in {"", "."}
+        or normalized != label
+        or posix_path.is_absolute()
+        or windows_path.is_absolute()
+        or bool(windows_path.drive)
+        or ".." in posix_path.parts
+    ):
+        raise InstallationRefused(
+            f"Unsafe workspace target in installation record {record_path}: {label!r}"
+        )
+
+    destination = workspace.resolve().joinpath(*posix_path.parts)
+    return ensure_workspace_destination(
+        workspace,
+        destination,
+        f"Workspace target from installation record {record_path}",
+    )
 
 
 def _replace_entry(source: Path, destination: Path) -> None:
@@ -2026,6 +2410,327 @@ def install_antigravity_global(
         raise
 
 
+def resolve_antigravity_workspace(target: Path) -> Path:
+    """Validate one existing project directory for a workspace-scoped install."""
+    raw_workspace = _absolute_without_resolving(target)
+    ensure_existing_path_chain_not_reparse(raw_workspace)
+    workspace = raw_workspace.resolve()
+    home = Path.home().resolve()
+    anchor = Path(workspace.anchor).resolve()
+    if workspace in {home, anchor}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root workspace; select one project directory"
+        )
+    if not workspace.is_dir():
+        raise InstallationRefused(
+            "Antigravity workspace installation requires an existing project directory"
+        )
+    if workspace.name.lower() == ".gemini":
+        raise InstallationRefused(
+            "Antigravity workspace installation requires a project directory, not GEMINI_HOME"
+        )
+    if not workspace.is_relative_to(workspace.anchor):
+        raise InstallationRefused("Resolved Antigravity workspace escaped its filesystem anchor")
+    return workspace
+
+
+def antigravity_workspace_file_map(
+    payload: Path,
+    workspace: Path,
+    adapter: dict[str, Any],
+) -> dict[Path, Path]:
+    """Map a generated payload to Antigravity's project discovery locations."""
+    workspace_install = adapter.get("workspace_install")
+    if not isinstance(workspace_install, dict):
+        raise InstallationRefused(
+            "Antigravity adapter does not declare native workspace installation targets"
+        )
+    workspace_root = workspace / workspace_install["root_name"]
+    mapping: dict[Path, Path] = {}
+
+    def add(source: Path, destination: Path) -> None:
+        if not source.exists():
+            return
+        if destination in mapping.values():
+            raise InstallationRefused(f"Duplicate Antigravity workspace target: {destination}")
+        mapping[source] = destination
+
+    # The host probe and current Antigravity migration docs both confirm that a
+    # workspace-root GEMINI.md is automatically parsed. The native .agents tree
+    # holds project-scoped agents, skills, workflows, and supporting references.
+    add(
+        payload / adapter["instruction_target"],
+        workspace / workspace_install["instruction_target"],
+    )
+    add(
+        payload / "USER_PROFILE.md",
+        workspace_root / workspace_install["user_profile_target"],
+    )
+
+    content_root = payload / adapter["content_root"]
+    if not content_root.is_dir():
+        raise InstallationRefused("Antigravity payload is missing its .agents resource tree")
+    for source in sorted(content_root.iterdir()):
+        if source.is_file():
+            add(source, workspace_root / source.name)
+            continue
+        for child in sorted(source.iterdir()):
+            add(child, workspace_root / source.name / child.name)
+    return mapping
+
+
+def antigravity_workspace_record_path(
+    workspace: Path,
+    adapter: dict[str, Any],
+) -> Path:
+    workspace_install = adapter["workspace_install"]
+    return (
+        workspace
+        / workspace_install["root_name"]
+        / workspace_install["payload_target"]
+        / "installation.json"
+    )
+
+
+def antigravity_workspace_changes(
+    payload: Path,
+    workspace: Path,
+    adapter: dict[str, Any],
+) -> dict[str, list[str]]:
+    """Plan a local install without replacing unmanaged project customizations."""
+    mapping = antigravity_workspace_file_map(payload, workspace, adapter)
+    record_path = antigravity_workspace_record_path(workspace, adapter)
+    previous_targets: set[str] = set()
+    previous_digests: dict[str, str] = {}
+    previous_paths: dict[str, Path] = {}
+    if record_path.exists():
+        record = load_json(record_path)
+        raw_targets = record.get("direct_targets")
+        raw_digests = record.get("direct_digests")
+        if not isinstance(raw_targets, list) or not all(
+            isinstance(item, str) for item in raw_targets
+        ):
+            raise InstallationRefused(
+                f"Invalid Antigravity workspace installation record: {record_path}"
+            )
+        if not isinstance(raw_digests, dict) or not all(
+            isinstance(key, str) and isinstance(value, str)
+            for key, value in raw_digests.items()
+        ):
+            raise InstallationRefused(
+                f"Invalid Antigravity workspace ownership record: {record_path}"
+            )
+        previous_targets = set(raw_targets)
+        previous_digests = raw_digests
+        previous_paths = {
+            label: workspace_record_target(workspace, label, record_path)
+            for label in previous_targets | set(previous_digests)
+        }
+
+    additions: list[str] = []
+    replacements: list[str] = []
+    unchanged: list[str] = []
+    for source, destination in mapping.items():
+        destination = ensure_workspace_destination(
+            workspace, destination, "Antigravity workspace target"
+        )
+        label = destination.relative_to(workspace).as_posix()
+        if not destination.exists():
+            additions.append(label)
+        elif entry_digest(source) == entry_digest(destination):
+            unchanged.append(label)
+        elif label in previous_targets and previous_digests.get(label) == entry_digest(destination):
+            replacements.append(label)
+        else:
+            raise InstallationRefused(
+                "Refusing to replace unmanaged or locally modified Antigravity workspace entry: "
+                f"{label}. Choose a clean workspace or remove the conflicting entry yourself."
+            )
+
+    current_targets = {
+        destination.relative_to(workspace).as_posix() for destination in mapping.values()
+    }
+    stale_targets = sorted(
+        label
+        for label in previous_targets - current_targets
+        if previous_paths[label].exists()
+        and previous_digests.get(label) == entry_digest(previous_paths[label])
+    )
+    return {
+        "add": sorted(additions),
+        "replace": sorted(replacements),
+        "remove": stale_targets,
+        "unchanged": sorted(unchanged),
+    }
+
+
+def install_antigravity_workspace(
+    payload: Path,
+    target: Path,
+    dry_run: bool,
+    assume_yes: bool,
+) -> dict[str, Any]:
+    """Install V4 into one Antigravity project without changing GEMINI_HOME."""
+    payload = payload.resolve()
+    if not payload.is_dir():
+        raise InstallationRefused(f"Payload does not exist: {payload}")
+    adapter = load_json(payload / "adapter.json")
+    if adapter.get("host") != "antigravity":
+        raise InstallationRefused(
+            "Antigravity workspace installation requires an antigravity payload"
+        )
+    workspace = resolve_antigravity_workspace(target)
+    mapping = antigravity_workspace_file_map(payload, workspace, adapter)
+    changes = antigravity_workspace_changes(payload, workspace, adapter)
+    workspace_install = adapter["workspace_install"]
+    workspace_root = workspace / workspace_install["root_name"]
+    managed_namespace = workspace_root / workspace_install["payload_target"]
+    result: dict[str, Any] = {
+        "status": "dry-run" if dry_run else "pending",
+        "host": "antigravity",
+        "scope": "workspace",
+        "target": str(workspace),
+        "managed_namespace": str(managed_namespace),
+        "changes": changes,
+        "backup": None,
+        "direct_discovery": {
+            "agents": str(workspace_root / workspace_install["agents_target"]),
+            "skills": str(workspace_root / workspace_install["skills_target"]),
+            "workflows": str(workspace_root / workspace_install["workflows_target"]),
+            "rule": str(workspace / workspace_install["instruction_target"]),
+        },
+    }
+    if dry_run:
+        return result
+    if not assume_yes:
+        raise InstallationRefused(
+            "Antigravity workspace installation requires explicit confirmation; "
+            "rerun with --yes after reviewing --dry-run"
+        )
+
+    timestamp = utc_timestamp()
+    backup_root = workspace_root / ".antigravity-backups" / timestamp
+    stage_root = workspace_root / f".antigravity-workspace-stage-{uuid.uuid4().hex}"
+    namespace_source = stage_root / "managed"
+    activated: list[tuple[Path, Path | None]] = []
+    try:
+        ensure_workspace_destination(
+            workspace, workspace_root, "Antigravity workspace resource root"
+        )
+        ensure_workspace_destination(
+            workspace, stage_root, "Antigravity workspace staging root"
+        )
+        ensure_workspace_destination(
+            workspace, backup_root, "Antigravity workspace backup root"
+        )
+        stage_root.mkdir(parents=True, exist_ok=False)
+        namespace_source.mkdir(parents=True, exist_ok=True)
+        for metadata_name in ("adapter.json", "manifest.json", "profile.json"):
+            source = payload / metadata_name
+            if source.exists():
+                copy_entry(source, namespace_source / metadata_name)
+
+        unchanged = set(changes["unchanged"])
+        for source, destination in mapping.items():
+            destination = ensure_workspace_destination(
+                workspace, destination, "Antigravity workspace target"
+            )
+            label = destination.relative_to(workspace).as_posix()
+            if label in unchanged:
+                continue
+            if destination.exists():
+                _ensure_not_reparse(destination)
+            staged = stage_root / "direct" / destination.relative_to(workspace)
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            copy_entry(source, staged)
+
+        for source, destination in mapping.items():
+            destination = ensure_workspace_destination(
+                workspace, destination, "Antigravity workspace target"
+            )
+            label = destination.relative_to(workspace).as_posix()
+            if label in unchanged:
+                continue
+            backup_path: Path | None = None
+            if destination.exists():
+                backup_path = backup_root / destination.relative_to(workspace)
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(destination, backup_path)
+            staged = stage_root / "direct" / destination.relative_to(workspace)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(staged, destination)
+            activated.append((destination, backup_path))
+
+        for relative in changes["remove"]:
+            destination = workspace_record_target(
+                workspace,
+                relative,
+                antigravity_workspace_record_path(workspace, adapter),
+            )
+            backup_path = backup_root / Path(relative)
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(destination, backup_path)
+            activated.append((destination, backup_path))
+
+        namespace_backup: Path | None = None
+        if managed_namespace.exists():
+            _ensure_not_reparse(managed_namespace)
+            namespace_backup = backup_root / managed_namespace.relative_to(workspace)
+            namespace_backup.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(managed_namespace, namespace_backup)
+        managed_namespace.parent.mkdir(parents=True, exist_ok=True)
+        _replace_entry(namespace_source, managed_namespace)
+        activated.append((managed_namespace, namespace_backup))
+
+        record = {
+            "schema_version": 1,
+            "host": "antigravity",
+            "scope": "workspace",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "payload": str(payload),
+            "workspace": str(workspace),
+            "backup": str(backup_root) if backup_root.exists() else None,
+            "direct_targets": sorted(
+                destination.relative_to(workspace).as_posix()
+                for destination in mapping.values()
+            ),
+            "direct_digests": {
+                destination.relative_to(workspace).as_posix(): entry_digest(destination)
+                for destination in mapping.values()
+            },
+            "removed_targets": list(changes["remove"]),
+        }
+        write_json_atomic(antigravity_workspace_record_path(workspace, adapter), record)
+
+        required = [
+            workspace / workspace_install["instruction_target"],
+            workspace_root / workspace_install["router_target"],
+        ]
+        required.extend(
+            destination / "agent.md"
+            for source, destination in mapping.items()
+            if source.parent.name == adapter["agents_target"]
+        )
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        result["backup"] = str(backup_root) if backup_root.exists() else None
+        result["status"] = "installed"
+        return result
+    except Exception:
+        for destination, backup_path in reversed(activated):
+            if destination.exists():
+                _remove_entry(destination)
+            if backup_path and backup_path.exists():
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(backup_path, destination)
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        raise
+
+
 def resolve_codex_home(target: Path) -> Path:
     """Validate a Codex home for direct global instruction integration."""
     base = target.expanduser().resolve()
@@ -2044,6 +2749,262 @@ def resolve_codex_home(target: Path) -> Path:
     return base
 
 
+def resolve_codex_workspace(target: Path) -> Path:
+    """Validate an existing project directory for a local Codex installation."""
+    raw_workspace = _absolute_without_resolving(target)
+    ensure_existing_path_chain_not_reparse(raw_workspace)
+    workspace = raw_workspace.resolve()
+    home = Path.home().resolve()
+    anchor = Path(workspace.anchor).resolve()
+    if workspace in {home, anchor}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root workspace; select one project directory"
+        )
+    if not workspace.is_dir():
+        raise InstallationRefused(
+            "Codex workspace installation requires an existing project directory"
+        )
+    if workspace.name.lower() == ".codex":
+        raise InstallationRefused(
+            "Codex workspace installation requires a project directory, not CODEX_HOME"
+        )
+    if not workspace.is_relative_to(workspace.anchor):
+        raise InstallationRefused("Resolved Codex workspace escaped its filesystem anchor")
+    return workspace
+
+
+def codex_workspace_file_map(payload: Path, workspace: Path) -> dict[Path, Path]:
+    """Map the generated payload to project-local Codex policy and resources."""
+    mapping: dict[Path, Path] = {}
+
+    def add(source: Path, target: Path) -> None:
+        if not source.exists():
+            return
+        if target in mapping.values():
+            raise InstallationRefused(f"Duplicate Codex workspace target: {target}")
+        mapping[source] = target
+
+    add(payload / "AGENTS.md", workspace / "AGENTS.md")
+    add(payload / "USER_PROFILE.md", workspace / "USER_PROFILE.md")
+    content_root = payload / ".agents"
+    if not content_root.is_dir():
+        raise InstallationRefused("Codex payload is missing its .agents resource tree")
+
+    for source in sorted(content_root.iterdir()):
+        if source.is_file():
+            add(source, workspace / ".agents" / source.name)
+            continue
+        for child in sorted(source.iterdir()):
+            if source.name == "skills":
+                # Codex natively discovers project skills from .codex/skills.
+                # Keep the generated .agents tree as a portable V4 reference,
+                # but place active skills in Codex's own discovery location.
+                add(child, workspace / ".codex" / "skills" / child.name)
+            elif source.name == "agents" and child.suffix == ".toml":
+                add(child, workspace / ".codex" / "agents" / child.name)
+            else:
+                add(child, workspace / ".agents" / source.name / child.name)
+    return mapping
+
+
+def codex_workspace_record_path(workspace: Path) -> Path:
+    return workspace / ".agents" / "antigravity" / "installation.json"
+
+
+def codex_workspace_changes(payload: Path, workspace: Path) -> dict[str, list[str]]:
+    """Plan a project-local install without replacing unmanaged project files."""
+    mapping = codex_workspace_file_map(payload, workspace)
+    record_path = codex_workspace_record_path(workspace)
+    previous_targets: set[str] = set()
+    previous_digests: dict[str, str] = {}
+    previous_paths: dict[str, Path] = {}
+    if record_path.exists():
+        record = load_json(record_path)
+        raw_targets = record.get("direct_targets")
+        raw_digests = record.get("direct_digests")
+        if not isinstance(raw_targets, list) or not all(isinstance(item, str) for item in raw_targets):
+            raise InstallationRefused(f"Invalid Codex workspace installation record: {record_path}")
+        if not isinstance(raw_digests, dict) or not all(
+            isinstance(key, str) and isinstance(value, str) for key, value in raw_digests.items()
+        ):
+            raise InstallationRefused(f"Invalid Codex workspace ownership record: {record_path}")
+        previous_targets = set(raw_targets)
+        previous_digests = raw_digests
+        previous_paths = {
+            label: workspace_record_target(workspace, label, record_path)
+            for label in previous_targets | set(previous_digests)
+        }
+
+    additions: list[str] = []
+    replacements: list[str] = []
+    unchanged: list[str] = []
+    for source, target in mapping.items():
+        target = ensure_workspace_destination(workspace, target, "Codex workspace target")
+        label = target.relative_to(workspace).as_posix()
+        if not target.exists():
+            additions.append(label)
+        elif entry_digest(source) == entry_digest(target):
+            unchanged.append(label)
+        elif label in previous_targets and previous_digests.get(label) == entry_digest(target):
+            replacements.append(label)
+        else:
+            raise InstallationRefused(
+                "Refusing to replace unmanaged or locally modified workspace entry: "
+                f"{label}. Choose a clean workspace or remove the conflicting entry yourself."
+            )
+
+    current_targets = {target.relative_to(workspace).as_posix() for target in mapping.values()}
+    stale_targets = sorted(
+        label
+        for label in previous_targets - current_targets
+        if previous_paths[label].exists()
+        and previous_digests.get(label) == entry_digest(previous_paths[label])
+    )
+    return {
+        "add": sorted(additions),
+        "replace": sorted(replacements),
+        "remove": stale_targets,
+        "unchanged": sorted(unchanged),
+    }
+
+
+def install_codex_workspace(
+    payload: Path,
+    target: Path,
+    dry_run: bool,
+    assume_yes: bool,
+) -> dict[str, Any]:
+    """Install V4 into one clean Codex project without touching CODEX_HOME."""
+    payload = payload.resolve()
+    if not payload.is_dir():
+        raise InstallationRefused(f"Payload does not exist: {payload}")
+    adapter = load_json(payload / "adapter.json")
+    if adapter.get("host") != "codex":
+        raise InstallationRefused("Codex workspace installation requires a Codex payload")
+    workspace = resolve_codex_workspace(target)
+    mapping = codex_workspace_file_map(payload, workspace)
+    changes = codex_workspace_changes(payload, workspace)
+    namespace_target = workspace / ".agents" / "antigravity"
+    result: dict[str, Any] = {
+        "status": "dry-run" if dry_run else "pending",
+        "host": "codex",
+        "scope": "workspace",
+        "target": str(workspace),
+        "namespace": str(namespace_target),
+        "changes": changes,
+        "backup": None,
+    }
+    if dry_run:
+        return result
+    if not assume_yes:
+        raise InstallationRefused(
+            "Codex workspace installation requires explicit confirmation; rerun with --yes after reviewing --dry-run"
+        )
+
+    timestamp = utc_timestamp()
+    backup_root = workspace / ".agents" / ".antigravity-backups" / timestamp
+    stage_root = workspace / ".agents" / f".antigravity-codex-workspace-stage-{uuid.uuid4().hex}"
+    namespace_source = stage_root / "namespace"
+    activated: list[tuple[Path, Path | None]] = []
+    try:
+        ensure_workspace_destination(workspace, stage_root, "Codex workspace staging root")
+        ensure_workspace_destination(workspace, backup_root, "Codex workspace backup root")
+        ensure_workspace_destination(workspace, namespace_target, "Codex managed namespace")
+        stage_root.mkdir(parents=True, exist_ok=False)
+        shutil.copytree(payload, namespace_source)
+        for source, target_path in mapping.items():
+            target_path = ensure_workspace_destination(
+                workspace, target_path, "Codex workspace target"
+            )
+            label = target_path.relative_to(workspace).as_posix()
+            if label in changes["unchanged"]:
+                continue
+            staged = stage_root / "direct" / target_path.relative_to(workspace)
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            copy_entry(source, staged)
+
+        for source, target_path in mapping.items():
+            target_path = ensure_workspace_destination(
+                workspace, target_path, "Codex workspace target"
+            )
+            label = target_path.relative_to(workspace).as_posix()
+            if label in changes["unchanged"]:
+                continue
+            backup_path: Path | None = None
+            if target_path.exists():
+                _ensure_not_reparse(target_path)
+                backup_path = backup_root / target_path.relative_to(workspace)
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(target_path, backup_path)
+            staged = stage_root / "direct" / target_path.relative_to(workspace)
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(staged, target_path)
+            activated.append((target_path, backup_path))
+
+        for relative in changes["remove"]:
+            target_path = workspace_record_target(
+                workspace,
+                relative,
+                codex_workspace_record_path(workspace),
+            )
+            backup_path = backup_root / Path(relative)
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(target_path, backup_path)
+            activated.append((target_path, backup_path))
+
+        namespace_backup: Path | None = None
+        if namespace_target.exists():
+            _ensure_not_reparse(namespace_target)
+            namespace_backup = backup_root / ".agents" / "antigravity"
+            namespace_backup.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(namespace_target, namespace_backup)
+        namespace_target.parent.mkdir(parents=True, exist_ok=True)
+        _replace_entry(namespace_source, namespace_target)
+        activated.append((namespace_target, namespace_backup))
+
+        record = {
+            "schema_version": 1,
+            "host": "codex",
+            "scope": "workspace",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "payload": str(payload),
+            "workspace": str(workspace),
+            "backup": str(backup_root) if backup_root.exists() else None,
+            "direct_targets": sorted(
+                target.relative_to(workspace).as_posix() for target in mapping.values()
+            ),
+            "direct_digests": {
+                target.relative_to(workspace).as_posix(): entry_digest(target)
+                for target in mapping.values()
+            },
+            "removed_targets": list(changes["remove"]),
+        }
+        write_json_atomic(codex_workspace_record_path(workspace), record)
+        required = [workspace / "AGENTS.md", workspace / ".agents" / "GLOBAL_MEMORY.md"]
+        required.extend(
+            workspace / ".codex" / "agents" / source.name
+            for source in sorted((payload / ".agents" / "agents").glob("*.toml"))
+        )
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        result["backup"] = str(backup_root) if backup_root.exists() else None
+        result["status"] = "installed"
+        return result
+    except Exception:
+        for target_path, backup_path in reversed(activated):
+            if target_path.exists():
+                _remove_entry(target_path)
+            if backup_path and backup_path.exists():
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(backup_path, target_path)
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        raise
+
+
 def codex_global_file_map(payload: Path, codex_home: Path) -> dict[Path, Path]:
     """Return only the explicit Codex discovery files/directories to replace."""
     mapping: dict[Path, Path] = {}
@@ -2058,10 +3019,13 @@ def codex_global_file_map(payload: Path, codex_home: Path) -> dict[Path, Path]:
     for source_root, target_root in (
         (payload / ".agents" / "skills", codex_home / "skills"),
         (payload / ".agents" / "workflows", codex_home / "workflows"),
+        (payload / ".agents" / "agents", codex_home / "agents"),
     ):
         if not source_root.exists():
             continue
         for source in sorted(source_root.iterdir()):
+            if source_root.name == "agents" and source.suffix != ".toml":
+                continue
             mapping[source] = target_root / source.name
     return mapping
 
@@ -2147,6 +3111,16 @@ def install_codex_global(
             "direct_targets": sorted(changes["add"] + changes["replace"]),
         }
         write_json_atomic(namespace_target / "installation.json", record)
+        required = [codex_home / "AGENTS.md", codex_home / "GLOBAL_MEMORY.md"]
+        required.extend(
+            codex_home / "agents" / source.name
+            for source in sorted((payload / ".agents" / "agents").glob("*.toml"))
+        )
+        missing = [str(path) for path in required if not path.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
         result["backup"] = str(backup_root) if backup_root.exists() else None
         result["status"] = "installed"
         return result
@@ -2225,9 +3199,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="For host=codex, install into Codex discovery locations plus a rollback namespace",
     )
     install_parser.add_argument(
+        "--codex-workspace",
+        action="store_true",
+        help="For host=codex, install into one project workspace plus a rollback namespace",
+    )
+    install_parser.add_argument(
         "--antigravity-global",
         action="store_true",
         help="For host=antigravity, install into native global discovery locations plus a rollback namespace",
+    )
+    install_parser.add_argument(
+        "--antigravity-workspace",
+        action="store_true",
+        help="For host=antigravity, install into one project workspace without changing GEMINI_HOME",
     )
     return parser
 
@@ -2248,13 +3232,26 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "install":
             if args.codex_global and args.host != "codex":
                 raise InstallationRefused("--codex-global is only valid with --host codex")
+            if args.codex_workspace and args.host != "codex":
+                raise InstallationRefused("--codex-workspace is only valid with --host codex")
             if args.antigravity_global and args.host != "antigravity":
                 raise InstallationRefused(
                     "--antigravity-global is only valid with --host antigravity"
                 )
-            if args.codex_global and args.antigravity_global:
+            if args.antigravity_workspace and args.host != "antigravity":
                 raise InstallationRefused(
-                    "Choose only one host-specific global installation mode"
+                    "--antigravity-workspace is only valid with --host antigravity"
+                )
+            if sum(
+                (
+                    args.codex_global,
+                    args.codex_workspace,
+                    args.antigravity_global,
+                    args.antigravity_workspace,
+                )
+            ) > 1:
+                raise InstallationRefused(
+                    "Choose only one host-specific installation mode"
                 )
             selected_profile, selected_packs, selected_option = resolve_install_option(
                 REPO_ROOT,
@@ -2273,8 +3270,12 @@ def main(argv: list[str] | None = None) -> int:
                     result = (
                         install_codex_global(payload, args.target, True, False)
                         if args.codex_global
+                        else install_codex_workspace(payload, args.target, True, False)
+                        if args.codex_workspace
                         else install_antigravity_global(payload, args.target, True, False)
                         if args.antigravity_global
+                        else install_antigravity_workspace(payload, args.target, True, False)
+                        if args.antigravity_workspace
                         else install_payload(payload, args.target, args.host, True, False)
                     )
             else:
@@ -2282,8 +3283,12 @@ def main(argv: list[str] | None = None) -> int:
                 result = (
                     install_codex_global(payload, args.target, False, args.yes)
                     if args.codex_global
+                    else install_codex_workspace(payload, args.target, False, args.yes)
+                    if args.codex_workspace
                     else install_antigravity_global(payload, args.target, False, args.yes)
                     if args.antigravity_global
+                    else install_antigravity_workspace(payload, args.target, False, args.yes)
+                    if args.antigravity_workspace
                     else install_payload(payload, args.target, args.host, False, args.yes)
                 )
             result["installation_option"] = selected_option

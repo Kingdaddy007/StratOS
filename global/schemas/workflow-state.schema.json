@@ -56,6 +56,72 @@
       "additionalProperties": false
     },
     "evidence": { "type": "array", "items": { "type": "object" } },
+    "acceptance_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "claim",
+          "owner",
+          "required",
+          "status",
+          "depends_on",
+          "verification",
+          "evidence",
+          "limitations",
+          "blocker",
+          "waiver"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-zA-Z0-9._-]+$" },
+          "claim": { "type": "string", "minLength": 1 },
+          "owner": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" },
+          "status": { "enum": ["pending", "met", "blocked", "waived"] },
+          "depends_on": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-zA-Z0-9._-]+$" }
+          },
+          "verification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "procedure", "success_condition"],
+            "properties": {
+              "kind": { "enum": ["command", "test", "inspection", "review"] },
+              "procedure": { "type": "string", "minLength": 1 },
+              "success_condition": { "type": "string", "minLength": 1 }
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["result"],
+              "properties": {
+                "result": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" },
+                "source": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" },
+                "observed_at": { "type": "string", "format": "date-time" }
+              }
+            }
+          },
+          "limitations": { "type": "array", "items": { "type": "string" } },
+          "blocker": { "type": ["string", "null"] },
+          "waiver": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["reason", "approved_by"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 },
+              "approved_by": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
     "artifacts": { "type": "array", "items": { "type": "string" } },
     "approvals": { "type": "array", "items": { "type": "object" } },
     "blockers": { "type": "array", "items": { "type": "string" } },

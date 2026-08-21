@@ -1,21 +1,46 @@
 # Codex Integration
 
-Codex discovers global instructions from its home directory. On Windows this is normally `%USERPROFILE%\\.codex`; on other systems it is `~/.codex` unless `CODEX_HOME` is set. The global instruction file is `AGENTS.md` (or a temporary `AGENTS.override.md`). Project-level `AGENTS.md` files are then combined from the project root downward, with closer contracts taking precedence.
+Codex reads global instructions from `CODEX_HOME/AGENTS.md` (`~/.codex/AGENTS.md` by default). It reads project instructions from `AGENTS.md` files from the repository root downward. Codex custom agents are TOML files in `CODEX_HOME/agents/` globally or `.codex/agents/` in one project. Project skills are discovered from `.codex/skills/`.
 
-Anti-Gravity therefore installs in two layers:
+Anti-Gravity V4 translates canonical policy into one primary role and five bounded specialist agents:
 
-1. A namespaced copy under `.codex/antigravity/` for rollback, inspection, and the complete generated payload.
-2. The generated `AGENTS.md`, skills, workflows, and memory in the Codex discovery locations so Codex can actually use them.
+| Canonical role | Codex form | Why |
+| --- | --- | --- |
+| Studio Director | `AGENTS.md` policy plus `.agents/agents/studio-director/agent.md` reference | Its canonical contract sets `subagent: false`; it owns the main task rather than spawning recursively. |
+| Staff Engineer | `staff-engineer.toml` | The only role with `workspace-write`; bounded by the parent charter. |
+| Product Strategy, Systems Architecture, Design, Assurance | Four read-only TOMLs | Research, architecture, design, and review specialists. |
 
-The installer must never replace `config.toml`, `config.json`, permissions, trusted-project registrations, plugins, or unrelated skills. It creates a timestamped backup before replacing a matching file or skill directory and supports a dry-run.
+This deliberate 1+5 split preserves the canonical role contract. Turning Studio Director into a sixth spawnable agent is a role-policy change, not an adapter change.
 
-## Verify the active installation
+Users do not need to invoke workflow names. The main Codex task applies the Studio Director routing rules from `AGENTS.md` and `GLOBAL_MEMORY.md`, chooses direct work or the smallest fitting workflow from task shape, and assigns a bounded workflow or acceptance gate to a specialist only when needed. Specialist TOMLs return candidate evidence and limitations; the main task integrates the result and decides final gate status.
 
-1. Open a new Codex task after installation so instructions reload.
-2. Ask: “Which global instruction file are you using, and what is the Anti-Gravity default profile?”
-3. Ask for a diagnosis-only task and confirm that it proposes no edits.
-4. Inspect the installation record at `.codex/antigravity/installation.json`.
+`GLOBAL_MEMORY.md` resolves selected portable workflow contracts from its sibling `workflows/` directory. In a global install those are `CODEX_HOME/workflows/`; in a workspace install they are `.agents/workflows/`. They are internal contracts, not Codex slash commands.
 
-The source-of-truth workflow is: edit `global/` → run `validate` → run `build --host codex` → review dry-run → install with backup → start a new Codex task.
+## Scope and profile choices
 
-Official references: [Codex customization](https://developers.openai.com/codex/concepts/customization), [AGENTS.md configuration](https://learn.chatgpt.com/docs/agent-configuration/agents-md), and [Codex skills](https://developers.openai.com/api/docs/guides/tools-skills).
+The Windows and macOS/Linux installers ask Codex users for both:
+
+1. **Scope:** **Global** for all Codex projects, or **Workspace** for one existing project.
+2. **Profile:** **General** for the core V4 bundle, or **Full** to add Spatial, Media, and Growth capability packs.
+
+Global installation writes active policy to `~/.codex/AGENTS.md`, active custom agents to `~/.codex/agents/`, and active skills to `~/.codex/skills/`. It keeps a complete generated rollback copy and record in `~/.codex/antigravity/`.
+
+Workspace installation writes `AGENTS.md` in the selected project, agents to `.codex/agents/`, skills to `.codex/skills/`, and portable V4 references, workflows, memory, and the installation record under `.agents/`. It never touches `CODEX_HOME`. It refuses to replace unmanaged or locally changed files, including an existing project `AGENTS.md`.
+
+Neither scope uses `GEMINI.md` for Codex.
+
+## Review and install
+
+```bash
+python global/scripts/os.py build --host codex
+python global/scripts/os.py install --host codex --target ~/.codex --option general --codex-global --dry-run
+python global/scripts/os.py install --host codex --target /path/to/project --option general --codex-workspace --dry-run
+```
+
+After reviewing the exact changes, repeat the selected command with `--yes`. Start a new Codex task after a global installation so global instructions reload. Verify that `AGENTS.md`, all five TOMLs, and the selected skills exist at their native discovery paths.
+
+The installer never changes `config.toml`, `config.json`, permissions, trusted-project registrations, plugins, or unrelated skills. It takes a timestamped backup before replacing managed global entries; workspace installs retain their own file-level backup under `.agents/.antigravity-backups/`.
+
+Source-of-truth workflow: edit `global/` → `validate` → `build --host codex` → review dry-run → install with backup → start a new task.
+
+Official references: [AGENTS.md configuration](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents), and [Codex skills](https://developers.openai.com/api/docs/guides/tools-skills).

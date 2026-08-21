@@ -6,6 +6,8 @@
   "instruction_target": "AGENTS.md",
   "skills_target": "skills",
   "workflows_target": "workflows",
+  "agents_target": "agents",
+  "agent_format": "codex-toml",
   "supports_slash_commands": false,
   "approval_model": "host-enforced",
   "capabilities": {

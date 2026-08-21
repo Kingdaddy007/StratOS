@@ -4,6 +4,7 @@
 #   .\install.ps1 -IDE 1 -InstallOption full -Yes
 #   .\install.ps1 -TargetHost antigravity -GlobalConfig $HOME\.gemini -Yes
 #   .\install.ps1 -GlobalConfig C:\path\to\config-parent -Yes
+#   .\install.ps1 -TargetHost antigravity -InstallScope workspace -WorkspacePath C:\path\to\project -DryRun
 
 [CmdletBinding()]
 param(
@@ -13,6 +14,9 @@ param(
     [string]$TargetHost,
     [ValidateSet('general', 'full')]
     [string]$InstallOption,
+    [ValidateSet('global', 'workspace')]
+    [string]$InstallScope,
+    [string]$WorkspacePath,
     [switch]$DryRun,
     [switch]$Yes,
     [switch]$AntigravityGlobal
@@ -53,6 +57,9 @@ function Select-InstallTarget {
             $script:AntigravityGlobal = $true
             return Get-FullPath $GlobalConfig
         }
+        if ($TargetHost -eq 'codex') {
+            return Get-FullPath $GlobalConfig
+        }
         return Add-Namespace $GlobalConfig
     }
 
@@ -60,7 +67,7 @@ function Select-InstallTarget {
         switch ($TargetHost) {
             'antigravity' { $script:AntigravityGlobal = $true; return Join-Path $env:USERPROFILE '.gemini' }
             'gemini' { return Join-Path $env:USERPROFILE '.gemini\antigravity' }
-            'codex' { return Join-Path $env:USERPROFILE '.codex\antigravity' }
+            'codex' { return Join-Path $env:USERPROFILE '.codex' }
             'cursor' { return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
             'windsurf' { return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
             'opencode' { return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
@@ -71,9 +78,9 @@ function Select-InstallTarget {
     if (-not $IDE) {
         Write-Host @"
 Choose a host:
-  [1] Antigravity 2.0 (native global) -> ~/.gemini
+  [1] Antigravity 2.0                -> ~/.gemini (global) or a project workspace
   [2] Gemini compatibility namespace -> ~/.gemini/antigravity
-  [3] Codex                         -> ~/.codex/antigravity
+  [3] Codex                         -> ~/.codex (global) or a project workspace
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
@@ -85,7 +92,7 @@ Choose a host:
     switch ($IDE.Trim()) {
         '1' { $script:TargetHost = 'antigravity'; $script:AntigravityGlobal = $true; return Join-Path $env:USERPROFILE '.gemini' }
         '2' { $script:TargetHost = 'gemini'; return Join-Path $env:USERPROFILE '.gemini\antigravity' }
-        '3' { $script:TargetHost = 'codex'; return Join-Path $env:USERPROFILE '.codex\antigravity' }
+        '3' { $script:TargetHost = 'codex'; return Join-Path $env:USERPROFILE '.codex' }
         '4' { $script:TargetHost = 'cursor'; return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
         '5' { $script:TargetHost = 'windsurf'; return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
         '6' { $script:TargetHost = 'opencode'; return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
@@ -97,12 +104,47 @@ Choose a host:
                 $script:AntigravityGlobal = $true
                 return Get-FullPath (Read-Host 'Enter the .gemini directory')
             }
+            if ($TargetHost -eq 'codex') {
+                return Get-FullPath (Read-Host 'Enter the .codex directory for a global install')
+            }
             if ($TargetHost -notin @('gemini', 'codex', 'cursor', 'windsurf', 'opencode')) {
                 throw "Unsupported host '$TargetHost'."
             }
             return Add-Namespace (Read-Host 'Enter a parent directory for the antigravity namespace')
         }
         default { throw "Unknown host choice '$IDE'. Use 1-6." }
+    }
+}
+
+function Select-InstallScope {
+    if ($InstallScope) {
+        if ($TargetHost -notin @('antigravity', 'codex') -and $InstallScope -eq 'workspace') {
+            throw 'Workspace installation is currently supported for Antigravity and Codex only.'
+        }
+        return $InstallScope
+    }
+    if ($AntigravityGlobal -and $TargetHost -eq 'antigravity') {
+        return 'global'
+    }
+    if ($TargetHost -notin @('antigravity', 'codex')) {
+        return 'global'
+    }
+    if ($Yes -or [Console]::IsInputRedirected) {
+        return 'global'
+    }
+
+    Write-Host @"
+
+Installation scope:
+  [1] Global    - use this V4 $TargetHost setup across your projects.
+  [2] Workspace - test or use it in one project only; global host configuration is unchanged.
+"@
+    $choice = (Read-Host 'Choose 1 or 2 [1]').Trim()
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = '1' }
+    switch ($choice) {
+        '1' { return 'global' }
+        '2' { return 'workspace' }
+        default { throw 'Choose 1 for Global or 2 for Workspace.' }
     }
 }
 
@@ -141,11 +183,16 @@ function Select-InstallOption {
     }
 
     $counts = Get-ManifestCounts
+    $agentDescription = if ($TargetHost -eq 'codex') {
+        "$($counts.Agents) canonical roles (5 specialist Codex agents)"
+    } else {
+        "$($counts.Agents) custom agents"
+    }
     Write-Host @"
 
 Your Installation Options:
-  [1] General Profile - installs $($counts.Agents) custom agents, $($counts.Workflows) workflows, and $($counts.GeneralSkills) General-profile skills. Spatial, Media, and Growth remain dormant.
-  [2] Full System - installs $($counts.Agents) custom agents, $($counts.Workflows) workflows, and all $($counts.AllSkills) registered skills, including Spatial, Media, and Growth.
+  [1] General Profile - installs $agentDescription, $($counts.Workflows) workflows, and $($counts.GeneralSkills) General-profile skills. Spatial, Media, and Growth remain dormant.
+  [2] Full System - installs $agentDescription, $($counts.Workflows) workflows, and all $($counts.AllSkills) registered skills, including Spatial, Media, and Growth.
 "@
     $choice = (Read-Host 'Choose 1 or 2 [1]').Trim()
     if ([string]::IsNullOrWhiteSpace($choice)) { $choice = '1' }
@@ -241,27 +288,78 @@ function Configure-PortableUris([string]$Directory) {
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $target = Get-FullPath (Select-InstallTarget)
+$InstallScope = Select-InstallScope
+if ($TargetHost -in @('antigravity', 'codex') -and $InstallScope -eq 'workspace') {
+    if ($GlobalConfig) {
+        throw '-GlobalConfig is a global target. Use -WorkspacePath for a workspace installation.'
+    }
+    $workspaceCandidate = if ($WorkspacePath) { $WorkspacePath } else { (Get-Location).Path }
+    $target = Get-FullPath $workspaceCandidate
+}
 $InstallOption = Select-InstallOption
 
 if ($AntigravityGlobal -and $TargetHost -ne 'antigravity') {
     throw '-AntigravityGlobal is only valid with -TargetHost antigravity.'
 }
 if ($TargetHost -eq 'antigravity') {
-    $script:AntigravityGlobal = $true
+    if ($PSBoundParameters.ContainsKey('AntigravityGlobal') -and $AntigravityGlobal -and $InstallScope -eq 'workspace') {
+        throw '-AntigravityGlobal conflicts with -InstallScope workspace.'
+    }
+    $script:AntigravityGlobal = $InstallScope -eq 'global'
+    $script:AntigravityWorkspace = $InstallScope -eq 'workspace'
 }
 
-if ($script:AntigravityGlobal) {
+if ($TargetHost -eq 'codex') {
+    $script:CodexGlobal = $InstallScope -eq 'global'
+    $script:CodexWorkspace = $InstallScope -eq 'workspace'
+}
+
+if ($script:AntigravityGlobal -or $script:AntigravityWorkspace) {
     $python = Get-PythonInvocation
     if (-not $python) {
-        throw 'Native Antigravity global installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+        throw 'Native Antigravity installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+    }
+    if (-not $DryRun -and -not $Yes) {
+        $confirmation = Read-Host "Install into Antigravity $InstallScope target '$target'? Type INSTALL to continue"
+        if ($confirmation -cne 'INSTALL') {
+            Write-Warn 'Installation cancelled. No files were changed.'
+            exit 0
+        }
+        $Yes = $true
     }
     $cli = Join-Path $scriptRoot 'global\scripts\os.py'
+    $mode = if ($script:AntigravityGlobal) { '--antigravity-global' } else { '--antigravity-workspace' }
     $arguments = @($python.Prefix) + @(
         $cli, 'install', '--host', 'antigravity', '--target', $target,
-        '--option', $InstallOption, '--antigravity-global'
+        '--option', $InstallOption, $mode
     )
     if ($DryRun) { $arguments += '--dry-run' }
-    elseif ($Yes) { $arguments += '--yes' }
+    else { $arguments += '--yes' }
+    & $python.File @arguments
+    exit $LASTEXITCODE
+}
+
+if ($script:CodexGlobal -or $script:CodexWorkspace) {
+    $python = Get-PythonInvocation
+    if (-not $python) {
+        throw 'Native Codex installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+    }
+    if (-not $DryRun -and -not $Yes) {
+        $confirmation = Read-Host "Install into Codex $InstallScope target '$target'? Type INSTALL to continue"
+        if ($confirmation -cne 'INSTALL') {
+            Write-Warn 'Installation cancelled. No files were changed.'
+            exit 0
+        }
+        $Yes = $true
+    }
+    $cli = Join-Path $scriptRoot 'global\scripts\os.py'
+    $mode = if ($script:CodexGlobal) { '--codex-global' } else { '--codex-workspace' }
+    $arguments = @($python.Prefix) + @(
+        $cli, 'install', '--host', 'codex', '--target', $target,
+        '--option', $InstallOption, $mode
+    )
+    if ($DryRun) { $arguments += '--dry-run' }
+    else { $arguments += '--yes' }
     & $python.File @arguments
     exit $LASTEXITCODE
 }

@@ -1,20 +1,20 @@
 ---
 id: build-feature
-version: 2
+version: 3
 status: active
 intent: Coordinate an approved material product change through only the roles, decisions, implementation, and evidence that its actual risk requires.
 use_when: [an approved feature or material change needs implementation across more than one concern, a visible handoff, a scoped delivery record, or risk-sized verification]
 do_not_use_when: [the request is still an unclear initiative or product decision, an observed fault needs diagnosis, a bounded one-surface implementation is already fully specified, a purely visual/design decision is unresolved, or Anti-Gravity itself is being changed]
 inputs: [approved user outcome and authority, current workspace facts and applicable contracts, affected surface and non-goals, acceptance evidence or an explicit evidence gap, constraints and known risks]
-required_resources: [applicable AGENTS.md files, active project contexts when present, Studio Director route selection, only the relevant Product Design Systems Staff Engineering and Assurance capabilities]
+required_resources: [applicable AGENTS.md files, active project contexts when present, Studio Director route selection, task-scoped workflow state when resumable writes are authorised, only the relevant Product Design Systems Staff Engineering and Assurance capabilities]
 mutation_class: local_edit
 approval_gates: [propose and planning remain read_only, require explicit implementation authority before local edits, require just-in-time approval before dependency or network work, destructive action, data repair, credentials, deployment, traffic changes, messaging, publication, purchases, or another external effect]
 states: [received, scoped, shaped, ready, approval-gated, implementing, checking, handoff, closed, stopped]
-outputs: [delivery scope and non-goals, selected role contributions, approved change set or proposal, verification evidence, residual risks, rollback or correction path, next owner]
-verification: [check the stated acceptance condition, affected contracts and failure paths, proportionate automated or observable evidence, relevant sibling paths when the mechanism can recur, and explicitly record unrun checks or environment limits]
+outputs: [delivery scope and non-goals, selected role contributions, acceptance-gate and dispatch decision when justified, approved change set or proposal, verification evidence, residual risks, rollback or correction path, next owner]
+verification: [check the stated acceptance condition and any structured gates, affected contracts and failure paths, proportionate automated or observable evidence, relevant sibling paths when the mechanism can recur, and explicitly record unrun checks or environment limits]
 failure_paths: [stop or return to the owning decision route on missing authority, unclear product meaning, unresolved design or architectural boundary, unsafe dependency/external action, contradictory evidence, scope expansion, or failed verification]
 resume_contract: task-scoped .agents/workflows/<task-id>.json following the workflows directory contract; record only material state, evidence, approvals, blockers, next action, owner, and timestamps
-next_workflows: [project-inception, design-ui, plan-architecture, debug-issue, test-strategy, verify-project, security-audit, database-migration, dependency-upgrade, none]
+next_workflows: [project-inception, design-ui, plan-architecture, task-dispatch, debug-issue, test-strategy, verify-project, security-audit, database-migration, dependency-upgrade, none]
 profiles: [general]
 ---
 
@@ -40,6 +40,18 @@ Start with the approved outcome, existing project truth, affected behaviour, and
 
 Do not load every skill or summon every lead by default. The selected roles may loop: a Staff Engineer can request a missing state from Design; Design can expose a product ambiguity; Assurance can return a change to any owner. The Studio Director integrates the result.
 
+## Decide gates, dispatch, and evidence routes
+
+The user does not need to name these workflows. After scope and acceptance are clear, the Studio Director makes a private routing decision:
+
+1. **Direct build:** keep one coherent, fully specified, reversible slice with one owner and a clear local check in the current task. Do not create workflow state merely because `build-feature` is available.
+2. **Acceptance gates:** for substantial, resumable, or delegated work, create the smallest set of decision-relevant observable gates in task state. Record dependencies, owner, verification procedure, success condition, evidence, limitations, and status. Stored procedures remain inert until inspected and authorised under normal tool policy.
+3. **Task dispatch:** select `task-dispatch` only when at least two gates or sub-outcomes are ready, independently verifiable, exclusively owned, and materially benefit from specialist judgement, independent evidence, or reduced wall-clock time. The parent assigns each gate and accepts or rejects returned evidence.
+4. **Test strategy:** select `test-strategy` when the credible oracle, fixture, failure cases, environment, or necessary test changes are unclear. Do not invent evidence after a result arrives.
+5. **Independent verification:** select `verify-project` before accepting a material completion or release claim when independent evidence interpretation changes confidence. A small local change may close with its proportionate check instead.
+
+These are conditional routes, not stages. A build can move directly from implementation to handoff, or loop through dispatch, evidence design, debugging, or verification only where the actual work requires it.
+
 ## State and authority
 
 | State | Required result | Next state |
@@ -47,7 +59,7 @@ Do not load every skill or summon every lead by default. The selected roles may 
 | `received` | Request, claimed outcome, authority, and source are visible. | `scoped` or `stopped` |
 | `scoped` | Affected surface, non-goals, risk, constraints, and acceptance evidence are clear enough to choose the route. | `shaped`, `ready`, `approval-gated`, or `stopped` |
 | `shaped` | Only the necessary product, design, system, or assurance questions have a decision, bounded assumption, or named owner. | `ready`, owning workflow, or `stopped` |
-| `ready` | Smallest implementation slice, relevant interfaces, verification approach, and correction path are visible. | `approval-gated` or `implementing` |
+| `ready` | Smallest implementation slice, relevant interfaces, verification approach, correction path, and the gate/dispatch decision are visible. | `approval-gated`, `implementing`, `task-dispatch`, or `test-strategy` |
 | `approval-gated` | Exact missing approval and its consequence are recorded. | `implementing`, another route, or `stopped` |
 | `implementing` | Authorised work stays within the stated scope. | `checking`, `shaped`, `approval-gated`, or `stopped` |
 | `checking` | Actual evidence is interpreted against the stated acceptance condition. | `handoff`, `shaped`, `debug-issue`, or `stopped` |
@@ -72,6 +84,7 @@ Deliver:
 - outcome and scope actually addressed;
 - changed files/interfaces or the no-change/proposal result;
 - selected role contributions and decisions;
+- acceptance gates, assigned owners, dependencies, and status when the gate decision justified them;
 - checks run, actual results, environment, and checks not run;
 - residual risks and the simplest correction/rollback path; and
 - the next owner or workflow if work remains.

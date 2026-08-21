@@ -49,7 +49,31 @@
         "payload_target": { "type": "string", "minLength": 1 }
       }
     },
-    "agent_format": { "enum": ["antigravity-markdown"] },
+    "workspace_install": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_name",
+        "instruction_target",
+        "router_target",
+        "user_profile_target",
+        "skills_target",
+        "workflows_target",
+        "agents_target",
+        "payload_target"
+      ],
+      "properties": {
+        "root_name": { "type": "string", "minLength": 1 },
+        "instruction_target": { "type": "string", "minLength": 1 },
+        "router_target": { "type": "string", "minLength": 1 },
+        "user_profile_target": { "type": "string", "minLength": 1 },
+        "skills_target": { "type": "string", "minLength": 1 },
+        "workflows_target": { "type": "string", "minLength": 1 },
+        "agents_target": { "type": "string", "minLength": 1 },
+        "payload_target": { "type": "string", "minLength": 1 }
+      }
+    },
+    "agent_format": { "enum": ["antigravity-markdown", "codex-toml"] },
     "agent_tool_map": {
       "type": "object",
       "additionalProperties": { "type": "string", "minLength": 1 }

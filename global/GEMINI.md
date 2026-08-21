@@ -86,7 +86,9 @@ external/destructive effect.
 
 ## 5. Routing and loading
 
-Read `GLOBAL_MEMORY.md` after this policy. For a substantial task:
+Read the installed workflow router after this policy: `GLOBAL_MEMORY.md` when it
+is beside this policy, or `.agents/GLOBAL_MEMORY.md` for a workspace-scoped
+install. If neither path exists, name the context gap. For a substantial task:
 
 1. Read the user's goal, explicit constraints, and active project truth.
 2. Classify the mode: `diagnose`, `propose`, `implement`, or

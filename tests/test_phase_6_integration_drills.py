@@ -94,6 +94,24 @@ class PhaseSixIntegrationDrillTests(unittest.TestCase):
         self.assertIn("smallest credible evidence", body)
         self.assertIn("retry success is not diagnosis", body)
 
+    def test_material_build_routes_workflows_without_requiring_user_vocabulary(self) -> None:
+        metadata, build_feature = self.workflow_metadata("build-feature")
+        router = (REPO_ROOT / "global" / "GLOBAL_MEMORY.md").read_text(encoding="utf-8")
+        director = (
+            REPO_ROOT / "global" / "agents" / "studio-director" / "AGENT.md"
+        ).read_text(encoding="utf-8")
+        drill = next(
+            item for item in self.drills if item["id"] == "automatically-routed-material-build"
+        )
+
+        self.assertEqual("build-feature", drill["entry_workflow"])
+        self.assertNotIn("workflow", drill["prompt_shape"].lower())
+        self.assertIn("task-dispatch", metadata["next_workflows"])
+        self.assertIn("acceptance-gate and dispatch decision", metadata["outputs"][2])
+        self.assertIn("The user does not need to name these workflows", build_feature)
+        self.assertIn("Beloved never needs to name a workflow", router)
+        self.assertIn("Beloved does not need to remember or invoke workflow names", director)
+
     def test_ai_evaluation_and_release_drills_keep_security_and_production_separate(self) -> None:
         _, test_strategy = self.workflow_metadata("test-strategy")
         _, verify_project = self.workflow_metadata("verify-project")

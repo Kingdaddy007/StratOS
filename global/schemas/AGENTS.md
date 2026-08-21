@@ -16,7 +16,7 @@ This directory defines machine-readable contracts for canonical skills, workflow
 - `manifest.schema.json`: canonical OS registry, profiles, resources, and agent registry.
 - `agent.schema.json`: portable canonical agent contract rendered by host adapters.
 - `workflow.schema.json`: active workflow metadata.
-- `workflow-state.schema.json`: resumable task state.
+- `workflow-state.schema.json`: resumable task state, including optional dependency-aware acceptance gates for substantial work.
 - `workflow-index.schema.json`: task ID to state-file registry.
 - `adapter.schema.json`: host mapping contract.
 

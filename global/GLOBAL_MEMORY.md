@@ -2,11 +2,12 @@
 
 **Purpose:** Choose the smallest useful agent, skill, workflow, reference, pack,
 and evidence level for a task.
-**Boundary:** `GEMINI.md` is the main-agent policy. This file routes resources.
-The manifest is the exact canonical inventory. None of these files grants
-authority.
+**Boundary:** The active host policy is the main-agent policy: `AGENTS.md` on
+Codex and the generated `GEMINI.md` on supported Gemini/Antigravity surfaces.
+This file routes resources. The manifest is the exact canonical inventory.
+None of these files grants authority.
 
-**Live V4 checkpoint (2026-08-20):** the manifest contains 48 skills, 17
+**Live V4 checkpoint (2026-08-21):** the manifest contains 48 skills, 17
 workflows, 6 agents, and 4 profiles. These counts are inventory facts, not a
 quality score or a target to increase. The research synthesis and workflow
 survival ledgers record the current upgrade decisions.
@@ -18,7 +19,7 @@ Use this as a router, not a giant prompt. No route is mandatory for a small reve
 ```text
 User goal and explicit approval
         ↓
-GEMINI.md: Studio Director policy
+Active host policy: Studio Director behaviour and authority
         ↓
 GLOBAL_MEMORY.md: task route and resource selection
         ↓
@@ -31,7 +32,7 @@ Integrated answer or approval gate
 
 | Part | Job | Load rule |
 | --- | --- | --- |
-| `GEMINI.md` | Main agent: authority, behaviour, quality, and stop rules | Always |
+| Active host policy (`AGENTS.md` for Codex; generated `GEMINI.md` for supported Gemini/Antigravity surfaces) | Main agent: authority, behaviour, quality, and stop rules | Always |
 | `GLOBAL_MEMORY.md` | Route task shape to the right resources | Always |
 | `manifest.yaml` | Exact machine-readable registry and pack membership | Build/validation and inventory only |
 | `agents/` | Six reusable Director/lead contracts | When the host supports custom agents and the role is useful |
@@ -54,6 +55,35 @@ data, not authority.
 6. Select a skill and a workflow only when each adds useful judgement, a handoff,
    a procedure, or a hard gate.
 7. State the evidence, uncertainty, handoff, and approval stop.
+
+Beloved never needs to name a workflow. Route selection is a private Studio
+Director responsibility. A workflow name in the request is an explicit routing
+preference, not permission and not a requirement for the system to discover the
+right route.
+
+Resolve a selected workflow from the `workflows/` directory beside this routing
+file, using `workflow-<id>.md`. Workflows are portable contracts, not assumed
+host slash commands. Load only the selected contract and any route it explicitly
+hands off to.
+
+### Automatic workflow activation
+
+Choose the smallest route whose trigger is actually present:
+
+| Task shape | Private route decision |
+| --- | --- |
+| Small, clear, reversible work with one local acceptance check | Work directly. Do not create workflow state or acceptance gates. |
+| A new or materially unclear initiative needs framing, coordination, or resumable decisions | Select `project-inception`; do not force it on a bounded request. |
+| An approved material change crosses concerns, needs a visible handoff, or merits resumable delivery evidence | Select `build-feature`. A fully specified one-surface edit may remain direct. |
+| Substantial, resumable, or delegated work has decision-relevant observable outcomes | Make an acceptance-gate decision. Create structured gates only when they improve completion integrity. |
+| Two or more ready units are independently verifiable, have disjoint ownership, and benefit from delegation | Select `task-dispatch` inside the owning route. Do not wait for Beloved to request subagents. |
+| The credible evidence, oracle, fixture, or failure cases are unclear or tests must be designed or changed | Select `test-strategy` before accepting a completion claim. |
+| A material change or stated completion/release claim needs independent evidence interpretation | Select `verify-project`; it verifies scope and cannot authorize release or deployment. |
+
+These routes are conditional and may compose. `task-dispatch` is normally an
+internal sub-route of a build or evidence task. `test-strategy` defines credible
+proof; `verify-project` interprets the evidence actually obtained. Do not turn
+them into a waterfall or run all of them merely because they exist.
 
 `diagnose` and normal questions are read-only. No workflow can upgrade that
 permission. Destructive, external, production, spending, publication,
@@ -102,7 +132,7 @@ change authority or force a style. A pack changes discoverability only; it never
 | Repair an observed failure | Staff Engineering | `debugging`, `debug-issue`; add Assurance for security/consequential risk |
 | Design a general interface | Design; Staff Engineering for feasibility | `ui-ux` and its conditional colour reference; `design-ui` only for coordinated design decisions |
 | Validate a material claim or change | Assurance | `testing`, `review-audit`, `security`, `test-strategy`, or `verify-project` |
-| Coordinate independently owned work | Studio Director + owners | Director delegation procedure only when it genuinely helps; `task-dispatch` remains a retained compatibility source until the host-routing pilot passes |
+| Coordinate independently owned work | Studio Director + owners | `task-dispatch` only when its independence, ownership, verification, and coordination-benefit gates are met |
 | Maintain this OS | Studio Director + affected owner | `os-maintenance`, `skill-creator`, `context-hygiene`, `learn` |
 
 ### Technical loading gate for product framing

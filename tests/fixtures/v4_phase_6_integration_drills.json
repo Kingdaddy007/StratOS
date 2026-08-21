@@ -51,6 +51,18 @@
       "must_not_do": ["choose checks only for coverage", "test a mock and call the real boundary verified", "claim release readiness"]
     },
     {
+      "id": "automatically-routed-material-build",
+      "prompt_shape": "A user asks naturally to implement an approved material feature with two independently verifiable, disjoint work units and a final integration claim; no internal route names are supplied.",
+      "entry_workflow": "build-feature",
+      "mode": "implement",
+      "effective_mutation_ceiling": "local_edit",
+      "required_skills": ["coding", "testing"],
+      "conditional_resources": [],
+      "required_handoffs": ["task-dispatch", "test-strategy", "verify-project"],
+      "expected_outcome": "The Studio Director privately selects the material build route, makes the acceptance-gate decision, dispatches only ready disjoint work, and independently interprets completion evidence without requiring workflow vocabulary from the user.",
+      "must_not_do": ["ask the user to choose a workflow", "dispatch overlapping ownership", "let a specialist certify its own gate", "force gates on a trivial edit"]
+    },
+    {
       "id": "ai-feature-evaluation",
       "prompt_shape": "A product team changes a retrieval-and-tool-use AI feature and wants to know whether it is safe and useful enough to expose.",
       "entry_workflow": "test-strategy",

@@ -2,6 +2,8 @@
 
 `global/workflows/` is the single canonical workflow source. Each active workflow declares portable metadata, task-scoped state, mutation authority, approval gates, outputs, evidence, failure behavior, and routing profiles. See `AGENTS.md` for the enforced contract.
 
+The Studio Director selects these routes privately from task shape. Users may name a workflow, but they do not need to know or invoke workflow vocabulary for the correct route to activate. Small coherent work remains direct.
+
 ## Core Routing
 
 | Intent | Workflow |
