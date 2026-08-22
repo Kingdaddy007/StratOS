@@ -53,6 +53,23 @@ For a nontrivial, cross-boundary, or release-bound change, reconstruct the chang
 
 Use an Assurance agent or another distinct reviewer when configured and useful. Otherwise run a deliberately fresh review pass that challenges the implementation’s assumptions. Do not make an unavailable second agent a hard blocker for low-risk or reversible work.
 
+## SEPARATE SPECIFICATION FROM STANDARDS
+
+For a branch, pull request, or material implementation review, evaluate two
+independent questions:
+
+1. **Specification:** Does the change implement the requested behaviour, preserve
+   stated non-goals, and avoid unapproved scope?
+2. **Standards:** Does it satisfy applicable repository contracts, architecture,
+   security, maintainability, and quality rules?
+
+Keep findings under those separate headings so a standards-clean implementation
+cannot hide a missed requirement, and a spec-correct implementation cannot hide
+a repository violation. Run bounded parallel reviewers only when both axes are
+substantial, their scopes are disjoint, and the host provides safe delegation;
+otherwise review them sequentially. Never require an issue tracker, a fixed diff
+shape, or a subagent when the actual review evidence is available another way.
+
 ## CLASSIFY FINDINGS AND STOP
 
 Use the standard severity scale:

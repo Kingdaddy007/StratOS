@@ -1640,7 +1640,29 @@ class CoreSkillContractTests(unittest.TestCase):
         self.assertIn("Never run all seven sweeps", copy_editing)
         self.assertIn("Never make copy more specific than the available evidence", copy_editing)
         self.assertIn("meaning-and-evidence-foundation.md", copy_editing)
+        self.assertIn("anti-slop-and-voice.md", copy_editing)
         self.assertNotIn(".claude/", copy_editing)
+
+        anti_slop = (
+            REPO_ROOT
+            / "global"
+            / "skills"
+            / "copy-editing"
+            / "references"
+            / "anti-slop-and-voice.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Never claim that AI wrote the text", anti_slop)
+        self.assertIn("Never invent specificity, lived experience, opinions", anti_slop)
+        self.assertIn("pattern -> quoted evidence -> reader effect -> proposed fix", anti_slop)
+
+    def test_review_audit_separates_specification_from_standards(self) -> None:
+        review = self.skill_text("review-audit")
+
+        self.assertIn("## SEPARATE SPECIFICATION FROM STANDARDS", review)
+        self.assertIn("**Specification:**", review)
+        self.assertIn("**Standards:**", review)
+        self.assertIn("Run bounded parallel reviewers only when", review)
+        self.assertIn("Never require an issue tracker", review)
 
     def test_expert_positioning_keeps_posture_as_a_contextual_commercial_choice(self) -> None:
         positioning = self.skill_text("expert-positioning")

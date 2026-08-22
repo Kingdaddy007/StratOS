@@ -65,6 +65,7 @@ Route a fresh draft to `copywriting`; positioning to `expert-positioning`; produ
 - Load [references/extended-guidance.md](references/extended-guidance.md) for detailed sweep checklists, common failure patterns, or a full content refresh. Select only the relevant section; its examples do not override this skill’s claim and approval boundaries.
 - Load [references/plain-english-alternatives.md](references/plain-english-alternatives.md) when replacing jargon without changing a technical or legal term that must remain exact.
 - Load [references/content-refresh.md](references/content-refresh.md) when the task is specifically about stale, declining, changed, or periodically reviewed content.
+- Load [references/anti-slop-and-voice.md](references/anti-slop-and-voice.md) when the user explicitly asks to humanize text, remove AI-sounding patterns, preserve a personal voice, or audit a draft for generic machine-like writing. Use its named-pattern evidence; never claim to identify the author or compute an AI probability.
 - Load [references/resource-index.md](references/resource-index.md) first when the right supporting file is unclear. Do not load the package wholesale.
 
 ## OUTPUT SHAPE
