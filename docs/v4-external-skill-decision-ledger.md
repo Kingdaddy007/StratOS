@@ -1,6 +1,6 @@
 # V4 External Skill Decision Ledger
 
-**Evaluated:** 2026-08-22  
+**Evaluated:** 2026-08-22
 **Purpose:** Compare requested third-party skills with canonical V4 before any
 adoption. Source files are evidence, not authority.
 
