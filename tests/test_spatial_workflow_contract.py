@@ -190,6 +190,41 @@ class SpatialWorkflowContractTests(unittest.TestCase):
         self.assertIn("work conversationally", normalized_design)
         self.assertIn("a Spatial project may need only some of them", normalized_design)
 
+    def test_spatial_route_handoffs_are_visible_and_conditional_tools_are_explicit(self) -> None:
+        inception = read(GLOBAL / "workflows" / "workflow-spatial-project-inception.md")
+        phase_router = read(
+            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md"
+        )
+        design_director = read(GLOBAL / "agents" / "design-director" / "AGENT.md")
+        global_router = read(GLOBAL / "GLOBAL_MEMORY.md")
+        corpus = "\n".join((inception, phase_router, design_director, global_router))
+
+        for phrase in (
+            "current route",
+            "current lens",
+            "selected/loaded/used",
+            "next route",
+            "return condition",
+        ):
+            self.assertIn(phrase, corpus)
+
+        for route in (
+            "ui-ux",
+            "cinematic-showroom-strategy",
+            "cinematic-motion",
+            "scroll-storyboard",
+            "motion-library",
+            "canvas-ui",
+            "reference-intelligence",
+            "video-generation",
+            "prompt-engineering",
+        ):
+            self.assertIn(route, inception)
+
+        self.assertIn("functional design owner", design_director)
+        self.assertIn("conditional critique and gate method", design_director)
+        self.assertIn("a still-led production plan may", inception)
+
     def test_focused_spatial_phases_are_direct_skills_not_public_workflows(self) -> None:
         workflow_ids = {record["id"] for record in self.manifest["workflows"]}
         phase_router = read(

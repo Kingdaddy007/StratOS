@@ -75,6 +75,31 @@ selects, combines, repeats, or omits them according to the client, evidence,
 and next decision. A "Gate" below means a condition to meet *when that lens is
 material*, not an automatic request for another Beloved approval.
 
+## ROUTE VISIBILITY CONTRACT
+
+Keep route selection private, but make material handoffs observable. At every
+approval gate, resume point, or change of owning lens, report only the fields
+that changed:
+
+```text
+Route and current lens:
+Decision being protected:
+Capabilities: selected | loaded | used
+Evidence or artifact produced:
+Unknown, conflict, or approval required:
+Next route and activation reason:
+Return condition:
+```
+
+Do not report an available capability as selected or used. Compress this to one
+or two lines for a small conversational move. The user should never need to
+remember a skill name, infer the current phase, or reconstruct what must happen
+next.
+
+The `design-director` is the functional lead that integrates design decisions.
+`master-design-director` is a conditional critique and gate skill used by that
+lead or the Studio Director; it is not a second owner or a competing agent.
+
 ### 1. Evidence Intake
 
 Use `brand-strategy`. Catalog website, social, projects, assets, communications, proof, constraints, dates, and unknowns. Separate facts, reported claims, inferences, and unknowns. Write `evidence-dossier.md`.
@@ -137,12 +162,33 @@ hybrid before work is committed to a direction that would be costly to undo.
 
 Use `storytelling` and `spatial-experience-design`. Decide controlling argument, narrative form, chapter jobs, hierarchy, proof timing, copy-visual relationship, inquiry, navigation, and responsive intent. Write `experience-blueprint.md`.
 
+Load the Design Director's `ui-ux` baseline when navigation, inquiry forms,
+interaction states, accessibility, responsive behaviour, or recovery paths
+become concrete. Do not postpone these decisions until implementation merely
+because the visual territory is spatial.
+
 **Decision check:** Use the Experience Gate only for a material narrative,
 hierarchy, proof, inquiry, or interaction decision.
 
 ### 8. Visual, Motion, and Asset Systems
 
-Complete the blueprint and `production-plan.md`: type, color, composition, crop, material, density, stillness, motion grammar when justified, asset boundary, generated-media needs, performance, accessibility, fallbacks, and build slices. Activate `cinematic-showroom-strategy`, `cinematic-motion`, `scroll-storyboard`, and conditional artifacts only when their activation tests pass.
+Complete the blueprint and `production-plan.md`: type, color, composition, crop, material, density, stillness, motion grammar when justified, asset boundary, generated-media needs, performance, accessibility, fallbacks, and build slices.
+
+Select conditional capabilities by the decision they own:
+
+| Decision present | Select | Boundary |
+| --- | --- | --- |
+| Several scenes, room films, text-safe media states, portfolio proof, and prompts must operate as one media-heavy experience | `cinematic-showroom-strategy` | Own the whole-site media and scene choreography, not motion code or provider execution. |
+| A named spatial job is served better by movement than stillness | `cinematic-motion` | Own motion grammar, tracks, implementation constraints, performance, and fallbacks. |
+| Meaning changes at authored scroll depths, or pinning, scrubbing, persistent continuity, or synchronized media is required | `scroll-storyboard` | Translate the approved story and experience into beat-level scroll behavior. |
+| An approved motion job needs an existing effect candidate | `motion-library` | Compare only relevant internal candidates; do not let the library choose the concept. |
+| One contained realtime DOM/WebGL effect may outperform still, DOM/CSS, or pre-rendered media | `canvas-ui` | Compare alternatives first; own the component import, lifecycle, fallback, and isolated-slice gate. |
+| A reference must validate continuity, hierarchy, motion, responsive translation, assets, or feasibility | `reference-intelligence` | Run the focused post-territory pass and preserve provenance and translation decisions. |
+| An approved scene requires generated video | Media profile plus `video-generation`; add `prompt-engineering` only for a provider-ready prompt | Keep provider access, uploads, credits, generation, and external effects behind just-in-time approval. |
+
+These routes may recur when a prototype changes the design question. Selecting
+one never implies selecting the others, and a still-led production plan may
+reject all of them.
 
 **Decision check:** Obtain implementation authority before a production contract
 causes local edits, source imports, dependency changes, or external effects.
@@ -181,4 +227,6 @@ Every project independently decides what is known first, emotional register, con
 - [ ] The decision, handoff, or resume state is supported by the necessary contracts or approved equivalents.
 - [ ] Optional complexity is explicitly accepted or rejected.
 - [ ] A risk prototype and vertical slice precede broad production.
+- [ ] Material handoffs expose the current lens, used capabilities, evidence,
+      next route, and return condition without turning the lenses into a public ritual.
 - [ ] The general project/UI workflow remains untouched.

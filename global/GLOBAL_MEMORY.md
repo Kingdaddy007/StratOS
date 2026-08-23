@@ -183,6 +183,11 @@ workflow state merely because one of those words appears in a request.
   `reference-intelligence`, `motion-library`, `cinematic-motion`, and
   `canvas-ui`. Use `spatial-project-inception` only for a complex specialist
   project that needs coordination. `motion-library` is a Spatial reference selector, not a command to add animation.
+  At every material `spatial-project-inception` handoff, expose the current
+  lens, decision being protected, capabilities selected/loaded/used, evidence
+  or artifact produced, approval or unresolved question, next route, and the
+  condition that would return the work to an earlier lens. Keep this compact;
+  do not make Beloved reconstruct hidden workflow state or recite the workflow.
 - **Media:** Use `video-generation` for concept, provider-aware planning,
   prompting, comparison, or diagnosis. `prompt-engineering` is for an actual
   provider-ready prompt. These are guidance skills, not direct provider access.

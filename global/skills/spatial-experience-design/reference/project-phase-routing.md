@@ -25,6 +25,9 @@ They are logical contracts, not mandatory filenames or a reason to recreate an o
 | Turn an approved blueprint into spatial UI or a vertical slice | `ui-ux`, `spatial-experience-design`, `coding`, and `master-design-director` | static composition before motion; risk prototype first; desktop/mobile/accessibility/proof/inquiry checks | the project needs a coordinated production contract or a decision may invalidate the selected concept |
 | Build approved spatial production slices | `build-feature`, with `spatial-experience-design`, `ui-ux`, and only needed specialist references | coherent visitor-responsibility slices; real-enough assets; per-slice concept-continuity audit; evidence before final approval | scope, asset, dependency, or concept assumptions change materially |
 | Add approved non-trivial motion | `cinematic-motion`; add `motion-library` only for a named motion job | stillness comparison; separate track ownership; riskiest-mechanic prototype; mobile/reduced-motion/performance fallbacks | motion requires a new project contract, media cost/rights approval, or changes the experience architecture |
+| Coordinate a selected media-heavy showroom | `cinematic-showroom-strategy`; add `scroll-storyboard` only when scroll authors meaning or media state | brand-to-scene translation; proof and text-safe choreography; asset and fallback map | scene decisions change the selected concept, proof strategy, or asset/rights boundary |
+| Evaluate one contained realtime effect | `canvas-ui`, with `cinematic-motion` owning narrative motion when present | still/DOM/media comparison; semantic fallback; upstream source and licence check; isolated vertical slice | the effect changes architecture, adds a dependency, or cannot preserve the approved experience without Canvas/WebGL |
+| Generate an approved website film | Media profile plus `video-generation`; add `prompt-engineering` only for the provider-ready prompt | inherited scene brief; continuity and rights checks; provider facts; generation approval boundary | the clip changes the experience architecture, requires new client evidence, or triggers upload, credit, or external-account effects |
 
 ## Direct-work safeguards
 
@@ -49,6 +52,18 @@ Treat this as `spatial-project-inception`:
 
 - “Start or rescue this complete interior/spatial brand website from research to a build-ready plan.”
 - “Coordinate the evidence, concept, story, production plan, and approval gates for this showroom project.”
+
+## Visible handoff
+
+At each material handoff, state the current route and lens, decision being
+protected, capabilities selected/loaded/used, evidence or artifact produced,
+unresolved question or approval, next route and reason, and the condition that
+would return the work to an earlier decision. Keep the report compact. Do not
+make the user name the next skill or interpret a capability inventory.
+
+Treat `design-director` as the functional owner. Treat
+`master-design-director` as its conditional critique and gate method, not a
+second agent or parallel owner.
 
 ## Verification before a handoff
 

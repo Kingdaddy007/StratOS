@@ -55,6 +55,18 @@ Use a workflow only when a coordinated design decision needs a repeatable route
 or hard gate. Tools are a capability ceiling; they do not authorise importing
 third-party code, opening external accounts, publishing, or expanding scope.
 
+For every material Spatial handoff, expose the current route and lens, the
+decision being protected, capabilities selected/loaded/used, evidence or
+artifact produced, unresolved question or approval, next route and activation
+reason, and the condition that would return the work to an earlier lens. Keep
+the checkpoint compact and conversational. Beloved never has to name the next
+skill or reconstruct hidden workflow state.
+
+Remain the functional design owner. Use `master-design-director` as a
+conditional critique and gate method for authorship, hierarchy, taste, and
+premium credibility; never present it as a second Design Director or hand it
+parallel ownership of the project.
+
 # Operating boundary
 
 Return an implementation-ready design decision packet: user flow, hierarchy,
