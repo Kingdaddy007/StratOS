@@ -65,6 +65,7 @@ Use this index to select only the reference needed for the current task.
 - [reference/scroll-driven-3d-cube.md](../reference/scroll-driven-3d-cube.md): Scroll-Driven 3D Cube
 - [reference/scroll-driven-cylinder-cards.md](../reference/scroll-driven-cylinder-cards.md): Scroll-Driven Cylinder Cards
 - [reference/scroll-mapped-3d-camera-scenes.md](../reference/scroll-mapped-3d-camera-scenes.md): Scroll-Mapped 3D Camera Scenes
+- [reference/scroll-verification.md](../reference/scroll-verification.md): Scroll Verification for authored motion, scrubbed media, composited contrast, focus, and fallbacks
 - [reference/staggered-structural-columns.md](../reference/staggered-structural-columns.md): Staggered Structural Columns (Vertical Blinds)
 - [reference/transition-library.md](../reference/transition-library.md): Transition Library
 - [reference/video-to-website-choreography.md](../reference/video-to-website-choreography.md): Video To Website Choreography

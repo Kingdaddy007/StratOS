@@ -31,6 +31,12 @@ A **Scroll Storyboard Contract** is a conditional translation layer between:
 
 It normally lives in `scroll-storyboard.md`. Equivalent approved choreography inside `experience-blueprint.md` or `production-plan.md` is acceptable.
 
+Before mapping depths, inherit the intended feeling curve from `storytelling`.
+Name the primary remembered peak and ending impression. Treat one primary peak
+as a pacing discipline, not a compulsory spectacle: if the approved story needs
+another shape, record why. Avoid adjacent beats with indistinguishable feeling
+and intensity unless the hold is deliberate.
+
 ## ACTIVATION TEST
 
 Create the artifact only when at least one answer is yes:
@@ -109,7 +115,10 @@ When an anchor object is useful:
 5. Write the beat table from narrative need, not existing effects.
 6. Map desktop, mobile, reduced-motion, loading, and failure behavior.
 7. Reconcile the table with media choreography and implementation ownership.
-8. Obtain the applicable Director and user approval before complex implementation.
+8. After implementation, perform a cold-scroll review: scroll once without
+   reading code, record one felt word per beat, identify the perceived peak and
+   ending, and compare them with the intended curve.
+9. Obtain the applicable Director and user approval before complex implementation.
 
 ## INTEGRATION
 
@@ -138,7 +147,7 @@ The storyboard never supersedes the approved creative brief or selected concept.
 
 ## OUTPUT SHAPE
 
-**New storyboard:** Activation rationale -> controlling argument -> register/continuity map -> beat table -> mobile/reduced-motion translation -> implementation notes.
+**New storyboard:** Activation rationale -> controlling argument -> intended feeling curve and primary peak -> register/continuity map -> beat table -> mobile/reduced-motion translation -> cold-scroll comparison -> implementation notes.
 
 **Audit:** Existing beat map -> disconnections -> timing and accessibility risks -> recommended repairs.
 
@@ -151,3 +160,4 @@ The storyboard never supersedes the approved creative brief or selected concept.
 5. Every authored transition has desktop, mobile, and reduced-motion behavior.
 6. Proof, navigation, and inquiry remain reachable.
 7. The storyboard does not contradict the selected concept or creative brief.
+8. The intended and felt curves, primary peak, and ending are compared after implementation when observable scroll exists.

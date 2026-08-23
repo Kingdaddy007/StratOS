@@ -63,6 +63,20 @@ Contribute the following to `creative-brief.md`, `concept-directions.md`, and `e
 - Copy rules and banned phrases.
 - Stillness and motion posture: what should remain still, what may move, and why.
 
+### Intended Feeling Curve
+
+Before approving chapter pacing, write one intended feeling per chapter and
+name the primary remembered peak plus the ending impression. Give the peak the
+strongest justified asset, proof, silence, or interaction budget; do not make
+every chapter equally loud. Let the controlling argument, proof burden,
+inquiry, accessibility, and brand truth override emotional theatre.
+
+After implementation, run one uninterrupted cold-scroll review without reading
+the code or implementation notes. Record one felt word per chapter, the
+perceived peak, and the ending impression. Compare intended and felt curves;
+revise pacing when the disagreement exposes filler, repetition, premature
+intensity, or an unearned close.
+
 Legacy projects may keep `spatial-story.md` or `story.md` when those files contain equivalent approved content. Create `scroll-storyboard.md` only when authored scroll timing, pinning, continuity, or media choreography makes a beat-level contract necessary.
 
 ## STORY DISCOVERY
@@ -131,7 +145,7 @@ Choose proof based on the brand:
 Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
 ## OUTPUT SHAPE
 
-**Narrative direction:** One feeling -> controlling argument -> candidate forms -> selected chapter jobs -> proof choreography -> inquiry posture.
+**Narrative direction:** One feeling -> controlling argument -> candidate forms -> intended feeling curve and primary peak -> selected chapter jobs -> proof choreography -> inquiry posture.
 
 **Artifact contribution:** Narrative sections for the creative brief, concept directions, and experience blueprint; legacy story files remain valid equivalents.
 
@@ -147,3 +161,4 @@ Load `references/resource-index.md` when the task needs examples, specialist cri
 6. Copy direction bans generic premium language.
 7. Inquiry posture is selective and clear.
 8. Scroll storyboarding is conditional, not universal.
+9. A material cinematic direction states its intended feeling curve, primary remembered peak, and ending impression without letting emotion displace proof or inquiry.

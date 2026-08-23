@@ -205,6 +205,13 @@ formal prototype if direct implementation is itself the cheapest credible test.
 
 After implementation authority, use `build-feature` with `ui-ux`, `spatial-experience-design`, and `coding`; add `cinematic-motion` only when motion is approved. Build coherent slices and critique each slice. Verify accessibility, performance, responsive composition, reduced-motion/fallback behavior, proof, inquiry, and concept continuity. See `spatial-experience-design/reference/project-phase-routing.md` for the preserved phase gates and direct-work boundaries.
 
+When authored scroll, pinned scenes, scrubbed media, persistent objects, or
+scroll-controlled Canvas/WebGL exists, load
+`cinematic-motion/reference/scroll-verification.md`. Verify sampled beat
+transitions, dead scroll, frozen media, composited contrast, focus reachability,
+loading/failure, mobile, reduced motion, and the intended-versus-felt cold
+scroll. Record the actual browser/device scope and residual uncertainty.
+
 **Decision check:** Verify the implemented scope and obtain any required
 release or external-effect approval.
 

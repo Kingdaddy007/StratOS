@@ -70,6 +70,7 @@ Use five logical contracts. They may be five files or equivalent approved docume
 Create only when required:
 
 - a reference question brief and translation ledger; use `reference-analysis-plan.md` and `reference-synthesis.md` for large or mixed-format corpora;
+- `site-fingerprints.md` in a workspace coordinating multiple spatial sites or a reusable production chassis, to detect repeated page grammar without storing client secrets;
 - `scroll-storyboard.md` for authored scroll timing, pinning, persistent continuity, or media choreography.
 - `cinematic-prompt-pack.md` for approved generated imagery or video.
 - `portfolio-proof-chapters.md` for detailed project decision narratives.
@@ -145,6 +146,8 @@ Load the `reference-intelligence` skill after the creative brief when external r
 
 Load [reference/project-phase-routing.md](reference/project-phase-routing.md) when a request starts, resumes, or targets one named phase of a substantial Spatial project. It distinguishes the one stateful project-coordination route from focused direct skill work, without discarding the former phase gates.
 
+Load [reference/page-grammar-and-fingerprint.md](reference/page-grammar-and-fingerprint.md) when concept territories risk sharing one page skeleton, when a reusable production chassis serves multiple clients, or when a selected direction must be compared with earlier site structures. Use its grammar, forbids, signature-move, and workspace-ledger rules without treating a difference count as proof of quality.
+
 Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
 
 ## OUTPUT SHAPE
@@ -161,3 +164,4 @@ Deliver the requested artifact or decision, the key rationale and tradeoffs, and
 6. Motion, video, anchor objects, storyboards, and generated media remain conditional.
 7. Load matching extended guidance for substantive or high-risk work.
 8. Preserve user constraints and verify the result before delivery.
+9. Compare page grammar with relevant prior work when a multi-site workspace or reusable chassis makes structural repetition plausible.

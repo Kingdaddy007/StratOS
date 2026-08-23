@@ -225,6 +225,42 @@ class SpatialWorkflowContractTests(unittest.TestCase):
         self.assertIn("conditional critique and gate method", design_director)
         self.assertIn("a still-led production plan may", inception)
 
+    def test_scroll_craft_findings_are_adapted_without_a_competing_runtime(self) -> None:
+        spatial_skill = read(GLOBAL / "skills" / "spatial-experience-design" / "SKILL.md")
+        grammar = read(
+            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "page-grammar-and-fingerprint.md"
+        )
+        storytelling = read(GLOBAL / "skills" / "storytelling" / "SKILL.md")
+        storyboard = read(GLOBAL / "skills" / "scroll-storyboard" / "SKILL.md")
+        motion = read(GLOBAL / "skills" / "cinematic-motion" / "SKILL.md")
+        scroll_verification = read(
+            GLOBAL / "skills" / "cinematic-motion" / "reference" / "scroll-verification.md"
+        )
+        production_plan = read(GLOBAL / "context_templates" / "production-plan.md")
+        template_ids = {record["id"] for record in self.manifest["context_templates"]}
+
+        self.assertIn("page-grammar-and-fingerprint.md", spatial_skill)
+        self.assertIn("site-fingerprints.md", spatial_skill)
+        self.assertIn("site-fingerprints", template_ids)
+        self.assertIn("Grammar forbids", grammar)
+        self.assertIn("fewer than four", grammar)
+        self.assertIn("Intended Feeling Curve", storytelling)
+        self.assertIn("cold-scroll", storytelling)
+        self.assertIn("primary remembered peak", storyboard)
+        self.assertIn("scroll-verification.md", motion)
+        for check in (
+            "Dead scroll",
+            "Frozen media",
+            "Composited contrast",
+            "Focus and reachability",
+            "Mobile and reduced motion",
+            "contact sheet",
+            "cold scroll",
+        ):
+            self.assertIn(check, scroll_verification)
+        self.assertIn("keyframe interval/GOP", production_plan)
+        self.assertNotIn("--sc-p", "\n".join((grammar, storytelling, storyboard, motion, scroll_verification)))
+
     def test_focused_spatial_phases_are_direct_skills_not_public_workflows(self) -> None:
         workflow_ids = {record["id"] for record in self.manifest["workflows"]}
         phase_router = read(

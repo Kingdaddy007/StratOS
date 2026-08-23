@@ -203,6 +203,12 @@ Performance rules:
 ## REFERENCE LOADING RULES
 
 Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
+
+Load `reference/scroll-verification.md` after implementing authored scroll,
+pinned scenes, scrubbed media, persistent objects, or scroll-controlled
+Canvas/WebGL. Use its dead-scroll, frozen-media, composited-contrast, focus,
+mobile, reduced-motion, loading, encoding, contact-sheet, and cold-scroll checks
+as bounded project evidence rather than release certification.
 ## OUTPUT SHAPE
 
 **Motion plan:** Communication job -> stillness comparison -> applicable tracks -> candidate grammar -> production evidence -> fallback -> implementation notes.
@@ -223,3 +229,4 @@ Load `references/resource-index.md` when the task needs examples, specialist cri
 8. Reduced-motion and mobile fallbacks exist.
 9. Inquiry and navigation remain reachable.
 10. No repeated fade-up preset across consecutive chapters.
+11. Implemented authored scroll has project-native mechanical and cold-scroll evidence before a completion claim.

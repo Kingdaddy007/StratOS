@@ -754,6 +754,15 @@
       "delivery_role": "template"
     },
     {
+      "id": "site-fingerprints",
+      "path": "global/context_templates/site-fingerprints.md",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "template"
+    },
+    {
       "id": "research-brief",
       "path": "global/context_templates/research-brief.md",
       "profiles": [

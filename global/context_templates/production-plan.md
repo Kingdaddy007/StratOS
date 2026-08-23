@@ -26,7 +26,16 @@ confidence: unset
 **Showroom choreography required:** [yes/no and activation rationale]
 **Portfolio proof chapters required:** [yes/no]
 **Scroll storyboard required:** [yes/no and activation rationale]
+**Scroll verification required:** [yes/no; beats/media/browsers/preferences in scope]
 **DESIGN files required:** [yes/no]
+
+### Scrubbed Media Encoding
+
+**Runtime mode:** [direct video playhead / extracted frames / none]
+**Probe and encoding evidence:** [codec, container, fps, resolution, duration, keyframe interval/GOP when relevant]
+**Poster and mobile source:** [paths/specification]
+**Measured seek/frame behavior:** [target browsers/devices and result]
+**Trade-off:** [seek smoothness, file size, loading, fallback]
 
 ## Performance, Accessibility, and Maintenance
 
@@ -59,7 +68,10 @@ confidence: unset
 
 ## Final Verification Plan
 
-[Accessibility, performance, responsive composition, media/motion fallbacks, proof, inquiry, and concept continuity checks.]
+[Accessibility, performance, responsive composition, media/motion fallbacks,
+proof, inquiry, concept continuity, and conditional scroll checks for dead
+scroll, frozen media, composited contrast, focus reachability, loading, mobile,
+reduced motion, contact sheet, and intended-versus-felt cold scroll.]
 
 ## Approval Record
 

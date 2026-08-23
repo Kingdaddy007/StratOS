@@ -26,6 +26,10 @@ confidence: unset
 **Constraints and second-order effects:** [accessibility, responsive, performance, maintenance]
 **Why this belongs to the brand:** [evidence trace]
 **Failure condition:** [what would invalidate it]
+**Page grammar:** [structural rule]
+**Navigation / opening / act shape / close:** [fingerprint dimensions]
+**Signature move:** [brand-specific memorable behavior or NONE]
+**Grammar forbids:** [patterns this direction excludes and why]
 
 ### Named Reference Questions and Mini Board
 
@@ -50,6 +54,9 @@ confidence: unset
 ## Divergence Gate
 
 **Structurally distinct:** [yes/no and evidence]
+**Nearest prior site fingerprints:** [rows or not applicable]
+**Material differences / collisions:** [six-dimension comparison]
+**Fingerprint decision:** [distinct/revise/evidence-backed exception]
 **Director verdict:** [approve/revise]
 
 ## Comparison
