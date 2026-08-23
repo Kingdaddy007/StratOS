@@ -72,13 +72,14 @@ These names must never be confused:
 
 | Thing | What it is |
 | --- | --- |
-| `global/GEMINI.md` | Portable behaviour and safety policy for Gemini/Antigravity surfaces. It is not an agent. |
+| `global/GEMINI.md` | Portable behaviour and safety policy that makes Antigravity's built-in Main Agent operate as Studio Director. The file itself is not a running agent. |
 | `global/GLOBAL_MEMORY.md` | Routing index. It is not memory with authority and it is not an agent. |
-| `studio-director` | The main Anti-Gravity OS custom agent. It coordinates work. |
-| `Main Agent` in Antigravity | Google Antigravity's built-in default agent, not the Studio Director. |
-| Five V4 specialist agents | Bounded supporting roles. They are not permanent workers running all the time. |
+| `studio-director` | Selectable custom form of the Studio Director role. It can invoke leads and bounded workers. |
+| `Main Agent` in Antigravity | Google Antigravity's built-in coordinator. With global V4 installed, it follows `GEMINI.md` and therefore acts as Studio Director. |
+| Five V4 specialist agents | Bounded supporting roles. They can be invoked or selected directly and may create bounded non-recursive workers. They are not permanent workers. |
 
-The Studio Director should be selected for normal Anti-Gravity OS work in Antigravity.
+Main Agent is the recommended normal entry after a global installation.
+`studio-director` remains an explicit selectable equivalent.
 
 ---
 

@@ -33,7 +33,11 @@
     "list_files": "list_dir",
     "search_text": "grep_search",
     "edit_file": "replace_file_content",
-    "run_command": "run_command"
+    "run_command": "run_command",
+    "invoke_agent": "invoke_subagent",
+    "define_worker": "define_subagent",
+    "message_agent": "send_message",
+    "manage_agents": "manage_subagents"
   },
   "supports_slash_commands": true,
   "approval_model": "host-enforced",
@@ -43,6 +47,10 @@
     "search_text": "Antigravity workspace text search",
     "edit_file": "Antigravity workspace file editing",
     "run_command": "Antigravity sandboxed command execution",
-    "request_approval": "Antigravity project permission and inline approval surface"
+    "request_approval": "Antigravity project permission and inline approval surface",
+    "invoke_agent": "Invoke an installed Custom Agent or bounded worker in an isolated child context",
+    "define_worker": "Define a temporary task-specific worker without standing authority",
+    "message_agent": "Send coordination or correction messages to active child or peer agents",
+    "manage_agents": "Inspect or terminate active child agents"
   }
 }

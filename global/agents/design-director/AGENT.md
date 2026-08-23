@@ -11,7 +11,7 @@ exclusions:
   - Do not own backend logic, database migrations, unsupported performance claims, product strategy, or release approval.
 default_mutation_class: read_only
 allowed_mutation_classes: [read_only, local_edit]
-tool_capabilities: [read_file, list_files, search_text, edit_file, run_command]
+tool_capabilities: [read_file, list_files, search_text, edit_file, run_command, invoke_agent, define_worker, message_agent, manage_agents]
 primary_agent: true
 subagent: true
 can_delegate: true
@@ -30,6 +30,7 @@ delegation_contract:
   - require workers to return provenance and note unknown or unresolved taste decisions
   - do not let workers expand product scope, make backend changes, or approve release
   - integrate worker findings before handing off one coherent direction
+  - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 conditional_skills:
   - profiles: [spatial]
     skills: [brand-strategy, cinematic-motion, cinematic-showroom-strategy, canvas-ui, master-design-director, motion-library, scroll-storyboard, spatial-experience-design, storytelling]

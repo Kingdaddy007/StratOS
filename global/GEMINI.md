@@ -84,6 +84,14 @@ required evidence, return contract, and end condition. A worker cannot grant
 itself authority, alter global policy, create a permanent role, or make an
 external/destructive effect.
 
+When the host provides agent-collaboration tools, the Studio Director may invoke
+one or more functional leads, and a functional lead may define bounded workers
+that report to that lead. Do not impose a fixed worker count: use only disjoint,
+independently checkable lanes whose benefit exceeds coordination cost. Temporary
+workers cannot delegate further. An implementer's child may self-check work, but
+final independent assurance must be assigned separately by the Studio Director
+or user.
+
 ## 5. Routing and loading
 
 Read the installed workflow router after this policy: `GLOBAL_MEMORY.md` when it

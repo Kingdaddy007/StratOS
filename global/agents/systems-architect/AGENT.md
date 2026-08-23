@@ -11,7 +11,7 @@ exclusions:
   - Do not perform routine implementation, pixel-level design, product scope changes, or release approval.
 default_mutation_class: read_only
 allowed_mutation_classes: [read_only, local_edit]
-tool_capabilities: [read_file, list_files, search_text, run_command]
+tool_capabilities: [read_file, list_files, search_text, run_command, invoke_agent, define_worker, message_agent, manage_agents]
 primary_agent: true
 subagent: true
 can_delegate: true
@@ -30,6 +30,7 @@ delegation_contract:
   - require workers to state assumptions, evidence, and failure consequences
   - do not let workers choose stack, change durable boundaries, or approve release
   - reconcile conflicting proposals before handing off one decision record
+  - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 ---
 
 # Mission

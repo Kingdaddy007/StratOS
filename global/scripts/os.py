@@ -107,6 +107,16 @@ CANONICAL_AGENT_TOOL_CAPABILITIES = {
     "search_text",
     "edit_file",
     "run_command",
+    "invoke_agent",
+    "define_worker",
+    "message_agent",
+    "manage_agents",
+}
+CANONICAL_AGENT_COLLABORATION_CAPABILITIES = {
+    "invoke_agent",
+    "define_worker",
+    "message_agent",
+    "manage_agents",
 }
 MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 UNRESOLVED_TOKEN_PATTERN = re.compile(
@@ -725,7 +735,8 @@ def validate_agent_files(repo_root: Path) -> tuple[list[dict[str, str]], dict[st
             problems.append(issue("agent-mutation", relative, "invalid allowed_mutation_classes"))
         elif metadata.get("default_mutation_class") not in allowed:
             problems.append(issue("agent-mutation", relative, "default mutation must be allowed"))
-        if any(value not in CANONICAL_AGENT_TOOL_CAPABILITIES for value in metadata.get("tool_capabilities", [])):
+        tool_capabilities = set(metadata.get("tool_capabilities", []))
+        if any(value not in CANONICAL_AGENT_TOOL_CAPABILITIES for value in tool_capabilities):
             problems.append(issue("agent-tools", relative, "unknown canonical tool capability"))
         if metadata.get("model_tier") not in {"inherit", "flash", "pro"}:
             problems.append(issue("agent-model", relative, "invalid model_tier"))
@@ -734,6 +745,29 @@ def validate_agent_files(repo_root: Path) -> tuple[list[dict[str, str]], dict[st
         for field in ("primary_agent", "subagent", "can_delegate"):
             if not isinstance(metadata.get(field), bool):
                 problems.append(issue("agent-field-type", relative, f"{field} must be boolean"))
+        if metadata.get("can_delegate") is True:
+            missing_collaboration = (
+                CANONICAL_AGENT_COLLABORATION_CAPABILITIES - tool_capabilities
+            )
+            if missing_collaboration:
+                problems.append(
+                    issue(
+                        "agent-delegation-tools",
+                        relative,
+                        "can_delegate requires: "
+                        + ", ".join(sorted(missing_collaboration)),
+                    )
+                )
+        elif tool_capabilities.intersection(
+            CANONICAL_AGENT_COLLABORATION_CAPABILITIES
+        ):
+            problems.append(
+                issue(
+                    "agent-delegation-tools",
+                    relative,
+                    "collaboration capabilities require can_delegate: true",
+                )
+            )
         conditional_skills = metadata.get("conditional_skills", [])
         if not isinstance(conditional_skills, list):
             problems.append(issue("agent-conditional-skills", relative, "conditional_skills must be a list"))
@@ -1530,6 +1564,14 @@ SPECIALIST_WORKFLOW_BOUNDARY = [
     "Return candidate evidence, limitations, and blockers. The accountable parent integrates the result and decides final gate status; you cannot waive a required gate or certify your own completion claim.",
 ]
 
+ANTIGRAVITY_DELEGATION_BOUNDARY = [
+    "You may invoke an installed Custom Agent or define temporary workers only when the delegation test in this contract passes.",
+    "A functional lead invoked as a child may create its own bounded workers when the host exposes these tools; every child must report to its immediate parent.",
+    "When defining a temporary worker, keep subagent-delegation capability disabled. Workers cannot create children or expand their charter.",
+    "Use agent messages and management tools for coordination, interruption, and collection of results; do not treat a child response as accepted evidence until the accountable parent checks it.",
+    "A worker created by the implementer may self-check that implementation, but final independent assurance must remain a separate sibling route owned by the Studio Director or user.",
+]
+
 
 def render_antigravity_agent(
     source: Path,
@@ -1595,6 +1637,14 @@ def render_antigravity_agent(
                 "",
                 "## Assigned workflow and acceptance gate",
                 *SPECIALIST_WORKFLOW_BOUNDARY,
+            ]
+        )
+    if metadata["can_delegate"]:
+        capability_routes.extend(
+            [
+                "",
+                "## Host-enabled delegation",
+                *(f"- {item}" for item in ANTIGRAVITY_DELEGATION_BOUNDARY),
             ]
         )
     if "video-generation" in selected_skills:

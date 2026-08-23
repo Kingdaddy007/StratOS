@@ -11,7 +11,7 @@ exclusions:
   - Do not own implementation syntax, system topology, release approval, or unsupported market claims.
 default_mutation_class: read_only
 allowed_mutation_classes: [read_only, local_edit]
-tool_capabilities: [read_file, list_files, search_text, run_command]
+tool_capabilities: [read_file, list_files, search_text, run_command, invoke_agent, define_worker, message_agent, manage_agents]
 primary_agent: true
 subagent: true
 can_delegate: true
@@ -30,6 +30,7 @@ delegation_contract:
   - require source-aware evidence and explicit confidence from every worker
   - do not let workers invent market facts, expand the brief, or make external claims
   - stop when the next decision or information need is clear
+  - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 conditional_skills:
   - profiles: [spatial]
     skills: [brand-strategy]

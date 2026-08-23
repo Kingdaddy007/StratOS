@@ -25,15 +25,17 @@ large or risky job gets more structure only where it helps.
 
 ## The first important choice
 
-In Antigravity's agent menu, choose **studio-director** for normal
-Anti-Gravity OS work.
+For normal Anti-Gravity OS work, use **Main Agent** after the global OS is
+installed, or choose **studio-director** directly. Both follow the Studio
+Director operating model. Main Agent is the most reliable default coordinator;
+the custom entry is useful when you want the role selected explicitly.
 
 | Name you see | What it means |
 | --- | --- |
-| `Main Agent` | Antigravity's built-in generic agent. It is not one of our six agents. |
-| `studio-director` | The custom Anti-Gravity OS entry point. This is your best default. |
-| `product-strategy-lead`, `systems-architect`, `design-director`, `staff-engineer`, `assurance-quality-lead` | Specialist agents. Studio Director can call them when their distinct judgement helps. |
-| `GEMINI.md` | The global policy file. It is not an agent and cannot send messages. |
+| `Main Agent` | Antigravity's built-in coordinator. When V4's global `GEMINI.md` is active, it operates as the Studio Director and can call the five leads. This is the recommended default. |
+| `studio-director` | The selectable custom form of the same Studio Director role. It has explicit collaboration tools for leads and bounded workers. |
+| `product-strategy-lead`, `systems-architect`, `design-director`, `staff-engineer`, `assurance-quality-lead` | Specialist agents. They can be called by Studio Director, selected directly, and—when justified—create bounded workers that report back to them. |
+| `GEMINI.md` | The policy that gives Main Agent the Studio Director behaviour. The file itself is not a running agent. |
 | `GLOBAL_MEMORY.md` | The routing index. It is not an agent and it does not contain client facts. |
 
 ## What to say when you start
@@ -95,7 +97,8 @@ The agent should not load every profile for every task.
 | What you notice | What to do |
 | --- | --- |
 | You cannot see `studio-director` after a fresh Antigravity start. | Check the global install with `SETUP.md`, then restart Antigravity. |
-| The input says `Main Agent` when you expect the OS role. | Open the agent menu and select `studio-director`. |
+| The input says `Main Agent`. | This is expected after a global install: `GEMINI.md` makes Main Agent the Studio Director. You may still select `studio-director` directly. |
+| A selected custom agent says it cannot invoke a child. | Confirm its generated tool list contains `invoke_subagent`, `define_subagent`, `send_message`, and `manage_subagents`, then reinstall the current payload and start a fresh conversation. |
 | The agent gives a generic answer without reading the project. | Say: “Inspect the relevant files and references first. State the evidence you used.” |
 | The agent assumes client facts or hides uncertainty. | Say: “Separate facts, assumptions, unknowns, and your recommendation.” |
 | The agent suggests deployment, publishing, or spending without pausing. | Stop it. Those actions require your explicit approval. |

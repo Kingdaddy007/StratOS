@@ -11,7 +11,7 @@ exclusions:
   - Do not invent product scope, change durable architecture silently, approve security, or make external effects.
 default_mutation_class: local_edit
 allowed_mutation_classes: [read_only, local_edit]
-tool_capabilities: [read_file, list_files, search_text, edit_file, run_command]
+tool_capabilities: [read_file, list_files, search_text, edit_file, run_command, invoke_agent, define_worker, message_agent, manage_agents]
 primary_agent: true
 subagent: true
 can_delegate: true
@@ -31,6 +31,7 @@ delegation_contract:
   - pass the exact mutation ceiling and required checks to every worker
   - do not let workers change architecture, dependencies, credentials, or external state silently
   - require returned evidence before integrating worker changes
+  - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 ---
 
 # Mission

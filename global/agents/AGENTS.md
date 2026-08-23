@@ -19,6 +19,9 @@ behaviour and authority contract. It is not itself a host installation file.
 - Every role uses the installed `GLOBAL_MEMORY.md` routing index to select the
   smallest relevant skill, reference, and workflow. A tool list is a capability
   ceiling, not permission or a reason to use a tool.
+- `can_delegate: true` is valid only when the canonical tool ceiling includes
+  invoke, define-worker, messaging, and agent-management capabilities. Host
+  adapters must map those capabilities to real host tools or fail validation.
 - The Studio Director owns the parent route. A specialist follows an assigned
   route inside its charter or reports that another route is needed; it does not
   silently replace the parent workflow.
@@ -32,6 +35,10 @@ behaviour and authority contract. It is not itself a host installation file.
   files belong only in `dist/<host>/`.
 - A reusable agent definition does not authorize an always-running agent or a
   permanent worker swarm.
+- A reusable Director or lead may create several workers when their charters are
+  disjoint and independently checkable. A temporary worker never receives
+  delegation capability. Final independent assurance remains a sibling route,
+  not a worker controlled by the implementer being reviewed.
 - A specialist handoff must name the task and scope, inputs and provenance,
   authority ceiling, findings, confidence, conflicts, recommendation,
   stop/escalate condition, residual risk, and owner. A missing field is an

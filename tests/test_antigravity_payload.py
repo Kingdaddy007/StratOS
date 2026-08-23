@@ -67,6 +67,10 @@ class AntigravityPayloadTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
             self.assertIn("## Required specialist return", rendered)
             self.assertIn("## Delegation contract", rendered)
+            self.assertIn("  - invoke_subagent", rendered)
+            self.assertIn("  - define_subagent", rendered)
+            self.assertIn("  - send_message", rendered)
+            self.assertIn("  - manage_subagents", rendered)
 
 
 if __name__ == "__main__":

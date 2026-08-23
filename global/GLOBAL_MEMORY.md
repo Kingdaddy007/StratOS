@@ -107,8 +107,12 @@ These are not a waterfall and not a permanent swarm. A lead fixes ordinary
 local defects in its own boundary. It consults another lead for a factual gap;
 the Studio Director resolves scope, authority, or trade-off conflicts.
 
-Use a temporary worker only for independently checkable work with a clear scope
-and return contract. A worker result is evidence; its parent lead checks it.
+The Studio Director may invoke several leads when their boundaries are genuinely
+different. Each lead may create several temporary workers for disjoint,
+independently checkable work with a clear scope and return contract. Every worker
+reports to its immediate parent and cannot create children. A worker result is
+evidence; its parent lead checks it. Final independent assurance is assigned as
+a sibling of the implementation route rather than as the implementer's child.
 
 ## 4. Packs
 

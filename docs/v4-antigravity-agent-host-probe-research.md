@@ -1,7 +1,8 @@
 # V4 Antigravity Agent Host-Probe Research
 
-**Status:** General workspace probe passed; real-task outcome pilot remains  
-**Verified:** 2026-08-20  
+**Status:** General workspace probe passed; collaboration payload fixed; live
+nested-delegation pilot remains
+**Verified:** 2026-08-23
 **Scope:** Google Antigravity 2.0 custom agents, skills, projects, subagents,
 hooks, and the V4 adapter. No live installation, hook, permission change, or
 external account action was performed.
@@ -67,6 +68,24 @@ The adapter now maps `list_files` to `list_dir` and the generated-payload test
 asserts that exact tool. This avoids a documented tool-name mismatch that could
 make agent behaviour incomplete or fragile.
 
+## Delegation capability correction
+
+The canonical roles declared `can_delegate: true`, but the generated
+Antigravity tool lists originally contained only file, search, edit, and command
+tools. That prose-level declaration could not create a child session.
+
+The canonical capability ceiling now requires four collaboration capabilities
+for every delegating role, and the Antigravity adapter maps them to the host's
+documented `invoke_subagent`, `define_subagent`, `send_message`, and
+`manage_subagents` tools. Validation fails when a role claims delegation without
+the full tool set. Generated-payload tests confirm all six roles receive the
+mapping.
+
+This establishes payload correctness, not a live-host result. A fresh
+Antigravity conversation must still prove both paths: selected Studio Director
+to functional lead, and invoked functional lead to a temporary worker. Workers
+must be defined without subagent tools so they cannot extend the hierarchy.
+
 ## What agents can and cannot guarantee
 
 Agents can divide work, inspect evidence, compare options, run tests, and
@@ -106,17 +125,23 @@ source. Do not install globally until the generated files pass this probe.
 3. **Spatial route:** A spatial website request makes the Design Director and
    relevant Spatial skills available; Canvas UI is considered only for a named
    visual job.
-4. **Direct-lead use:** Select one lead directly and confirm it stays inside its
-   role and tool ceiling.
-5. **Temporary worker:** Give one read-only, independently checkable task to a
-   worker. Confirm it receives a compact charter, returns evidence, and stops.
-6. **Permission stop:** Attempt a dependency, source-import, or external-style
+4. **Direct-lead use:** Select one lead directly, confirm the four collaboration
+   tools are available, and confirm it stays inside its role and tool ceiling.
+5. **Director-to-lead:** Select `studio-director`, invoke one installed lead,
+   and confirm the lead returns evidence to Studio Director.
+6. **Lead-to-worker nesting:** From the invoked lead, define and invoke one
+   read-only worker with subagent tools disabled. Confirm it receives a compact
+   charter, returns evidence to the lead, and stops.
+7. **Sibling assurance:** Let Staff Engineering own a harmless implementation
+   lane and Assurance own a separate review lane. Confirm Assurance is not a
+   child controlled by the implementer.
+8. **Permission stop:** Attempt a dependency, source-import, or external-style
    request. Confirm the host asks rather than silently proceeding.
-7. **Worktree isolation:** Use a small concurrent task only in a disposable
+9. **Worktree isolation:** Use a small concurrent task only in a disposable
    worktree and confirm it does not overwrite the primary project folder.
-8. **Tool surface:** Confirm every generated tool name is accepted by the
+10. **Tool surface:** Confirm every generated tool name is accepted by the
    installed host version. Stop on an unknown tool rather than guessing.
-9. **Capability-route wording:** In a fresh project from the fallback payload,
+11. **Capability-route wording:** In a fresh project from the fallback payload,
    select Design Director and confirm it reports `canvas-ui` and
    `video-generation` as available *guidance* under Spatial + Media, while
    correctly saying direct provider generation is unavailable without a visible

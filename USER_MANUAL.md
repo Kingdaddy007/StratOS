@@ -5,8 +5,9 @@ words “agent”, “skill”, and “workflow” still feel confusing.
 
 ## 1. Start with Studio Director
 
-In Google Antigravity, select **studio-director** from the agent menu for your
-normal work.
+In Google Antigravity, use **Main Agent** after installing V4 globally, or
+select **studio-director** directly. Main Agent loads the Studio Director policy
+from `GEMINI.md`; the custom entry provides the same role as an explicit choice.
 
 Studio Director is the coordinator. It should understand your goal, decide how
 much structure is useful, and either work directly or call a specialist. It is
@@ -46,6 +47,26 @@ have to.
 
 The result should come back as one answer from Studio Director. A specialist is
 there to improve a decision, not to make the system feel busy.
+
+### The delegation hierarchy
+
+```text
+Main Agent governed by GEMINI.md, or selected studio-director
+        -> one or more functional leads
+                -> bounded temporary workers
+                <- worker evidence returns to its lead
+        <- lead conclusions return to Studio Director
+```
+
+A lead may create several workers when the work is separable: for example, one
+worker inspects an API contract while another runs a focused regression check.
+Workers cannot create more workers. The lead checks their results before it
+reports upward. A builder's own worker may self-check the build, but final
+independent assurance should be a separate sibling assigned by Studio Director.
+
+You can also select a lead directly. It may then create bounded workers and
+return one integrated result to you. Do not ask for a fixed number of workers;
+ask for the smallest useful team and the reason for each lane.
 
 ## 4. Skills, workflows, and references
 
@@ -115,6 +136,16 @@ run generation or spend credits.
 The feature is implemented. Use independent assurance to review changed code,
 tests, security, regression risk, and residual risk. Do not approve a release
 for me.
+```
+
+### Ask for bounded parallel work
+
+```text
+This task has several independent parts. Use only the functional leads or
+temporary workers that materially improve speed or confidence. Give every child
+a clear scope and evidence requirement. Have them report back to their parent,
+then return one integrated answer. Keep final assurance independent from the
+implementation worker tree.
 ```
 
 ## 7. Help the AI when it cannot know something

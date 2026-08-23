@@ -11,7 +11,7 @@ exclusions:
   - Do not implement the feature being judged, approve release, or execute external or destructive work.
 default_mutation_class: read_only
 allowed_mutation_classes: [read_only]
-tool_capabilities: [read_file, list_files, search_text, run_command]
+tool_capabilities: [read_file, list_files, search_text, run_command, invoke_agent, define_worker, message_agent, manage_agents]
 primary_agent: true
 subagent: true
 can_delegate: true
@@ -30,6 +30,7 @@ delegation_contract:
   - require each worker to return evidence, confidence, and residual risk
   - do not allow workers to approve, release, edit, or delegate recursively
   - keep assurance independent from the builder and report unresolved conflict
+  - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 ---
 
 # Mission

@@ -39,9 +39,13 @@ It then asks which capability profile to install:
 - **Option B — Full System:** 6 canonical roles, 17 workflows, and all
   registered skills, including Spatial, Media, and Growth.
 
-Antigravity exposes all six roles as host custom agents. Codex keeps Studio
-Director as the primary `AGENTS.md` role and exposes the other five as bounded
-custom-agent TOMLs.
+Antigravity exposes all six roles as host custom agents. Its built-in Main Agent
+also becomes the Studio Director when the generated global `GEMINI.md` is
+active. The Studio Director and five leads receive explicit Antigravity
+collaboration tools; a lead may create bounded workers, while workers do not
+receive recursive delegation capability. Codex keeps Studio Director as the
+primary `AGENTS.md` role and exposes the other five as bounded custom-agent
+TOMLs.
 
 The counts come from `global/manifest.yaml`, so they stay current when the
 registry changes. Use `--option general` or `--option full` for scripts and
@@ -80,9 +84,11 @@ six agents, selected skills, and workflows from `<project>/.agents/`. It does
 not change `~/.gemini/` and refuses to overwrite unmanaged project entries.
 
 Start a fresh Antigravity conversation after installation so it reloads the
-global configuration. For normal Anti-Gravity OS work, select
-`studio-director` from the agent menu. `Main Agent` is Antigravity's built-in
-default, while `studio-director` is the custom Anti-Gravity OS coordinator.
+global configuration. For normal Anti-Gravity OS work, use `Main Agent`; the
+generated global `GEMINI.md` makes it operate as Studio Director. You may select
+`studio-director` when you want the explicit custom role. Both can invoke the
+five leads. A directly selected lead can also create bounded workers and collect
+their returns when the task justifies delegation.
 
 ### Gemini compatibility
 
