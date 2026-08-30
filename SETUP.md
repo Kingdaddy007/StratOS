@@ -12,6 +12,7 @@ Installation is a user-authorized operation. Reading this document does not auth
 | 4 | Cursor | `~/.cursor/rules/antigravity` |
 | 5 | Windsurf | `~/.codeium/windsurf/memories/antigravity` |
 | 6 | OpenCode | `~/.config/opencode/antigravity` |
+| 7 | Zed | `~/.config/zed/prompts/antigravity` |
 
 Each host receives a generated adapter payload. Canonical `global/` source is never installed directly. Antigravity's native global path is different from the Gemini compatibility namespace.
 

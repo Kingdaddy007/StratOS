@@ -89,7 +89,7 @@ add_namespace() {
 
 select_target() {
     if [[ -n "$GLOBAL_CONFIG" ]]; then
-        [[ -n "$HOST_ID" ]] || { warn 'Custom/global config targets require --host antigravity|gemini|codex|cursor|windsurf|opencode.'; return 1; }
+        [[ -n "$HOST_ID" ]] || { warn 'Custom/global config targets require --host antigravity|gemini|codex|cursor|windsurf|opencode|zed.'; return 1; }
         if [[ "$HOST_ID" == 'antigravity' ]]; then
             NATIVE_GLOBAL=true
             SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
@@ -111,6 +111,7 @@ select_target() {
             cursor) SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
             windsurf) SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
             opencode) SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
+            zed) SELECTED_TARGET="$HOME/.config/zed/prompts/antigravity" ;;
             *) warn "Unsupported host '$HOST_ID'."; return 1 ;;
         esac
         return
@@ -125,9 +126,10 @@ Choose a host:
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
-  [7] Custom parent directory
+  [7] Zed                           -> ~/.config/zed/prompts/antigravity
+  [8] Custom parent directory
 EOF
-        read -r -p 'Enter 1-7: ' IDE
+        read -r -p 'Enter 1-8: ' IDE
     fi
 
     case "$IDE" in
@@ -137,10 +139,11 @@ EOF
         4) HOST_ID='cursor'; SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
         5) HOST_ID='windsurf'; SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
         6) HOST_ID='opencode'; SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
-        7)
+        7) HOST_ID='zed'; SELECTED_TARGET="$HOME/.config/zed/prompts/antigravity" ;;
+        8)
             local custom_parent
             if [[ -z "$HOST_ID" ]]; then
-                read -r -p 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode): ' HOST_ID
+                read -r -p 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode, zed): ' HOST_ID
             fi
             if [[ "$HOST_ID" == 'antigravity' ]]; then
                 NATIVE_GLOBAL=true
@@ -155,7 +158,7 @@ EOF
             fi
             read -r -p 'Parent directory for the antigravity namespace: ' custom_parent
             SELECTED_TARGET="$(add_namespace "$custom_parent")" ;;
-        *) warn "Unknown host choice '$IDE'. Use 1-7."; return 1 ;;
+        *) warn "Unknown host choice '$IDE'. Use 1-8."; return 1 ;;
     esac
 }
 

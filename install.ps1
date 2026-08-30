@@ -10,7 +10,7 @@
 param(
     [string]$GlobalConfig,
     [string]$IDE,
-    [ValidateSet('antigravity', 'gemini', 'codex', 'cursor', 'windsurf', 'opencode')]
+    [ValidateSet('antigravity', 'gemini', 'codex', 'cursor', 'windsurf', 'opencode', 'zed')]
     [string]$TargetHost,
     [ValidateSet('general', 'full')]
     [string]$InstallOption,
@@ -51,7 +51,7 @@ function Add-Namespace([string]$Path) {
 function Select-InstallTarget {
     if ($GlobalConfig) {
         if (-not $TargetHost) {
-            throw 'Custom/global config targets require -TargetHost antigravity|gemini|codex|cursor|windsurf|opencode.'
+            throw 'Custom/global config targets require -TargetHost antigravity|gemini|codex|cursor|windsurf|opencode|zed.'
         }
         if ($TargetHost -eq 'antigravity') {
             $script:AntigravityGlobal = $true
@@ -71,6 +71,7 @@ function Select-InstallTarget {
             'cursor' { return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
             'windsurf' { return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
             'opencode' { return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
+            'zed' { return Join-Path $env:USERPROFILE '.config\zed\prompts\antigravity' }
             default { throw "Unsupported host '$TargetHost'." }
         }
     }
@@ -84,9 +85,10 @@ Choose a host:
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
-  [7] Custom parent directory
+  [7] Zed                           -> ~/.config/zed/prompts/antigravity
+  [8] Custom parent directory
 "@
-        $script:IDE = Read-Host 'Enter 1-7'
+        $script:IDE = Read-Host 'Enter 1-8'
     }
 
     switch ($IDE.Trim()) {
@@ -96,9 +98,10 @@ Choose a host:
         '4' { $script:TargetHost = 'cursor'; return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
         '5' { $script:TargetHost = 'windsurf'; return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
         '6' { $script:TargetHost = 'opencode'; return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
-        '7' {
+        '7' { $script:TargetHost = 'zed'; return Join-Path $env:USERPROFILE '.config\zed\prompts\antigravity' }
+        '8' {
             if (-not $TargetHost) {
-                $script:TargetHost = (Read-Host 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode)').Trim().ToLowerInvariant()
+                $script:TargetHost = (Read-Host 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode, zed)').Trim().ToLowerInvariant()
             }
             if ($TargetHost -eq 'antigravity') {
                 $script:AntigravityGlobal = $true
@@ -107,12 +110,12 @@ Choose a host:
             if ($TargetHost -eq 'codex') {
                 return Get-FullPath (Read-Host 'Enter the .codex directory for a global install')
             }
-            if ($TargetHost -notin @('gemini', 'codex', 'cursor', 'windsurf', 'opencode')) {
+            if ($TargetHost -notin @('gemini', 'codex', 'cursor', 'windsurf', 'opencode', 'zed')) {
                 throw "Unsupported host '$TargetHost'."
             }
             return Add-Namespace (Read-Host 'Enter a parent directory for the antigravity namespace')
         }
-        default { throw "Unknown host choice '$IDE'. Use 1-6." }
+        default { throw "Unknown host choice '$IDE'. Use 1-8." }
     }
 }
 

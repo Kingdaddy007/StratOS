@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "host": "zed",
+  "namespace": "antigravity",
+  "content_root": ".",
+  "instruction_target": "AGENTS.md",
+  "skills_target": "skills",
+  "workflows_target": "prompts",
+  "supports_slash_commands": true,
+  "approval_model": "mixed",
+  "capabilities": {
+    "read_file": "host-native file reading",
+    "list_files": "host-native workspace listing",
+    "search_text": "host-native repository search",
+    "edit_file": "host-native patch or file editing",
+    "run_command": "host-native terminal execution",
+    "request_approval": "host-native confirmation gate"
+  }
+}

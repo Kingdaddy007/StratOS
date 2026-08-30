@@ -1,0 +1,4 @@
+interface:
+  display_name: "Speculative Outreach"
+  short_description: "Guidance for speculative outreach tasks"
+  default_prompt: "Use $speculative-outreach to help complete this task with its domain workflow."

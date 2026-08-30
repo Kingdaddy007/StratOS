@@ -27,7 +27,7 @@ from typing import Any, Iterable
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GLOBAL_ROOT = REPO_ROOT / "global"
 MANIFEST_PATH = GLOBAL_ROOT / "manifest.yaml"
-SUPPORTED_HOSTS = ("antigravity", "gemini", "codex", "cursor", "windsurf", "opencode")
+SUPPORTED_HOSTS = ("antigravity", "gemini", "codex", "cursor", "windsurf", "opencode", "zed")
 INSTALL_OPTIONS = ("general", "full")
 ANTIGRAVITY_RULE_MAX_CHARACTERS = 12_000
 MUTATION_CLASSES = (
