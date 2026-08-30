@@ -198,7 +198,7 @@ workflow state merely because one of those words appears in a request.
 - **Growth:** Product & Strategy selects the smallest relevant combination of
   `copy-editing`, `copywriting`, `expert-positioning`,
   `marketing-psychology`, `page-cro`, `prospect-research`,
-  `sales-enablement`, and `offer-architecture`. The commercial workflows
+  `sales-enablement`, `offer-architecture`, and `speculative-outreach`. The commercial workflows
   are hard gates, not defaults.
 
 `customer-market-demand-evidence.md` and `meaning-and-evidence-foundation.md` are conditional shared references. Each is not a baseline and not a sixth permanent Growth capability. This reference never authorises external research or external effects; a low-risk copy improvement remains direct work.
