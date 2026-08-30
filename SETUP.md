@@ -12,7 +12,7 @@ Installation is a user-authorized operation. Reading this document does not auth
 | 4 | Cursor | `~/.cursor/rules/antigravity` |
 | 5 | Windsurf | `~/.codeium/windsurf/memories/antigravity` |
 | 6 | OpenCode | `~/.config/opencode/antigravity` |
-| 7 | Zed | `~/.config/zed/prompts/antigravity` |
+| 7 | Zed | Global `~/.config/zed/AGENTS.md` + `~/.agents/skills/`, or one project workspace |
 
 Each host receives a generated adapter payload. Canonical `global/` source is never installed directly. Antigravity's native global path is different from the Gemini compatibility namespace.
 
@@ -26,7 +26,7 @@ Each host receives a generated adapter payload. Canonical `global/` source is ne
 
 ## Installation choices
 
-For Antigravity and Codex, every interactive install first asks where V4 should operate:
+For Antigravity, Codex, and Zed, every interactive install first asks where V4 should operate:
 
 - **Global:** available across projects. Active files go to the selected host's
   global discovery directories.
@@ -40,6 +40,17 @@ It then asks which capability profile to install:
 - **Option B — Full System:** 6 canonical roles, 17 workflows, and all
   registered skills, including Spatial, Media, and Growth.
 
+Zed's native Agent consumes `AGENTS.md` and the discoverable `.agents/skills/`
+catalog, but it does not expose V4 Markdown role contracts as selectable custom
+agents. Zed installs those six contracts as clearly labelled references under
+the dedicated `antigravity/agent-contracts/` namespace. It also installs one
+adapter-owned `antigravity-v4` support skill; its bundled
+`references/GLOBAL_MEMORY.md`, workflow contracts, and role references are the
+globally readable route bundle. The namespace copies under the Zed
+configuration directory are for inspection and provenance. Use the Codex
+adapter or a Zed ACP external agent when real selectable role agents are
+required.
+
 Antigravity exposes all six roles as host custom agents. Its built-in Main Agent
 also becomes the Studio Director when the generated global `GEMINI.md` is
 active. The Studio Director and five leads receive explicit Antigravity
@@ -51,7 +62,7 @@ TOMLs.
 The counts come from `global/manifest.yaml`, so they stay current when the
 registry changes. Use `--option general` or `--option full` for scripts and
 CI. An omitted option keeps the existing non-interactive default: General.
-Interactive Codex and Antigravity runs ask for Global or Workspace. Automated
+Interactive Codex, Antigravity, and Zed runs ask for Global or Workspace. Automated
 runs should pass `--scope`/`-InstallScope`; when scope is omitted with
 `--yes`/`-Yes` or redirected input, the safe compatibility default is Global.
 
@@ -156,6 +167,8 @@ python global/scripts/os.py install --host antigravity --target ~/.gemini --opti
 python global/scripts/os.py install --host antigravity --target ~/.gemini --option general --antigravity-global --yes
 python global/scripts/os.py install --host antigravity --target /path/to/project --option general --antigravity-workspace --dry-run
 python global/scripts/os.py install --host antigravity --target /path/to/project --option general --antigravity-workspace --yes
+python global/scripts/os.py install --host zed --target ~/.config/zed --option general --zed-global --dry-run
+python global/scripts/os.py install --host zed --target /path/to/project --option general --zed-workspace --dry-run
 ```
 
 ### Codex global governance
@@ -171,6 +184,36 @@ python global/scripts/os.py install --host codex --target /path/to/project --cod
 ```
 
 Global Codex installation keeps a complete generated copy at `~/.codex/antigravity/`, records the backup in `~/.codex/antigravity/installation.json`, and does not modify `config.toml`, `config.json`, permissions, plugins, or unrelated files. Workspace installation keeps its record under `.agents/antigravity/` and refuses to replace unmanaged project files. Start a new Codex task after a global installation so the global instructions reload.
+
+### Zed
+
+Zed's personal instruction file is `%APPDATA%\Zed\AGENTS.md` on Windows and
+`~/.config/zed/AGENTS.md` on macOS/Linux. V4's global skills are installed in
+the native `~/.agents/skills/` catalog. The installer merges only its marked V4
+policy block into an existing Zed `AGENTS.md`, preserving user instructions.
+
+Preview and install globally:
+
+```powershell
+.\install.ps1 -TargetHost zed -InstallOption general -DryRun
+.\install.ps1 -TargetHost zed -InstallOption general -Yes
+```
+
+For one project only:
+
+```powershell
+.\install.ps1 -TargetHost zed -InstallScope workspace -WorkspacePath C:\path\to\project -InstallOption general -DryRun
+.\install.ps1 -TargetHost zed -InstallScope workspace -WorkspacePath C:\path\to\project -InstallOption general -Yes
+```
+
+The native Zed adapter does not edit `settings.json`, model profiles,
+permissions, or ACP registrations. Those remain explicit Zed configuration.
+Zed project-local skills are only active after the worktree is trusted. If a
+project already contains a higher-priority instruction file (`.rules`,
+`.cursorrules`, `.windsurfrules`, `.clinerules`,
+`.github/copilot-instructions.md`, or `AGENT.md`), the workspace installer
+stops instead of claiming that `AGENTS.md` is active; reconcile that file
+first.
 
 Use `--profile spatial` only for interior, showroom, gallery, luxury-home, furniture, decor, staging, or architecture-adjacent work. General engineering is the default.
 
@@ -191,6 +234,16 @@ The adapter's `content_root`, `instruction_target`, `skills_target`, and `workfl
   `.codex/agents/`, skills at `.codex/skills/`, and V4 references under
   `.agents/`. Studio Director remains the primary `AGENTS.md` role; the five
   canonical specialist roles are real bounded custom agents.
+- Zed global installs the marked V4 policy in the native Zed `AGENTS.md` and
+  skills in `~/.agents/skills/`. The `antigravity-v4` support skill is the
+  runtime route bundle because Zed's project file tools do not promise
+  arbitrary files beside the personal instruction file. Router, workflow,
+  role, metadata, and provenance copies are kept under the dedicated
+  `%APPDATA%\Zed\antigravity\` namespace (or `~/.config/zed/antigravity/`),
+  not scattered through the Zed config root. Zed workspace installs the
+  project `AGENTS.md`, `.agents/skills/`, and non-native support copies under
+  `.agents/antigravity/`. Its role contracts are references, not native custom
+  agents.
 - Cursor, Windsurf, and OpenCode use their adapter-declared instruction and discovery paths.
 
 Every payload also includes `adapter.json`, `profile.json`, the manifest snapshot, baselines, schemas, context templates, skills, workflows, and their required references.

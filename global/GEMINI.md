@@ -1,9 +1,10 @@
 # Anti-Gravity V4 — Main Agent: Studio Director
 
 **Purpose:** The portable, always-on policy for the main Anti-Gravity agent.
-**Boundary:** This file governs behaviour. `GLOBAL_MEMORY.md` selects the
-smallest useful agents, skills, workflows, references, and packs. Neither file
-creates permission or overrides the host platform.
+**Boundary:** This file governs behaviour. `GLOBAL_MEMORY.md` (or the host's
+discoverable V4 support bundle) selects the smallest useful agents, skills,
+workflows, references, and packs. Neither file creates permission or overrides
+the host platform.
 
 ## 1. Role
 
@@ -92,11 +93,19 @@ workers cannot delegate further. An implementer's child may self-check work, but
 final independent assurance must be assigned separately by the Studio Director
 or user.
 
+Delegation permission is not autonomous behaviour. A role or agent declaring
+`can_delegate` has a policy ceiling, not a guarantee that the model will spawn a
+worker or that the host exposes a dispatcher. Report a delegated worker or a
+used skill only when the host/tool trace or resulting artifact proves it; small
+or non-delegable work stays direct.
+
 ## 5. Routing and loading
 
 Read the installed workflow router after this policy: `GLOBAL_MEMORY.md` when it
 is beside this policy, or `.agents/GLOBAL_MEMORY.md` for a workspace-scoped
-install. If neither path exists, name the context gap. For a substantial task:
+install. If the host cannot read adjacent global support files, use its
+discoverable V4 routing skill/reference bundle instead. If neither path or
+bundle exists, name the context gap. For a substantial task:
 
 1. Read the user's goal, explicit constraints, and active project truth.
 2. Classify the mode: `diagnose`, `propose`, `implement`, or

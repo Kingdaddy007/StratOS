@@ -122,6 +122,17 @@ MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 UNRESOLVED_TOKEN_PATTERN = re.compile(
     r"(?<!\$)\{\{[A-Za-z_][A-Za-z0-9_.-]*\}\}"
 )
+ZED_MANAGED_START = "<!-- BEGIN ANTIGRAVITY V4 ZED MANAGED BLOCK -->"
+ZED_MANAGED_END = "<!-- END ANTIGRAVITY V4 ZED MANAGED BLOCK -->"
+ZED_PROJECT_INSTRUCTION_PRIORITY = (
+    ".rules",
+    ".cursorrules",
+    ".windsurfrules",
+    ".clinerules",
+    ".github/copilot-instructions.md",
+    "AGENT.md",
+    "AGENTS.md",
+)
 PERSONAL_PATH_PATTERNS = (
     re.compile(r"(?i)file:///+[a-z]:/users/"),
     re.compile(r"(?i)[a-z]:[\\/]users[\\/]"),
@@ -994,6 +1005,75 @@ def validate_adapters(repo_root: Path) -> list[dict[str, str]]:
                 problems.append(
                     issue("adapter-agents", path.relative_to(repo_root), "unsupported agent_format")
                 )
+        if host == "zed":
+            agent_fields = {
+                "agents_target",
+                "support_skill",
+                "agent_format",
+                "native_custom_agents",
+                "policy_preamble",
+            }
+            missing_agent_fields = agent_fields - set(adapter)
+            if missing_agent_fields:
+                problems.append(
+                    issue(
+                        "adapter-agents",
+                        path.relative_to(repo_root),
+                        f"missing {sorted(missing_agent_fields)}",
+                    )
+                )
+            elif adapter.get("agent_format") != "zed-native-reference":
+                problems.append(
+                    issue("adapter-agents", path.relative_to(repo_root), "unsupported agent_format")
+                )
+            elif adapter.get("native_custom_agents") is not False:
+                problems.append(
+                    issue(
+                        "adapter-agents",
+                        path.relative_to(repo_root),
+                        "Zed native adapter must not claim custom-agent support",
+                    )
+                )
+            elif not isinstance(adapter.get("support_skill"), str) or not SKILL_NAME_PATTERN.fullmatch(
+                adapter["support_skill"]
+            ):
+                problems.append(
+                    issue(
+                        "adapter-agents",
+                        path.relative_to(repo_root),
+                        "Zed support_skill must be a valid skill name",
+                    )
+                )
+            required_install_fields = {
+                "root_name",
+                "instruction_target",
+                "router_target",
+                "user_profile_target",
+                "skills_target",
+                "workflows_target",
+                "agents_target",
+                "payload_target",
+            }
+            for scope in ("global_install", "workspace_install"):
+                install = adapter.get(scope)
+                if not isinstance(install, dict):
+                    problems.append(
+                        issue(
+                            "adapter-install",
+                            path.relative_to(repo_root),
+                            f"Zed adapter must declare {scope} targets",
+                        )
+                    )
+                else:
+                    missing_install_fields = required_install_fields - set(install)
+                    if missing_install_fields:
+                        problems.append(
+                            issue(
+                                "adapter-install",
+                                path.relative_to(repo_root),
+                                f"{scope} missing {sorted(missing_install_fields)}",
+                            )
+                        )
         capabilities = adapter.get("capabilities", {})
         for capability in (
             "read_file",
@@ -1764,6 +1844,108 @@ def render_codex_agent_toml(
     )
 
 
+def render_zed_agent_reference(
+    source: Path,
+    destination: Path,
+    available_skills: set[str],
+    selected_skills: list[str],
+) -> None:
+    """Keep canonical role contracts discoverable without claiming Zed agents."""
+    metadata, body = split_frontmatter(source)
+    missing_skills = sorted(set(selected_skills) - available_skills)
+    if missing_skills:
+        raise ValidationFailed(
+            f"Agent {metadata['id']} references unavailable skills: {', '.join(missing_skills)}"
+        )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        "\n".join(
+            [
+                "<!-- Generated V4 role reference for Zed. This is not a native Zed custom agent. -->",
+                "<!-- Zed's native Agent uses AGENTS.md and discoverable skills; use Codex or ACP for selectable role agents. -->",
+                "",
+                body.lstrip("\n").rstrip(),
+                "",
+                "## Available capability routes",
+                "Select only the route that matches the task. A route is not permission.",
+                *(f"- `skills/{skill_id}/SKILL.md`" for skill_id in selected_skills),
+                "",
+                "## Required specialist return",
+                *(f"- {item}" for item in metadata["return_contract"]),
+                "",
+                "## Delegation contract",
+                *(f"- {item}" for item in metadata["delegation_contract"]),
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def render_zed_support_skill(
+    repo_root: Path,
+    destination: Path,
+    manifest: dict[str, Any],
+    selected_profiles: tuple[str, ...],
+) -> None:
+    """Build a globally readable Zed skill containing V4 routing references."""
+    selected_profile_set = set(selected_profiles)
+    available_skills = {
+        entry["id"]
+        for entry in manifest["skills"]
+        if selected_profile_set.intersection(entry["profiles"])
+    }
+    destination.mkdir(parents=True, exist_ok=True)
+    (destination / "SKILL.md").write_text(
+        "\n".join(
+            [
+                "---",
+                "name: antigravity-v4",
+                "description: Route Anti-Gravity V4 work and consult its selected workflow and role references in Zed.",
+                "---",
+                "",
+                "# Anti-Gravity V4 support bundle",
+                "",
+                "Use this adapter support skill when a Zed task needs the V4 routing index, a workflow contract, or a canonical role reference.",
+                "Read `references/GLOBAL_MEMORY.md` first, then load only the relevant file under `references/workflows/` or `references/agent-contracts/`.",
+                "",
+                "This is a host support bundle, not one of the canonical V4 skills and not a selectable custom agent. It grants no authority, approval, or delegation guarantee.",
+                "Only resources selected by the active V4 profile are bundled here; dormant packs remain unavailable until the profile is changed.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    references = destination / "references"
+    copy_entry(repo_root / "global" / "GLOBAL_MEMORY.md", references / "GLOBAL_MEMORY.md")
+
+    workflow_root = references / "workflows"
+    for entry in manifest["workflows"]:
+        if not selected_profile_set.intersection(entry["profiles"]):
+            continue
+        source = repo_root / entry["path"]
+        destination = workflow_root / source.name
+        copy_entry(source, destination)
+        if destination.is_file():
+            # The canonical workflow links to sibling global skills. Rebase
+            # that portable link one level deeper inside this support skill.
+            text = destination.read_text(encoding="utf-8-sig")
+            destination.write_text(text.replace("../skills/", "../../../"), encoding="utf-8")
+
+    role_root = references / "agent-contracts"
+    for entry in manifest["agents"]:
+        if not selected_profile_set.intersection(entry["profiles"]):
+            continue
+        source = repo_root / entry["path"] / "AGENT.md"
+        metadata, _ = split_frontmatter(source)
+        render_zed_agent_reference(
+            source,
+            role_root / f"{entry['id']}.md",
+            available_skills,
+            agent_skills_for_profiles(metadata, selected_profiles),
+        )
+
+
 def activate_staged_payload(stage: Path, final: Path) -> None:
     """Replace a generated payload without deleting the last known-good copy first."""
     backup = final.parent / f".{final.name}-previous-{uuid.uuid4().hex[:8]}"
@@ -1812,10 +1994,13 @@ def build_payload(
         instruction_source = repo_root / manifest["canonical"]["policy"]
         instruction_target = stage / adapter["instruction_target"]
         instruction_target.parent.mkdir(parents=True, exist_ok=True)
-        header = (
+        header_lines = [
             f"<!-- Generated for {host} from canonical Anti-Gravity policy. "
-            "Host authority and approval controls remain authoritative. -->\n\n"
-        )
+            "Host authority and approval controls remain authoritative. -->",
+        ]
+        if adapter.get("policy_preamble"):
+            header_lines.extend(["", "## Host integration notes", adapter["policy_preamble"]])
+        header = "\n".join(header_lines) + "\n\n"
         instruction_target.write_text(
             header + instruction_source.read_text(encoding="utf-8-sig"),
             encoding="utf-8",
@@ -1905,6 +2090,37 @@ def build_payload(
                         available_skills,
                         selected_agent_skills,
                     )
+        elif adapter.get("agent_format") == "zed-native-reference":
+            agent_root = content_root / adapter["agents_target"]
+            available_skills = {
+                entry["id"]
+                for entry in manifest["skills"]
+                if set(selected_profiles).intersection(entry["profiles"])
+            }
+            for entry in manifest["agents"]:
+                # Zed has no native Markdown custom-agent registry. Keep every
+                # canonical role as an explicitly labelled support reference,
+                # even though the manifest's host compatibility list is limited
+                # to hosts that can run the role directly.
+                if not set(selected_profiles).intersection(entry["profiles"]):
+                    continue
+                source = repo_root / entry["path"] / "AGENT.md"
+                metadata, _ = split_frontmatter(source)
+                render_zed_agent_reference(
+                    source,
+                    agent_root / f"{entry['id']}.md",
+                    available_skills,
+                    agent_skills_for_profiles(metadata, selected_profiles),
+                )
+            support_skill = adapter.get("support_skill")
+            if not isinstance(support_skill, str) or not support_skill:
+                raise ValidationFailed("Zed adapter must declare a support_skill")
+            render_zed_support_skill(
+                repo_root,
+                content_root / adapter["skills_target"] / support_skill,
+                manifest,
+                selected_profiles,
+            )
 
         copy_entry(repo_root / "global" / "manifest.yaml", stage / "manifest.json")
         copy_entry(
@@ -2165,6 +2381,834 @@ def install_payload(
         shutil.rmtree(stage, ignore_errors=True)
         if activated_existing and backup.exists() and not install_root.exists():
             backup.replace(install_root)
+        raise
+
+
+def resolve_zed_global_home(target: Path) -> Path:
+    """Validate Zed's personal configuration directory for a global install."""
+    raw = target.expanduser()
+    ensure_existing_path_chain_not_reparse(raw)
+    base = raw.resolve()
+    home = Path.home().resolve()
+    anchor = Path(base.anchor).resolve()
+    if base in {home, anchor}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root Zed target; select the Zed configuration directory"
+        )
+    if base.name.lower() != "zed":
+        raise InstallationRefused(
+            "Native Zed global installation requires a target ending in Zed"
+        )
+    if base.exists() and not base.is_dir():
+        raise InstallationRefused(f"Zed global target must be a directory: {base}")
+    if base.parent == anchor:
+        raise InstallationRefused(
+            "Refusing to install directly below the filesystem root"
+        )
+    return base
+
+
+def resolve_zed_workspace(target: Path) -> Path:
+    """Validate one existing project directory for a Zed workspace install."""
+    raw_workspace = _absolute_without_resolving(target)
+    ensure_existing_path_chain_not_reparse(raw_workspace)
+    workspace = raw_workspace.resolve()
+    home = Path.home().resolve()
+    anchor = Path(workspace.anchor).resolve()
+    if workspace in {home, anchor}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root workspace; select one project directory"
+        )
+    if not workspace.is_dir():
+        raise InstallationRefused(
+            "Zed workspace installation requires an existing project directory"
+        )
+    if not workspace.is_relative_to(workspace.anchor):
+        raise InstallationRefused("Resolved Zed workspace escaped its filesystem anchor")
+    return workspace
+
+
+def zed_global_skill_root(override: Path | None = None) -> Path:
+    """Return Zed's documented global skill catalog root."""
+    raw = override if override is not None else Path.home() / ".agents" / "skills"
+    lexical = _absolute_without_resolving(raw)
+    ensure_existing_path_chain_not_reparse(lexical)
+    resolved = lexical.resolve()
+    if resolved in {Path(resolved.anchor).resolve(), Path.home().resolve()}:
+        raise InstallationRefused(
+            "Refusing a home or filesystem-root Zed skill catalog target"
+        )
+    if resolved.exists() and not resolved.is_dir():
+        raise InstallationRefused(f"Zed skill catalog target must be a directory: {resolved}")
+    return resolved
+
+
+def ensure_zed_global_destination(
+    zed_home: Path, skills_root: Path, destination: Path, context: str
+) -> Path:
+    """Reject reparse points in every existing component of a global target."""
+    lexical = _absolute_without_resolving(destination)
+    ensure_existing_path_chain_not_reparse(lexical)
+    if not (lexical.is_relative_to(zed_home) or lexical.is_relative_to(skills_root)):
+        raise InstallationRefused(f"{context} escaped the declared Zed roots: {lexical}")
+    return lexical
+
+
+def _zed_add_mapping(
+    mapping: dict[Path, Path], source: Path, target: Path
+) -> None:
+    if not source.exists():
+        return
+    if target in mapping.values():
+        raise InstallationRefused(f"Duplicate Zed target: {target}")
+    mapping[source] = target
+
+
+def _zed_content_mapping(
+    payload: Path,
+    adapter: dict[str, Any],
+    namespace_root: Path,
+    skills_root: Path,
+    mapping: dict[Path, Path],
+) -> None:
+    content_root = payload / adapter["content_root"]
+    if not content_root.is_dir():
+        raise InstallationRefused("Zed payload is missing its resource tree")
+    registry_names = {
+        adapter["skills_target"]: skills_root,
+        adapter["workflows_target"]: namespace_root / adapter["workflows_target"],
+        adapter["agents_target"]: namespace_root / adapter["agents_target"],
+    }
+    metadata_names = {"manifest.json", "adapter.json", "profile.json"}
+    for source in sorted(content_root.iterdir()):
+        if source.name in {"GLOBAL_MEMORY.md", "USER_PROFILE.md", "AGENTS.md"}:
+            continue
+        if source.name in registry_names:
+            target_root = registry_names[source.name]
+            for child in sorted(source.iterdir()):
+                _zed_add_mapping(mapping, child, target_root / child.name)
+            continue
+        if source.name in metadata_names:
+            _zed_add_mapping(mapping, source, namespace_root / source.name)
+            continue
+        if source.is_dir():
+            for child in sorted(source.iterdir()):
+                _zed_add_mapping(mapping, child, namespace_root / source.name / child.name)
+        else:
+            _zed_add_mapping(mapping, source, namespace_root / source.name)
+
+
+def zed_global_file_map(
+    payload: Path,
+    zed_home: Path,
+    adapter: dict[str, Any],
+    skills_root: Path | None = None,
+) -> dict[Path, Path]:
+    """Map a Zed payload to AGENTS.md, Zed support files, and global skills."""
+    global_install = adapter.get("global_install")
+    if not isinstance(global_install, dict):
+        raise InstallationRefused("Zed adapter does not declare global installation targets")
+    skills_root = zed_global_skill_root(skills_root)
+    namespace = zed_home / global_install["payload_target"]
+    mapping: dict[Path, Path] = {}
+    _zed_add_mapping(
+        mapping,
+        payload / adapter["instruction_target"],
+        zed_home / global_install["instruction_target"],
+    )
+    _zed_add_mapping(
+        mapping,
+        payload / adapter["content_root"] / "GLOBAL_MEMORY.md",
+        namespace / global_install["router_target"],
+    )
+    _zed_add_mapping(
+        mapping,
+        payload / "USER_PROFILE.md",
+        namespace / global_install["user_profile_target"],
+    )
+    _zed_content_mapping(
+        payload,
+        adapter,
+        namespace,
+        skills_root,
+        mapping,
+    )
+    return mapping
+
+
+def zed_workspace_file_map(
+    payload: Path,
+    workspace: Path,
+    adapter: dict[str, Any],
+) -> dict[Path, Path]:
+    """Map a Zed payload to one project's AGENTS.md, .agents tree, and skills."""
+    workspace_install = adapter.get("workspace_install")
+    if not isinstance(workspace_install, dict):
+        raise InstallationRefused("Zed adapter does not declare workspace installation targets")
+    support_root = workspace / workspace_install["root_name"]
+    namespace = support_root / workspace_install["payload_target"]
+    skills_root = support_root / workspace_install["skills_target"]
+    instruction_target = zed_workspace_instruction_target(workspace, adapter)
+    mapping: dict[Path, Path] = {}
+    _zed_add_mapping(
+        mapping,
+        payload / adapter["instruction_target"],
+        instruction_target,
+    )
+    _zed_add_mapping(
+        mapping,
+        payload / adapter["content_root"] / "GLOBAL_MEMORY.md",
+        namespace / workspace_install["router_target"],
+    )
+    _zed_add_mapping(
+        mapping,
+        payload / "USER_PROFILE.md",
+        namespace / workspace_install["user_profile_target"],
+    )
+    _zed_content_mapping(
+        payload,
+        adapter,
+        namespace,
+        skills_root,
+        mapping,
+    )
+    return mapping
+
+
+def _zed_extract_managed_block(text: str) -> str | None:
+    starts = text.count(ZED_MANAGED_START)
+    ends = text.count(ZED_MANAGED_END)
+    if starts == 0 and ends == 0:
+        return None
+    if starts != 1 or ends != 1:
+        raise InstallationRefused("Zed AGENTS.md has malformed Anti-Gravity managed markers")
+    start = text.index(ZED_MANAGED_START)
+    end = text.index(ZED_MANAGED_END, start)
+    if end < start:
+        raise InstallationRefused("Zed AGENTS.md has inverted Anti-Gravity managed markers")
+    return text[start : end + len(ZED_MANAGED_END)]
+
+
+def merge_zed_policy(existing: str | None, generated: str) -> str:
+    """Append or replace only the installer-owned Zed policy block."""
+    block = (
+        f"{ZED_MANAGED_START}\n"
+        f"{generated.rstrip()}\n"
+        f"{ZED_MANAGED_END}"
+    )
+    if not existing:
+        return block + "\n"
+    managed = _zed_extract_managed_block(existing)
+    if managed is None:
+        return existing.rstrip() + "\n\n" + block + "\n"
+    start = existing.index(ZED_MANAGED_START)
+    try:
+        end = existing.index(ZED_MANAGED_END, start) + len(ZED_MANAGED_END)
+    except ValueError as error:
+        raise InstallationRefused(
+            "Zed AGENTS.md has inverted Anti-Gravity managed markers"
+        ) from error
+    return existing[:start] + block + existing[end:]
+
+
+def _zed_safe_label(label: str, record_path: Path) -> PurePosixPath:
+    path = PurePosixPath(label)
+    windows_path = PureWindowsPath(label)
+    if (
+        not label
+        or "\x00" in label
+        or "\\" in label
+        or path.is_absolute()
+        or windows_path.is_absolute()
+        or bool(windows_path.drive)
+        or path == PurePosixPath(".")
+        or path.as_posix() != label
+        or ".." in path.parts
+    ):
+        raise InstallationRefused(
+            f"Unsafe Zed installation record target {record_path}: {label!r}"
+        )
+    return path
+
+
+def zed_global_target_label(
+    target: Path, zed_home: Path, skills_root: Path
+) -> str:
+    if target.is_relative_to(zed_home):
+        return target.relative_to(zed_home).as_posix()
+    if target.is_relative_to(skills_root):
+        return "skills/" + target.relative_to(skills_root).as_posix()
+    raise InstallationRefused(f"Zed target escaped its declared roots: {target}")
+
+
+def zed_global_target_from_label(
+    label: str, zed_home: Path, skills_root: Path, record_path: Path
+) -> Path:
+    path = _zed_safe_label(label, record_path)
+    if path.parts and path.parts[0] == "skills":
+        if len(path.parts) == 1:
+            raise InstallationRefused(
+                f"Unsafe Zed skill target in installation record {record_path}: {label!r}"
+            )
+        return skills_root.joinpath(*path.parts[1:])
+    return zed_home.joinpath(*path.parts)
+
+
+def _zed_load_record(
+    record_path: Path, expected_scope: str
+) -> tuple[set[str], dict[str, str]]:
+    if not record_path.exists():
+        return set(), {}
+    record = load_json(record_path)
+    if record.get("host") != "zed" or record.get("scope") != expected_scope:
+        raise InstallationRefused(f"Invalid Zed installation record: {record_path}")
+    raw_targets = record.get("direct_targets")
+    raw_digests = record.get("direct_digests")
+    if not isinstance(raw_targets, list) or not all(
+        isinstance(item, str) for item in raw_targets
+    ):
+        raise InstallationRefused(f"Invalid Zed installation targets: {record_path}")
+    if not isinstance(raw_digests, dict) or not all(
+        isinstance(key, str) and isinstance(value, str)
+        for key, value in raw_digests.items()
+    ):
+        raise InstallationRefused(f"Invalid Zed installation ownership: {record_path}")
+    return set(raw_targets), raw_digests
+
+
+def _zed_entry_matches(source: Path, target: Path) -> bool:
+    if not target.exists():
+        return False
+    if source.is_file() and target.is_file():
+        return sha256_file(source) == sha256_file(target)
+    if source.is_dir() and target.is_dir():
+        return directory_digest(source) == directory_digest(target)
+    return False
+
+
+def zed_workspace_instruction_target(workspace: Path, adapter: dict[str, Any]) -> Path:
+    """Return the active project instruction slot or refuse silent precedence loss."""
+    install = adapter.get("workspace_install")
+    if not isinstance(install, dict):
+        raise InstallationRefused("Zed adapter does not declare workspace installation targets")
+    configured = PurePosixPath(install["instruction_target"]).as_posix()
+    try:
+        configured_index = ZED_PROJECT_INSTRUCTION_PRIORITY.index(configured)
+    except ValueError:
+        configured_index = len(ZED_PROJECT_INSTRUCTION_PRIORITY)
+    target = ensure_workspace_destination(
+        workspace,
+        workspace / Path(*PurePosixPath(configured).parts),
+        "Zed workspace instruction target",
+    )
+    for relative in ZED_PROJECT_INSTRUCTION_PRIORITY[:configured_index]:
+        candidate = workspace / Path(*PurePosixPath(relative).parts)
+        if candidate.exists() or candidate.is_symlink():
+            ensure_workspace_destination(workspace, candidate, "Zed project instruction precedence check")
+            raise InstallationRefused(
+                "Zed would load a higher-priority project instruction file before "
+                f"AGENTS.md: {candidate}. Remove or reconcile it before installing V4."
+            )
+    return target
+
+
+def zed_global_changes(
+    payload: Path,
+    zed_home: Path,
+    adapter: dict[str, Any],
+    skills_root: Path | None = None,
+) -> dict[str, list[str]]:
+    skills_root = zed_global_skill_root(skills_root)
+    mapping = zed_global_file_map(payload, zed_home, adapter, skills_root)
+    global_install = adapter["global_install"]
+    namespace = zed_home / global_install["payload_target"]
+    record_path = namespace / "installation.json"
+    ensure_zed_global_destination(
+        zed_home, skills_root, namespace, "Zed managed namespace"
+    )
+    ensure_existing_path_chain_not_reparse(record_path)
+    if namespace.exists() and not record_path.exists():
+        raise InstallationRefused(
+            f"Refusing to replace unmanaged Zed namespace: {namespace}"
+        )
+    previous_targets, previous_digests = _zed_load_record(record_path, "global")
+    additions: list[str] = []
+    replacements: list[str] = []
+    unchanged: list[str] = []
+    instruction_target = zed_home / global_install["instruction_target"]
+    for source, target in mapping.items():
+        target = ensure_zed_global_destination(
+            zed_home, skills_root, target, "Zed global target"
+        )
+        label = zed_global_target_label(target, zed_home, skills_root)
+        if target == instruction_target:
+            existing = target.read_text(encoding="utf-8-sig") if target.exists() else None
+            candidate = merge_zed_policy(existing, source.read_text(encoding="utf-8-sig"))
+            if not target.exists():
+                additions.append(label)
+            elif candidate == existing:
+                unchanged.append(label)
+            else:
+                replacements.append(label)
+            continue
+        if not target.exists():
+            additions.append(label)
+        elif _zed_entry_matches(source, target):
+            unchanged.append(label)
+        elif (
+            label in previous_targets
+            and previous_digests.get(label) == entry_digest(target)
+        ) or target.is_relative_to(namespace):
+            replacements.append(label)
+        else:
+            raise InstallationRefused(
+                "Refusing to replace unmanaged or locally modified Zed entry: "
+                f"{label}. Choose a clean target or remove the conflicting entry yourself."
+            )
+    current_targets = {
+        zed_global_target_label(target, zed_home, skills_root)
+        for target in mapping.values()
+    }
+    stale: list[str] = []
+    for label in sorted(previous_targets - current_targets):
+        target = zed_global_target_from_label(label, zed_home, skills_root, record_path)
+        ensure_zed_global_destination(
+            zed_home, skills_root, target, "Zed stale global target"
+        )
+        if target.exists() and previous_digests.get(label) == entry_digest(target):
+            stale.append(label)
+    return {
+        "add": sorted(additions),
+        "replace": sorted(replacements),
+        "remove": stale,
+        "unchanged": sorted(unchanged),
+    }
+
+
+def _zed_workspace_record_path(workspace: Path, adapter: dict[str, Any]) -> Path:
+    install = adapter["workspace_install"]
+    return (
+        workspace
+        / install["root_name"]
+        / install["payload_target"]
+        / "installation.json"
+    )
+
+
+def zed_workspace_changes(
+    payload: Path,
+    workspace: Path,
+    adapter: dict[str, Any],
+) -> dict[str, list[str]]:
+    mapping = zed_workspace_file_map(payload, workspace, adapter)
+    install = adapter["workspace_install"]
+    support_root = workspace / install["root_name"]
+    namespace = support_root / install["payload_target"]
+    record_path = namespace / "installation.json"
+    ensure_workspace_destination(workspace, support_root, "Zed workspace resource root")
+    ensure_workspace_destination(workspace, namespace, "Zed workspace managed namespace")
+    if support_root.exists() and not support_root.is_dir():
+        raise InstallationRefused(f"Zed workspace resource root must be a directory: {support_root}")
+    if namespace.exists() and not record_path.exists():
+        raise InstallationRefused(
+            f"Refusing to replace unmanaged Zed workspace namespace: {namespace}"
+        )
+    previous_targets, previous_digests = _zed_load_record(record_path, "workspace")
+    additions: list[str] = []
+    replacements: list[str] = []
+    unchanged: list[str] = []
+    instruction_target = workspace / install["instruction_target"]
+    for source, target in mapping.items():
+        target = ensure_workspace_destination(workspace, target, "Zed workspace target")
+        label = target.relative_to(workspace).as_posix()
+        if target == instruction_target:
+            existing = target.read_text(encoding="utf-8-sig") if target.exists() else None
+            candidate = merge_zed_policy(existing, source.read_text(encoding="utf-8-sig"))
+            if not target.exists():
+                additions.append(label)
+            elif candidate == existing:
+                unchanged.append(label)
+            else:
+                replacements.append(label)
+            continue
+        if not target.exists():
+            additions.append(label)
+        elif _zed_entry_matches(source, target):
+            unchanged.append(label)
+        elif (
+            label in previous_targets
+            and previous_digests.get(label) == entry_digest(target)
+        ) or target.is_relative_to(namespace):
+            replacements.append(label)
+        else:
+            raise InstallationRefused(
+                "Refusing to replace unmanaged or locally modified Zed workspace entry: "
+                f"{label}. Choose a clean workspace or remove the conflicting entry yourself."
+            )
+    current_targets = {
+        target.relative_to(workspace).as_posix() for target in mapping.values()
+    }
+    previous_paths = {
+        label: workspace_record_target(workspace, label, record_path)
+        for label in previous_targets | set(previous_digests)
+    }
+    stale = sorted(
+        label
+        for label in previous_targets - current_targets
+        if previous_paths[label].exists()
+        and previous_digests.get(label) == entry_digest(previous_paths[label])
+    )
+    return {
+        "add": sorted(additions),
+        "replace": sorted(replacements),
+        "remove": stale,
+        "unchanged": sorted(unchanged),
+    }
+
+
+def _zed_stage_path(stage_root: Path, label: str) -> Path:
+    return stage_root / "direct" / Path(*_zed_safe_label(label, stage_root).parts)
+
+
+def install_zed_global(
+    payload: Path,
+    target: Path,
+    dry_run: bool,
+    assume_yes: bool,
+    skills_root: Path | None = None,
+) -> dict[str, Any]:
+    """Install V4 into Zed's native global instructions and skill catalog."""
+    payload = payload.resolve()
+    if not payload.is_dir():
+        raise InstallationRefused(f"Payload does not exist: {payload}")
+    adapter = load_json(payload / "adapter.json")
+    if adapter.get("host") != "zed":
+        raise InstallationRefused("Zed global installation requires a Zed payload")
+    zed_home = resolve_zed_global_home(target)
+    skills_root = zed_global_skill_root(skills_root)
+    mapping = zed_global_file_map(payload, zed_home, adapter, skills_root)
+    changes = zed_global_changes(payload, zed_home, adapter, skills_root)
+    install = adapter["global_install"]
+    namespace = zed_home / install["payload_target"]
+    result: dict[str, Any] = {
+        "status": "dry-run" if dry_run else "pending",
+        "host": "zed",
+        "scope": "global",
+        "target": str(zed_home),
+        "skills_root": str(skills_root),
+        "managed_namespace": str(namespace),
+        "managed_record": str(namespace / "installation.json"),
+        "changes": changes,
+        "backup": None,
+        "direct_discovery": {
+            "rule": str(zed_home / install["instruction_target"]),
+            "router": str(namespace / install["router_target"]),
+            "skills": str(skills_root),
+            "workflows": str(namespace / install["workflows_target"]),
+            "role_references": str(namespace / install["agents_target"]),
+            "runtime_support_skill": str(skills_root / adapter["support_skill"]),
+        },
+    }
+    if dry_run:
+        return result
+    if not assume_yes:
+        raise InstallationRefused(
+            "Zed global installation requires explicit confirmation; rerun with --yes after reviewing --dry-run"
+        )
+
+    timestamp = utc_timestamp()
+    backup_root = zed_home / ".antigravity-backups" / timestamp
+    stage_root = zed_home / f".antigravity-zed-stage-{uuid.uuid4().hex}"
+    namespace_source = stage_root / "namespace"
+    activated: list[tuple[Path, Path | None]] = []
+    try:
+        ensure_existing_path_chain_not_reparse(zed_home)
+        ensure_existing_path_chain_not_reparse(skills_root)
+        ensure_existing_path_chain_not_reparse(backup_root)
+        ensure_existing_path_chain_not_reparse(stage_root)
+        zed_home.mkdir(parents=True, exist_ok=True)
+        stage_root.mkdir(parents=True, exist_ok=False)
+        if namespace.exists():
+            _ensure_not_reparse(namespace)
+            shutil.copytree(filesystem_path(namespace), filesystem_path(namespace_source))
+        else:
+            namespace_source.mkdir(parents=True, exist_ok=True)
+        instruction_target = zed_home / install["instruction_target"]
+        namespace_dirty = not namespace.exists()
+        unchanged = set(changes["unchanged"])
+        for source, destination in mapping.items():
+            destination = ensure_zed_global_destination(
+                zed_home, skills_root, destination, "Zed global target"
+            )
+            label = zed_global_target_label(destination, zed_home, skills_root)
+            if destination.is_relative_to(namespace):
+                staged = namespace_source / destination.relative_to(namespace)
+                if not _zed_entry_matches(source, destination):
+                    copy_entry(source, staged)
+                    namespace_dirty = True
+                continue
+            if label in unchanged:
+                continue
+            staged = _zed_stage_path(stage_root, label)
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            if destination == instruction_target:
+                existing = destination.read_text(encoding="utf-8-sig") if destination.exists() else None
+                staged.write_text(
+                    merge_zed_policy(existing, source.read_text(encoding="utf-8-sig")),
+                    encoding="utf-8",
+                )
+            else:
+                copy_entry(source, staged)
+
+        for source, destination in mapping.items():
+            destination = ensure_zed_global_destination(
+                zed_home, skills_root, destination, "Zed global target"
+            )
+            label = zed_global_target_label(destination, zed_home, skills_root)
+            if destination.is_relative_to(namespace) or label in unchanged:
+                continue
+            staged = _zed_stage_path(stage_root, label)
+            backup_path: Path | None = None
+            if destination.exists():
+                _ensure_not_reparse(destination)
+                backup_path = backup_root / Path(*_zed_safe_label(label, stage_root).parts)
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(destination, backup_path)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(staged, destination)
+            activated.append((destination, backup_path))
+
+        for label in changes["remove"]:
+            destination = zed_global_target_from_label(
+                label, zed_home, skills_root, namespace / "installation.json"
+            )
+            ensure_zed_global_destination(
+                zed_home, skills_root, destination, "Zed stale global target"
+            )
+            if destination.is_relative_to(namespace):
+                namespace_dirty = True
+                relative = destination.relative_to(namespace)
+                retired = namespace_source / relative
+                if retired.exists():
+                    _remove_entry(retired)
+                continue
+            backup_path = backup_root / Path(*_zed_safe_label(label, stage_root).parts)
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(destination, backup_path)
+            activated.append((destination, backup_path))
+
+        if namespace_dirty:
+            namespace_backup: Path | None = None
+            if namespace.exists():
+                namespace_backup = backup_root / "antigravity"
+                namespace_backup.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(namespace, namespace_backup)
+            namespace.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(namespace_source, namespace)
+            activated.append((namespace, namespace_backup))
+
+        record = {
+            "schema_version": 1,
+            "host": "zed",
+            "scope": "global",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "payload": str(payload),
+            "zed_home": str(zed_home),
+            "skills_root": str(skills_root),
+            "backup": str(backup_root) if backup_root.exists() else None,
+            "direct_targets": sorted(
+                zed_global_target_label(destination, zed_home, skills_root)
+                for destination in mapping.values()
+            ),
+            "direct_digests": {
+                zed_global_target_label(destination, zed_home, skills_root): entry_digest(destination)
+                for destination in mapping.values()
+            },
+            "removed_targets": list(changes["remove"]),
+        }
+        write_json_atomic(namespace / "installation.json", record)
+        missing = [str(destination) for destination in mapping.values() if not destination.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        result["backup"] = str(backup_root) if backup_root.exists() else None
+        result["status"] = "installed"
+        return result
+    except Exception:
+        for destination, backup_path in reversed(activated):
+            if destination.exists():
+                _remove_entry(destination)
+            if backup_path and backup_path.exists():
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(backup_path, destination)
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        raise
+
+
+def install_zed_workspace(
+    payload: Path,
+    target: Path,
+    dry_run: bool,
+    assume_yes: bool,
+) -> dict[str, Any]:
+    """Install V4 into one project using Zed's project AGENTS.md and .agents paths."""
+    payload = payload.resolve()
+    if not payload.is_dir():
+        raise InstallationRefused(f"Payload does not exist: {payload}")
+    adapter = load_json(payload / "adapter.json")
+    if adapter.get("host") != "zed":
+        raise InstallationRefused("Zed workspace installation requires a Zed payload")
+    workspace = resolve_zed_workspace(target)
+    mapping = zed_workspace_file_map(payload, workspace, adapter)
+    changes = zed_workspace_changes(payload, workspace, adapter)
+    install = adapter["workspace_install"]
+    support_root = workspace / install["root_name"]
+    namespace = support_root / install["payload_target"]
+    result: dict[str, Any] = {
+        "status": "dry-run" if dry_run else "pending",
+        "host": "zed",
+        "scope": "workspace",
+        "target": str(workspace),
+        "managed_namespace": str(namespace),
+        "managed_record": str(namespace / "installation.json"),
+        "changes": changes,
+        "backup": None,
+        "direct_discovery": {
+            "rule": str(workspace / install["instruction_target"]),
+            "router": str(namespace / install["router_target"]),
+            "skills": str(support_root / install["skills_target"]),
+            "workflows": str(namespace / install["workflows_target"]),
+            "role_references": str(namespace / install["agents_target"]),
+            "runtime_support_skill": str(
+                support_root / install["skills_target"] / adapter["support_skill"]
+            ),
+        },
+    }
+    if dry_run:
+        return result
+    if not assume_yes:
+        raise InstallationRefused(
+            "Zed workspace installation requires explicit confirmation; rerun with --yes after reviewing --dry-run"
+        )
+
+    timestamp = utc_timestamp()
+    backup_root = support_root / ".antigravity-backups" / timestamp
+    stage_root = support_root / f".antigravity-zed-workspace-stage-{uuid.uuid4().hex}"
+    namespace_source = stage_root / "namespace"
+    activated: list[tuple[Path, Path | None]] = []
+    try:
+        ensure_workspace_destination(workspace, support_root, "Zed workspace resource root")
+        ensure_workspace_destination(workspace, stage_root, "Zed workspace staging root")
+        ensure_workspace_destination(workspace, backup_root, "Zed workspace backup root")
+        support_root.mkdir(parents=True, exist_ok=True)
+        stage_root.mkdir(parents=True, exist_ok=False)
+        if namespace.exists():
+            _ensure_not_reparse(namespace)
+            shutil.copytree(filesystem_path(namespace), filesystem_path(namespace_source))
+        else:
+            namespace_source.mkdir(parents=True, exist_ok=True)
+        instruction_target = workspace / install["instruction_target"]
+        namespace_dirty = not namespace.exists()
+        unchanged = set(changes["unchanged"])
+        for source, destination in mapping.items():
+            destination = ensure_workspace_destination(workspace, destination, "Zed workspace target")
+            label = destination.relative_to(workspace).as_posix()
+            if destination.is_relative_to(namespace):
+                staged = namespace_source / destination.relative_to(namespace)
+                if not _zed_entry_matches(source, destination):
+                    copy_entry(source, staged)
+                    namespace_dirty = True
+                continue
+            if label in unchanged:
+                continue
+            staged = _zed_stage_path(stage_root, label)
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            if destination == instruction_target:
+                existing = destination.read_text(encoding="utf-8-sig") if destination.exists() else None
+                staged.write_text(
+                    merge_zed_policy(existing, source.read_text(encoding="utf-8-sig")),
+                    encoding="utf-8",
+                )
+            else:
+                copy_entry(source, staged)
+
+        for source, destination in mapping.items():
+            destination = ensure_workspace_destination(workspace, destination, "Zed workspace target")
+            label = destination.relative_to(workspace).as_posix()
+            if destination.is_relative_to(namespace) or label in unchanged:
+                continue
+            staged = _zed_stage_path(stage_root, label)
+            backup_path: Path | None = None
+            if destination.exists():
+                _ensure_not_reparse(destination)
+                backup_path = backup_root / Path(*_zed_safe_label(label, stage_root).parts)
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(destination, backup_path)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(staged, destination)
+            activated.append((destination, backup_path))
+
+        for label in changes["remove"]:
+            destination = workspace_record_target(workspace, label, namespace / "installation.json")
+            if destination.is_relative_to(namespace):
+                namespace_dirty = True
+                retired = namespace_source / destination.relative_to(namespace)
+                if retired.exists():
+                    _remove_entry(retired)
+                continue
+            backup_path = backup_root / Path(*_zed_safe_label(label, stage_root).parts)
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(destination, backup_path)
+            activated.append((destination, backup_path))
+
+        if namespace_dirty:
+            namespace_backup: Path | None = None
+            if namespace.exists():
+                namespace_backup = backup_root / namespace.relative_to(workspace)
+                namespace_backup.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(namespace, namespace_backup)
+            namespace.parent.mkdir(parents=True, exist_ok=True)
+            _replace_entry(namespace_source, namespace)
+            activated.append((namespace, namespace_backup))
+
+        record = {
+            "schema_version": 1,
+            "host": "zed",
+            "scope": "workspace",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "payload": str(payload),
+            "workspace": str(workspace),
+            "backup": str(backup_root) if backup_root.exists() else None,
+            "direct_targets": sorted(
+                destination.relative_to(workspace).as_posix()
+                for destination in mapping.values()
+            ),
+            "direct_digests": {
+                destination.relative_to(workspace).as_posix(): entry_digest(destination)
+                for destination in mapping.values()
+            },
+            "removed_targets": list(changes["remove"]),
+        }
+        write_json_atomic(namespace / "installation.json", record)
+        missing = [str(destination) for destination in mapping.values() if not destination.exists()]
+        if missing:
+            raise InstallationRefused(
+                "Post-install validation failed; missing: " + ", ".join(missing)
+            )
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
+        result["backup"] = str(backup_root) if backup_root.exists() else None
+        result["status"] = "installed"
+        return result
+    except Exception:
+        for destination, backup_path in reversed(activated):
+            if destination.exists():
+                _remove_entry(destination)
+            if backup_path and backup_path.exists():
+                backup_path.parent.mkdir(parents=True, exist_ok=True)
+                _replace_entry(backup_path, destination)
+        shutil.rmtree(filesystem_path(stage_root), ignore_errors=True)
         raise
 
 
@@ -3263,6 +4307,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="For host=antigravity, install into one project workspace without changing GEMINI_HOME",
     )
+    install_parser.add_argument(
+        "--zed-global",
+        action="store_true",
+        help="For host=zed, install into Zed's native global AGENTS.md and skill catalog",
+    )
+    install_parser.add_argument(
+        "--zed-workspace",
+        action="store_true",
+        help="For host=zed, install into one project AGENTS.md and .agents tree",
+    )
     return parser
 
 
@@ -3280,6 +4334,11 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"status": "built", "payload": str(payload)}, indent=2))
             return 0
         if args.command == "install":
+            if args.host == "zed" and not (args.zed_global or args.zed_workspace):
+                raise InstallationRefused(
+                    "Zed installation requires --zed-global or --zed-workspace; "
+                    "the generic compatibility namespace is not a native Zed install"
+                )
             if args.codex_global and args.host != "codex":
                 raise InstallationRefused("--codex-global is only valid with --host codex")
             if args.codex_workspace and args.host != "codex":
@@ -3292,12 +4351,18 @@ def main(argv: list[str] | None = None) -> int:
                 raise InstallationRefused(
                     "--antigravity-workspace is only valid with --host antigravity"
                 )
+            if args.zed_global and args.host != "zed":
+                raise InstallationRefused("--zed-global is only valid with --host zed")
+            if args.zed_workspace and args.host != "zed":
+                raise InstallationRefused("--zed-workspace is only valid with --host zed")
             if sum(
                 (
                     args.codex_global,
                     args.codex_workspace,
                     args.antigravity_global,
                     args.antigravity_workspace,
+                    args.zed_global,
+                    args.zed_workspace,
                 )
             ) > 1:
                 raise InstallationRefused(
@@ -3326,6 +4391,10 @@ def main(argv: list[str] | None = None) -> int:
                         if args.antigravity_global
                         else install_antigravity_workspace(payload, args.target, True, False)
                         if args.antigravity_workspace
+                        else install_zed_global(payload, args.target, True, False)
+                        if args.zed_global
+                        else install_zed_workspace(payload, args.target, True, False)
+                        if args.zed_workspace
                         else install_payload(payload, args.target, args.host, True, False)
                     )
             else:
@@ -3339,6 +4408,10 @@ def main(argv: list[str] | None = None) -> int:
                     if args.antigravity_global
                     else install_antigravity_workspace(payload, args.target, False, args.yes)
                     if args.antigravity_workspace
+                    else install_zed_global(payload, args.target, False, args.yes)
+                    if args.zed_global
+                    else install_zed_workspace(payload, args.target, False, args.yes)
+                    if args.zed_workspace
                     else install_payload(payload, args.target, args.host, False, args.yes)
                 )
             result["installation_option"] = selected_option

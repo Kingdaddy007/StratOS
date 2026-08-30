@@ -8,7 +8,7 @@ flowchart LR
   source --> compiler["os.py validate/build"]
   manifest --> compiler
   compiler --> dist["dist/<host>/ generated payload"]
-  dist --> adapters["Gemini / Codex / Cursor / Windsurf / OpenCode"]
+  dist --> adapters["Antigravity / Gemini / Codex / Cursor / Windsurf / OpenCode / Zed"]
   adapters --> host["host instruction + skills + workflows"]
 ```
 

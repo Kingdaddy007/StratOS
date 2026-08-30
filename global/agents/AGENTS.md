@@ -22,6 +22,11 @@ behaviour and authority contract. It is not itself a host installation file.
 - `can_delegate: true` is valid only when the canonical tool ceiling includes
   invoke, define-worker, messaging, and agent-management capabilities. Host
   adapters must map those capabilities to real host tools or fail validation.
+- `can_delegate` is a policy ceiling, not a promise of autonomous dispatch. A
+  model may choose direct work, and a host may expose no usable collaboration
+  tool. Do not claim a worker was created or a skill was used without tool or
+  artifact evidence; when dispatch is unavailable or not worthwhile, work
+  directly within the charter.
 - The Studio Director owns the parent route. A specialist follows an assigned
   route inside its charter or reports that another route is needed; it does not
   silently replace the parent workflow.

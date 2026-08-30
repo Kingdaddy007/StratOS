@@ -5,15 +5,42 @@
   "content_root": ".",
   "instruction_target": "AGENTS.md",
   "skills_target": "skills",
-  "workflows_target": "prompts",
+  "workflows_target": "workflows",
+  "agents_target": "agent-contracts",
+  "support_skill": "antigravity-v4",
+  "agent_format": "zed-native-reference",
+  "native_custom_agents": false,
+  "policy_preamble": "Zed's native Agent can load this AGENTS.md and the V4 skills, but it does not turn Markdown role contracts into selectable custom agents. The six canonical role contracts are kept as references under the dedicated antigravity/ namespace. The globally readable antigravity-v4 support skill contains the routing index and selected workflow/role references; namespace copies are for inspection and provenance. Real Codex custom agents require the Codex adapter or an ACP external agent.",
+  "global_install": {
+    "root_name": "Zed",
+    "instruction_target": "AGENTS.md",
+    "router_target": "GLOBAL_MEMORY.md",
+    "user_profile_target": "USER_PROFILE.md",
+    "skills_target": "~/.agents/skills",
+    "workflows_target": "workflows",
+    "agents_target": "agent-contracts",
+    "payload_target": "antigravity"
+  },
+  "workspace_install": {
+    "root_name": ".agents",
+    "instruction_target": "AGENTS.md",
+    "router_target": "GLOBAL_MEMORY.md",
+    "user_profile_target": "USER_PROFILE.md",
+    "skills_target": "skills",
+    "workflows_target": "workflows",
+    "agents_target": "agent-contracts",
+    "payload_target": "antigravity"
+  },
   "supports_slash_commands": true,
-  "approval_model": "mixed",
+  "approval_model": "host-enforced",
   "capabilities": {
     "read_file": "host-native file reading",
     "list_files": "host-native workspace listing",
     "search_text": "host-native repository search",
     "edit_file": "host-native patch or file editing",
     "run_command": "host-native terminal execution",
-    "request_approval": "host-native confirmation gate"
+    "request_approval": "host-native confirmation gate",
+    "load_skill": "Zed Agent skill tool and slash/@ invocation",
+    "invoke_agent": "Zed Agent spawn_agent tool when enabled by the active profile and version"
   }
 }

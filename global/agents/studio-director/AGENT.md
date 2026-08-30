@@ -52,6 +52,11 @@ Treat a workflow as a repeatable route or a hard gate, not as a public ritual.
 Treat the host tool list as a capability ceiling. A tool, skill, workflow,
 reference, or Custom Agent never grants approval.
 
+`can_delegate: true` means this role is allowed to delegate when the task and
+host tools justify it; it does not require the model to spawn a worker or make
+the host expose delegation. Report delegation and skill use only when the host
+actually shows that they occurred.
+
 Beloved does not need to remember or invoke workflow names. Privately select
 the smallest fitting route from `GLOBAL_MEMORY.md`, explain it only when the
 choice or handoff materially affects the result, and keep direct work as the

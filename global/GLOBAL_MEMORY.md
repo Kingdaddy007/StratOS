@@ -3,11 +3,12 @@
 **Purpose:** Choose the smallest useful agent, skill, workflow, reference, pack,
 and evidence level for a task.
 **Boundary:** The active host policy is the main-agent policy: `AGENTS.md` on
-Codex and the generated `GEMINI.md` on supported Gemini/Antigravity surfaces.
+Codex and Zed, and the generated `GEMINI.md` on supported Gemini/Antigravity
+surfaces.
 This file routes resources. The manifest is the exact canonical inventory.
 None of these files grants authority.
 
-**Live V4 checkpoint (2026-08-21):** the manifest contains 48 skills, 17
+**Live V4 checkpoint (2026-08-31):** the manifest contains 49 skills, 17
 workflows, 6 agents, and 4 profiles. These counts are inventory facts, not a
 quality score or a target to increase. The research synthesis and workflow
 survival ledgers record the current upgrade decisions.
@@ -32,7 +33,7 @@ Integrated answer or approval gate
 
 | Part | Job | Load rule |
 | --- | --- | --- |
-| Active host policy (`AGENTS.md` for Codex; generated `GEMINI.md` for supported Gemini/Antigravity surfaces) | Main agent: authority, behaviour, quality, and stop rules | Always |
+| Active host policy (`AGENTS.md` for Codex/Zed; generated `GEMINI.md` for supported Gemini/Antigravity surfaces) | Main agent: authority, behaviour, quality, and stop rules | Always |
 | `GLOBAL_MEMORY.md` | Route task shape to the right resources | Always |
 | `manifest.yaml` | Exact machine-readable registry and pack membership | Build/validation and inventory only |
 | `agents/` | Six reusable Director/lead contracts | When the host supports custom agents and the role is useful |
@@ -61,6 +62,12 @@ Director responsibility. A workflow name in the request is an explicit routing
 preference, not permission and not a requirement for the system to discover the
 right route.
 
+On a Zed global install, load the discoverable `antigravity-v4` support skill
+when the task needs this router or a workflow/role reference. Its bundled
+references are the readable route surface; files beside Zed's personal
+`AGENTS.md` are retained for inspection and provenance, not assumed to be
+accessible to project-scoped file tools.
+
 Resolve a selected workflow from the `workflows/` directory beside this routing
 file, using `workflow-<id>.md`. Workflows are portable contracts, not assumed
 host slash commands. Load only the selected contract and any route it explicitly
@@ -84,6 +91,11 @@ These routes are conditional and may compose. `task-dispatch` is normally an
 internal sub-route of a build or evidence task. `test-strategy` defines credible
 proof; `verify-project` interprets the evidence actually obtained. Do not turn
 them into a waterfall or run all of them merely because they exist.
+
+Delegation permission is not autonomous behaviour. `can_delegate: true` only
+describes the role's policy ceiling; the model may continue directly and the
+host may not expose a real dispatcher. Claim a delegated worker or a used skill
+only when the host/tool trace or resulting artifact proves it.
 
 `diagnose` and normal questions are read-only. No workflow can upgrade that
 permission. Destructive, external, production, spending, publication,

@@ -60,6 +60,9 @@ function Select-InstallTarget {
         if ($TargetHost -eq 'codex') {
             return Get-FullPath $GlobalConfig
         }
+        if ($TargetHost -eq 'zed') {
+            return Get-FullPath $GlobalConfig
+        }
         return Add-Namespace $GlobalConfig
     }
 
@@ -71,7 +74,7 @@ function Select-InstallTarget {
             'cursor' { return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
             'windsurf' { return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
             'opencode' { return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
-            'zed' { return Join-Path $env:USERPROFILE '.config\zed\prompts\antigravity' }
+            'zed' { return Join-Path $env:APPDATA 'Zed' }
             default { throw "Unsupported host '$TargetHost'." }
         }
     }
@@ -85,7 +88,7 @@ Choose a host:
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
-  [7] Zed                           -> ~/.config/zed/prompts/antigravity
+  [7] Zed                           -> %APPDATA%\Zed (global) or a project workspace
   [8] Custom parent directory
 "@
         $script:IDE = Read-Host 'Enter 1-8'
@@ -98,7 +101,7 @@ Choose a host:
         '4' { $script:TargetHost = 'cursor'; return Join-Path $env:USERPROFILE '.cursor\rules\antigravity' }
         '5' { $script:TargetHost = 'windsurf'; return Join-Path $env:USERPROFILE '.codeium\windsurf\memories\antigravity' }
         '6' { $script:TargetHost = 'opencode'; return Join-Path $env:USERPROFILE '.config\opencode\antigravity' }
-        '7' { $script:TargetHost = 'zed'; return Join-Path $env:USERPROFILE '.config\zed\prompts\antigravity' }
+        '7' { $script:TargetHost = 'zed'; return Join-Path $env:APPDATA 'Zed' }
         '8' {
             if (-not $TargetHost) {
                 $script:TargetHost = (Read-Host 'Supported host (antigravity, gemini, codex, cursor, windsurf, opencode, zed)').Trim().ToLowerInvariant()
@@ -109,6 +112,9 @@ Choose a host:
             }
             if ($TargetHost -eq 'codex') {
                 return Get-FullPath (Read-Host 'Enter the .codex directory for a global install')
+            }
+            if ($TargetHost -eq 'zed') {
+                return Get-FullPath (Read-Host 'Enter the Zed configuration directory')
             }
             if ($TargetHost -notin @('gemini', 'codex', 'cursor', 'windsurf', 'opencode', 'zed')) {
                 throw "Unsupported host '$TargetHost'."
@@ -121,15 +127,15 @@ Choose a host:
 
 function Select-InstallScope {
     if ($InstallScope) {
-        if ($TargetHost -notin @('antigravity', 'codex') -and $InstallScope -eq 'workspace') {
-            throw 'Workspace installation is currently supported for Antigravity and Codex only.'
+        if ($TargetHost -notin @('antigravity', 'codex', 'zed') -and $InstallScope -eq 'workspace') {
+            throw 'Workspace installation is currently supported for Antigravity, Codex, and Zed only.'
         }
         return $InstallScope
     }
     if ($AntigravityGlobal -and $TargetHost -eq 'antigravity') {
         return 'global'
     }
-    if ($TargetHost -notin @('antigravity', 'codex')) {
+    if ($TargetHost -notin @('antigravity', 'codex', 'zed')) {
         return 'global'
     }
     if ($Yes -or [Console]::IsInputRedirected) {
@@ -188,6 +194,8 @@ function Select-InstallOption {
     $counts = Get-ManifestCounts
     $agentDescription = if ($TargetHost -eq 'codex') {
         "$($counts.Agents) canonical roles (5 specialist Codex agents)"
+    } elseif ($TargetHost -eq 'zed') {
+        "$($counts.Agents) canonical role references (Zed has no native custom-agent registry)"
     } else {
         "$($counts.Agents) custom agents"
     }
@@ -292,7 +300,7 @@ function Configure-PortableUris([string]$Directory) {
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $target = Get-FullPath (Select-InstallTarget)
 $InstallScope = Select-InstallScope
-if ($TargetHost -in @('antigravity', 'codex') -and $InstallScope -eq 'workspace') {
+if ($TargetHost -in @('antigravity', 'codex', 'zed') -and $InstallScope -eq 'workspace') {
     if ($GlobalConfig) {
         throw '-GlobalConfig is a global target. Use -WorkspacePath for a workspace installation.'
     }
@@ -315,6 +323,11 @@ if ($TargetHost -eq 'antigravity') {
 if ($TargetHost -eq 'codex') {
     $script:CodexGlobal = $InstallScope -eq 'global'
     $script:CodexWorkspace = $InstallScope -eq 'workspace'
+}
+
+if ($TargetHost -eq 'zed') {
+    $script:ZedGlobal = $InstallScope -eq 'global'
+    $script:ZedWorkspace = $InstallScope -eq 'workspace'
 }
 
 if ($script:AntigravityGlobal -or $script:AntigravityWorkspace) {
@@ -359,6 +372,31 @@ if ($script:CodexGlobal -or $script:CodexWorkspace) {
     $mode = if ($script:CodexGlobal) { '--codex-global' } else { '--codex-workspace' }
     $arguments = @($python.Prefix) + @(
         $cli, 'install', '--host', 'codex', '--target', $target,
+        '--option', $InstallOption, $mode
+    )
+    if ($DryRun) { $arguments += '--dry-run' }
+    else { $arguments += '--yes' }
+    & $python.File @arguments
+    exit $LASTEXITCODE
+}
+
+if ($script:ZedGlobal -or $script:ZedWorkspace) {
+    $python = Get-PythonInvocation
+    if (-not $python) {
+        throw 'Native Zed installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+    }
+    if (-not $DryRun -and -not $Yes) {
+        $confirmation = Read-Host "Install into Zed $InstallScope target '$target'? Type INSTALL to continue"
+        if ($confirmation -cne 'INSTALL') {
+            Write-Warn 'Installation cancelled. No files were changed.'
+            exit 0
+        }
+        $Yes = $true
+    }
+    $cli = Join-Path $scriptRoot 'global\scripts\os.py'
+    $mode = if ($script:ZedGlobal) { '--zed-global' } else { '--zed-workspace' }
+    $arguments = @($python.Prefix) + @(
+        $cli, 'install', '--host', 'zed', '--target', $target,
         '--option', $InstallOption, $mode
     )
     if ($DryRun) { $arguments += '--dry-run' }

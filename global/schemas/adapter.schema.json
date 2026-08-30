@@ -25,6 +25,7 @@
     "skills_target": { "type": "string", "minLength": 1 },
     "workflows_target": { "type": "string", "minLength": 1 },
     "agents_target": { "type": "string", "minLength": 1 },
+    "support_skill": { "type": "string", "minLength": 1 },
     "global_install": {
       "type": "object",
       "additionalProperties": false,
@@ -73,7 +74,11 @@
         "payload_target": { "type": "string", "minLength": 1 }
       }
     },
-    "agent_format": { "enum": ["antigravity-markdown", "codex-toml"] },
+    "agent_format": {
+      "enum": ["antigravity-markdown", "codex-toml", "zed-native-reference"]
+    },
+    "native_custom_agents": { "type": "boolean" },
+    "policy_preamble": { "type": "string" },
     "agent_tool_map": {
       "type": "object",
       "additionalProperties": { "type": "string", "minLength": 1 }

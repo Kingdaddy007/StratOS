@@ -24,7 +24,12 @@ This directory contains deterministic development, validation, build, and verifi
   generated policy and resources in one existing project without changing
   GEMINI_HOME. `--codex-global` activates global Codex policy,
   skills, and custom-agent TOMLs; `--codex-workspace` activates them in one
-  existing project without changing CODEX_HOME.
+  existing project without changing CODEX_HOME. `--zed-global` activates Zed's
+  native AGENTS.md and global skill catalog (including the `antigravity-v4`
+  routing support skill); `--zed-workspace` activates them in one existing
+  project without changing Zed's global configuration. Zed installs require
+  one of these explicit modes; the generic compatibility namespace is not a
+  native Zed install.
 - `verify.py`: project baseline verification runner; it does not declare deployment readiness.
 - `checks/`: focused baseline scanners used by `verify.py`.
 

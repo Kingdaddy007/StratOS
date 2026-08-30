@@ -24,13 +24,15 @@ warn() { printf '  WARN  %s\n' "$1" >&2; }
 
 usage() {
     cat <<'EOF'
-Usage: ./install.sh [--ide 1-7] [--host HOST] [--global-config TARGET] [--scope global|workspace] [--workspace PATH] [--option general|full] [--dry-run] [--yes]
+Usage: ./install.sh [--ide 1-8] [--host HOST] [--global-config TARGET] [--scope global|workspace] [--workspace PATH] [--option general|full] [--dry-run] [--yes]
 
 Compatibility-host installs write to a dedicated directory named "antigravity".
 For --host antigravity, use the native global target ~/.gemini; agents go to
 ~/.gemini/config/agents and skills go to ~/.gemini/config/skills.
 Antigravity and Codex support --scope global and --scope workspace (one project).
-Other hosts use --global-config as a parent directory unless it already ends in /antigravity.
+Zed uses its native AGENTS.md and .agents/skills locations; pass --scope workspace for one project.
+The development CLI requires an explicit --zed-global or --zed-workspace mode for Zed.
+Other compatibility hosts use --global-config as a parent directory unless it already ends in /antigravity.
 If --option is omitted, the installer asks whether to install General or Full.
 EOF
 }
@@ -99,6 +101,10 @@ select_target() {
             SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
             return
         fi
+        if [[ "$HOST_ID" == 'zed' ]]; then
+            SELECTED_TARGET="$(expand_path "$GLOBAL_CONFIG")"
+            return
+        fi
         SELECTED_TARGET="$(add_namespace "$GLOBAL_CONFIG")"
         return
     fi
@@ -111,7 +117,7 @@ select_target() {
             cursor) SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
             windsurf) SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
             opencode) SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
-            zed) SELECTED_TARGET="$HOME/.config/zed/prompts/antigravity" ;;
+            zed) SELECTED_TARGET="${XDG_CONFIG_HOME:-$HOME/.config}/zed" ;;
             *) warn "Unsupported host '$HOST_ID'."; return 1 ;;
         esac
         return
@@ -126,7 +132,7 @@ Choose a host:
   [4] Cursor                        -> ~/.cursor/rules/antigravity
   [5] Windsurf                      -> ~/.codeium/windsurf/memories/antigravity
   [6] OpenCode                      -> ~/.config/opencode/antigravity
-  [7] Zed                           -> ~/.config/zed/prompts/antigravity
+  [7] Zed                           -> ~/.config/zed (global) or a project workspace
   [8] Custom parent directory
 EOF
         read -r -p 'Enter 1-8: ' IDE
@@ -139,7 +145,7 @@ EOF
         4) HOST_ID='cursor'; SELECTED_TARGET="$HOME/.cursor/rules/antigravity" ;;
         5) HOST_ID='windsurf'; SELECTED_TARGET="$HOME/.codeium/windsurf/memories/antigravity" ;;
         6) HOST_ID='opencode'; SELECTED_TARGET="$HOME/.config/opencode/antigravity" ;;
-        7) HOST_ID='zed'; SELECTED_TARGET="$HOME/.config/zed/prompts/antigravity" ;;
+        7) HOST_ID='zed'; SELECTED_TARGET="${XDG_CONFIG_HOME:-$HOME/.config}/zed" ;;
         8)
             local custom_parent
             if [[ -z "$HOST_ID" ]]; then
@@ -156,6 +162,11 @@ EOF
                 SELECTED_TARGET="$(expand_path "$custom_parent")"
                 return
             fi
+            if [[ "$HOST_ID" == 'zed' ]]; then
+                read -r -p 'Enter the Zed configuration directory: ' custom_parent
+                SELECTED_TARGET="$(expand_path "$custom_parent")"
+                return
+            fi
             read -r -p 'Parent directory for the antigravity namespace: ' custom_parent
             SELECTED_TARGET="$(add_namespace "$custom_parent")" ;;
         *) warn "Unknown host choice '$IDE'. Use 1-8."; return 1 ;;
@@ -165,13 +176,13 @@ EOF
 select_install_scope() {
     if [[ -n "$INSTALL_SCOPE" ]]; then
         case "$INSTALL_SCOPE" in global|workspace) ;; *) warn 'Unsupported scope. Use global or workspace.'; return 1 ;; esac
-        if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' && "$INSTALL_SCOPE" == 'workspace' ]]; then
-            warn 'Workspace installation is currently supported for Antigravity and Codex only.'
+        if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' && "$HOST_ID" != 'zed' && "$INSTALL_SCOPE" == 'workspace' ]]; then
+            warn 'Workspace installation is currently supported for Antigravity, Codex, and Zed only.'
             return 1
         fi
         return
     fi
-    if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' ]]; then
+    if [[ "$HOST_ID" != 'antigravity' && "$HOST_ID" != 'codex' && "$HOST_ID" != 'zed' ]]; then
         INSTALL_SCOPE='global'
         return
     fi
@@ -196,8 +207,8 @@ EOF
 }
 
 assert_supported_host() {
-    case "$HOST_ID" in antigravity|gemini|codex|cursor|windsurf|opencode) return 0 ;; esac
-    warn "Unsupported host '$HOST_ID'. Use antigravity, gemini, codex, cursor, windsurf, or opencode."
+    case "$HOST_ID" in antigravity|gemini|codex|cursor|windsurf|opencode|zed) return 0 ;; esac
+    warn "Unsupported host '$HOST_ID'. Use antigravity, gemini, codex, cursor, windsurf, opencode, or zed."
     return 1
 }
 
@@ -247,6 +258,7 @@ select_install_option() {
         read -r agent_count workflow_count general_skill_count all_skill_count <<< "$counts"
         local agent_description="$agent_count custom agents"
         if [[ "$HOST_ID" == 'codex' ]]; then agent_description="$agent_count canonical roles (5 specialist Codex agents)"; fi
+        if [[ "$HOST_ID" == 'zed' ]]; then agent_description="$agent_count canonical role references (Zed has no native custom-agent registry)"; fi
         general_description="installs $agent_description, $workflow_count workflows, and $general_skill_count General-profile skills"
         full_description="installs $agent_description, $workflow_count workflows, and all $all_skill_count registered skills"
     fi
@@ -321,7 +333,7 @@ select_target
 assert_supported_host
 select_install_scope
 select_install_option
-if [[ "$INSTALL_SCOPE" == 'workspace' ]] && [[ "$HOST_ID" == 'antigravity' || "$HOST_ID" == 'codex' ]]; then
+if [[ "$INSTALL_SCOPE" == 'workspace' ]] && [[ "$HOST_ID" == 'antigravity' || "$HOST_ID" == 'codex' || "$HOST_ID" == 'zed' ]]; then
     [[ -z "$GLOBAL_CONFIG" ]] || { warn '--global-config is a global target. Use --workspace for a workspace installation.'; exit 2; }
     TARGET="$(expand_path "${WORKSPACE_PATH:-$PWD}")"
 else
@@ -369,6 +381,24 @@ if [[ "$HOST_ID" == 'codex' ]]; then
     if [[ "$INSTALL_SCOPE" == 'workspace' ]]; then CODEX_ARGS+=(--codex-workspace); else CODEX_ARGS+=(--codex-global); fi
     if [[ "$DRY_RUN" == true ]]; then CODEX_ARGS+=(--dry-run); else CODEX_ARGS+=(--yes); fi
     "${PYTHON[@]}" "${CODEX_ARGS[@]}"
+    exit $?
+fi
+
+if [[ "$HOST_ID" == 'zed' ]]; then
+    find_python || {
+        warn 'Native Zed installation needs Python 3. Install Python 3 or use a release package with the installer runtime.'
+        exit 1
+    }
+    if [[ "$DRY_RUN" != true && "$ASSUME_YES" != true ]]; then
+        read -r -p "Install into Zed $INSTALL_SCOPE target '$TARGET'? Type INSTALL to continue: " CONFIRMATION
+        [[ "$CONFIRMATION" == 'INSTALL' ]] || { warn 'Installation cancelled. No files were changed.'; exit 0; }
+        ASSUME_YES=true
+    fi
+    CLI="$SCRIPT_ROOT/global/scripts/os.py"
+    ZED_ARGS=("$CLI" install --host zed --target "$TARGET" --option "$INSTALL_OPTION")
+    if [[ "$INSTALL_SCOPE" == 'workspace' ]]; then ZED_ARGS+=(--zed-workspace); else ZED_ARGS+=(--zed-global); fi
+    if [[ "$DRY_RUN" == true ]]; then ZED_ARGS+=(--dry-run); else ZED_ARGS+=(--yes); fi
+    "${PYTHON[@]}" "${ZED_ARGS[@]}"
     exit $?
 fi
 
