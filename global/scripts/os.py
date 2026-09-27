@@ -3259,6 +3259,15 @@ def antigravity_global_file_map(
         for source in sorted(source_root.iterdir()):
             add(source, target_root / source.name)
 
+    # Router-linked shared references must sit beside the global router. Map
+    # files individually so unrelated files in that directory are preserved.
+    reference_root = content_root / "reference"
+    if reference_root.is_dir():
+        target_root = gemini_home / global_install["reference_target"]
+        for source in sorted(reference_root.iterdir()):
+            if source.is_file():
+                add(source, target_root / source.name)
+
     # Do not map the complete generated payload into the global namespace.
     # It contains deep reference trees which can cross Windows path limits and
     # would duplicate the direct skill/workflow registries. The native host

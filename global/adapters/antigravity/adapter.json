@@ -15,6 +15,7 @@
     "skills_target": "config/skills",
     "workflows_target": "config/workflows",
     "agents_target": "config/agents",
+    "reference_target": "reference",
     "payload_target": "config/antigravity-os"
   },
   "workspace_install": {
