@@ -246,6 +246,15 @@
       "delivery_role": "capability"
     },
     {
+      "id": "media-choreography",
+      "path": "global/skills/media-choreography",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
       "id": "master-design-director",
       "path": "global/skills/master-design-director",
       "profiles": [
@@ -411,6 +420,15 @@
     {
       "id": "spatial-experience-design",
       "path": "global/skills/spatial-experience-design",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "capability"
+    },
+    {
+      "id": "spatial-outreach-site-sprint",
+      "path": "global/skills/spatial-outreach-site-sprint",
       "profiles": [
         "spatial"
       ],
@@ -1070,6 +1088,16 @@
     {
       "id": "spatial-design-audit-library",
       "path": "global/design-audit",
+      "profiles": [
+        "spatial"
+      ],
+      "functional_owner": "design_direction",
+      "delivery_role": "reference"
+    },
+    {
+      "id": "v5-creative-constitution-v1.0.0",
+      "path": "global/reference/v5-creative-constitution-v1.0.0.md",
+      "destination": "reference/v5-creative-constitution-v1.0.0.md",
       "profiles": [
         "spatial"
       ],

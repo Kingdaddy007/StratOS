@@ -18,7 +18,7 @@ Use it only after the project has a named question, such as:
 
 ## Evidence Rules
 
-The 30 local reports are **mediated reference notes**, not automatic current
+The 31 local reports are **mediated reference notes**, not automatic current
 technical specifications. Their design observations can suggest a candidate;
 their proposed "upgrade" sections do not authorize a skill rewrite, a
 dependency, or an implementation choice.

@@ -33,7 +33,7 @@ delegation_contract:
   - temporary workers must not receive delegation capability; final independent assurance must remain outside the implementer's worker tree
 conditional_skills:
   - profiles: [spatial]
-    skills: [brand-strategy, cinematic-motion, cinematic-showroom-strategy, canvas-ui, master-design-director, motion-library, scroll-storyboard, spatial-experience-design, storytelling]
+    skills: [brand-strategy, cinematic-motion, media-choreography, canvas-ui, master-design-director, motion-library, scroll-storyboard, spatial-experience-design, spatial-outreach-site-sprint, storytelling]
   - profiles: [media]
     skills: [prompt-engineering, video-generation]
 ---

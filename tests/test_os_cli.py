@@ -118,14 +118,14 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_antigravity_global_dry_run_reports_native_targets_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            gemini_home = Path(directory) / ".gemini"
+            gemini_home = Path(directory).resolve() / ".gemini"
             gemini_home.mkdir()
             sentinel = gemini_home / "unrelated.json"
             sentinel.write_text("keep", encoding="utf-8")
@@ -149,14 +149,14 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_antigravity_global_install_preserves_unrelated_entries_and_backups(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            gemini_home = Path(directory) / ".gemini"
+            gemini_home = Path(directory).resolve() / ".gemini"
             unrelated = gemini_home / "config" / "skills" / "unrelated"
             unrelated.mkdir(parents=True)
             (unrelated / "SKILL.md").write_text("keep", encoding="utf-8")
@@ -198,14 +198,14 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_antigravity_workspace_install_uses_project_discovery_paths(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            workspace = Path(directory) / "project"
+            workspace = Path(directory).resolve() / "project"
             unrelated = workspace / ".agents" / "skills" / "unrelated"
             unrelated.mkdir(parents=True)
             (unrelated / "SKILL.md").write_text("keep", encoding="utf-8")
@@ -238,18 +238,18 @@ class InstallerSafetyTests(unittest.TestCase):
             )
             self.assertTrue((workspace / ".agents" / "workflows").is_dir())
             self.assertEqual("keep", (unrelated / "SKILL.md").read_text(encoding="utf-8"))
-            self.assertEqual(workspace, Path(result["target"]))
+            self.assertEqual(workspace.resolve(), Path(result["target"]))
 
     def test_antigravity_workspace_refuses_unmanaged_root_policy(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            workspace = Path(directory) / "project"
+            workspace = Path(directory).resolve() / "project"
             workspace.mkdir()
             (workspace / "GEMINI.md").write_text("project-owned policy", encoding="utf-8")
 
@@ -263,7 +263,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_antigravity_workspace_profile_switch_prunes_only_owned_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             full_payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
@@ -277,7 +277,7 @@ class InstallerSafetyTests(unittest.TestCase):
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            workspace = Path(directory) / "project"
+            workspace = Path(directory).resolve() / "project"
             workspace.mkdir()
             self.os_cli.install_antigravity_workspace(
                 payload=full_payload,
@@ -312,14 +312,14 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_codex_global_install_promotes_generated_custom_agents(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="codex",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            codex_home = Path(directory) / ".codex"
+            codex_home = Path(directory).resolve() / ".codex"
             codex_home.mkdir()
 
             result = self.os_cli.install_codex_global(
@@ -354,16 +354,43 @@ class InstallerSafetyTests(unittest.TestCase):
                 (codex_home / "antigravity" / ".agents" / "agents" / "studio-director" / "agent.md").exists()
             )
 
+            preview = self.os_cli.install_codex_global(
+                payload=payload,
+                target=codex_home,
+                dry_run=True,
+                assume_yes=False,
+            )
+            self.assertEqual([], preview["changes"]["add"])
+            self.assertEqual([], preview["changes"]["replace"])
+            self.assertTrue(preview["changes"]["unchanged"])
+
+            repeated = self.os_cli.install_codex_global(
+                payload=payload,
+                target=codex_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            self.assertEqual("installed", repeated["status"])
+            record = json.loads(
+                (codex_home / "antigravity" / "installation.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                len(self.os_cli.codex_global_file_map(payload, codex_home)),
+                len(record["direct_targets"]),
+            )
+
     def test_codex_workspace_install_uses_project_discovery_paths(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="codex",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            workspace = Path(directory) / "project"
+            workspace = Path(directory).resolve() / "project"
             workspace.mkdir()
 
             preview = self.os_cli.install_codex_workspace(
@@ -393,14 +420,14 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_codex_workspace_install_refuses_unmanaged_project_instructions(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             payload = self.os_cli.build_payload(
                 host="codex",
                 profile="general",
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            workspace = Path(directory) / "project"
+            workspace = Path(directory).resolve() / "project"
             workspace.mkdir()
             (workspace / "AGENTS.md").write_text("user contract", encoding="utf-8")
 
@@ -414,7 +441,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_workspace_install_records_cannot_escape_the_selected_project(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             for host in ("antigravity", "codex"):
                 with self.subTest(host=host):
                     payload = self.os_cli.build_payload(
@@ -466,7 +493,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_workspace_resolvers_reject_a_linked_project_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             real_workspace = root / "real-project"
             real_workspace.mkdir()
             linked_workspace = root / "linked-project"
@@ -487,7 +514,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_workspace_installers_reject_linked_discovery_ancestors(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             for host, linked_name in (("antigravity", ".agents"), ("codex", ".codex")):
                 with self.subTest(host=host):
                     payload = self.os_cli.build_payload(
@@ -533,7 +560,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_profile_switch_prunes_only_previously_owned_optional_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             full_payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
@@ -547,7 +574,7 @@ class InstallerSafetyTests(unittest.TestCase):
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            gemini_home = Path(directory) / ".gemini"
+            gemini_home = Path(directory).resolve() / ".gemini"
             self.os_cli.install_antigravity_global(
                 payload=full_payload,
                 target=gemini_home,
@@ -585,7 +612,7 @@ class InstallerSafetyTests(unittest.TestCase):
 
     def test_profile_switch_preserves_modified_owned_entry(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "build"
+            output = Path(directory).resolve() / "build"
             full_payload = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
@@ -599,7 +626,7 @@ class InstallerSafetyTests(unittest.TestCase):
                 repo_root=REPO_ROOT,
                 output_root=output,
             )
-            gemini_home = Path(directory) / ".gemini"
+            gemini_home = Path(directory).resolve() / ".gemini"
             self.os_cli.install_antigravity_global(
                 payload=full_payload,
                 target=gemini_home,
@@ -768,7 +795,7 @@ conditional_skills:
 
     def test_gemini_policy_respects_antigravity_rule_limit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             policy = root / "global" / "GEMINI.md"
             policy.parent.mkdir(parents=True)
             policy.write_text("x" * 12001, encoding="utf-8")
@@ -781,7 +808,7 @@ conditional_skills:
 
     def test_every_host_builds_and_spatial_profile_is_optional(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory)
+            output = Path(directory).resolve()
             for host in self.os_cli.SUPPORTED_HOSTS:
                 payload = self.os_cli.build_payload(
                     host=host,
@@ -876,7 +903,7 @@ conditional_skills:
                 host="codex",
                 profile="spatial",
                 repo_root=REPO_ROOT,
-                output_root=Path(directory),
+                output_root=Path(directory).resolve(),
             )
             self.assertTrue(
                 payload.joinpath(
@@ -908,7 +935,7 @@ conditional_skills:
 
     def test_antigravity_payload_renders_agents_and_composes_packs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory)
+            output = Path(directory).resolve()
             general = self.os_cli.build_payload(
                 host="antigravity",
                 profile="general",
@@ -923,8 +950,8 @@ conditional_skills:
                 output_root=output,
             )
 
-            self.assertEqual(output / "antigravity" / "general", general)
-            self.assertEqual(output / "antigravity" / "spatial+media", mixed)
+            self.assertEqual((output / "antigravity" / "general").resolve(), general)
+            self.assertEqual((output / "antigravity" / "spatial+media").resolve(), mixed)
             main_policy = (mixed / "GEMINI.md").read_text(encoding="utf-8")
             router = (mixed / ".agents" / "GLOBAL_MEMORY.md").read_text(encoding="utf-8")
             self.assertIn("Main Agent: Studio Director", main_policy)
@@ -987,7 +1014,7 @@ conditional_skills:
 
     def test_growth_pack_is_opt_in_and_general_is_implicit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory)
+            output = Path(directory).resolve()
             general = self.os_cli.build_payload(
                 host="codex",
                 profile="general",
@@ -1099,7 +1126,7 @@ class WorkflowStateTests(unittest.TestCase):
 
     def test_independent_tasks_receive_distinct_state_and_index_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            workspace = Path(directory)
+            workspace = Path(directory).resolve()
             first = self.os_cli.write_workflow_state(workspace, self.state("task-one"))
             second = self.os_cli.write_workflow_state(workspace, self.state("task-two"))
 
@@ -1118,7 +1145,7 @@ class WorkflowStateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(ValueError):
                 self.os_cli.write_workflow_state(
-                    Path(directory), self.state("../escaped-task")
+                    Path(directory).resolve(), self.state("../escaped-task")
                 )
 
     def test_valid_acceptance_gate_is_preserved_in_task_state(self) -> None:
@@ -1127,7 +1154,7 @@ class WorkflowStateTests(unittest.TestCase):
             state["status"] = "complete"
             state["acceptance_gates"] = [self.gate(status="met")]
 
-            state_path = self.os_cli.write_workflow_state(Path(directory), state)
+            state_path = self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
             written = json.loads(state_path.read_text(encoding="utf-8"))
             self.assertEqual("met", written["acceptance_gates"][0]["status"])
@@ -1144,7 +1171,7 @@ class WorkflowStateTests(unittest.TestCase):
             state["acceptance_gates"] = [gate]
 
             with self.assertRaisesRegex(ValueError, "must contain result"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_acceptance_gate_evidence_schema_rejects_whitespace_only_values(self) -> None:
         schema = json.loads(
@@ -1168,7 +1195,7 @@ class WorkflowStateTests(unittest.TestCase):
             gate["evidence"] = [{"result": "   "}]
             state["acceptance_gates"] = [gate]
             with self.assertRaisesRegex(ValueError, "values must be non-empty"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_acceptance_gate_evidence_timestamp_requires_timezone(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1179,7 +1206,7 @@ class WorkflowStateTests(unittest.TestCase):
             ]
             state["acceptance_gates"] = [gate]
             with self.assertRaisesRegex(ValueError, "must include a timezone"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_complete_state_rejects_unresolved_acceptance_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1188,7 +1215,7 @@ class WorkflowStateTests(unittest.TestCase):
             state["acceptance_gates"] = [self.gate()]
 
             with self.assertRaisesRegex(ValueError, "unresolved acceptance gates"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_required_acceptance_gate_cannot_be_waived(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1196,7 +1223,7 @@ class WorkflowStateTests(unittest.TestCase):
             state["acceptance_gates"] = [self.gate(status="waived", required=True)]
 
             with self.assertRaisesRegex(ValueError, "cannot be waived"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_acceptance_gate_dependencies_must_be_acyclic(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1207,7 +1234,7 @@ class WorkflowStateTests(unittest.TestCase):
             ]
 
             with self.assertRaisesRegex(ValueError, "must be acyclic"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
     def test_met_acceptance_gate_requires_met_dependencies(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1218,7 +1245,7 @@ class WorkflowStateTests(unittest.TestCase):
             ]
 
             with self.assertRaisesRegex(ValueError, "cannot be met before its dependencies"):
-                self.os_cli.write_workflow_state(Path(directory), state)
+                self.os_cli.write_workflow_state(Path(directory).resolve(), state)
 
 
 class CoreRouteContractTests(unittest.TestCase):

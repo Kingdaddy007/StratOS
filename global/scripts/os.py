@@ -4133,7 +4133,7 @@ def codex_global_changes(payload: Path, codex_home: Path) -> dict[str, list[str]
         label = str(target.relative_to(codex_home))
         if not target.exists():
             additions.append(label)
-        elif source.is_file() and target.is_file() and sha256_file(source) == sha256_file(target):
+        elif source.is_dir() == target.is_dir() and entry_digest(source) == entry_digest(target):
             unchanged.append(label)
         else:
             replacements.append(label)
@@ -4174,6 +4174,9 @@ def install_codex_global(
     try:
         shutil.copytree(payload, namespace_source)
         for source, target_path in mapping.items():
+            label = str(target_path.relative_to(codex_home))
+            if label in changes["unchanged"]:
+                continue
             staged = stage_root / "direct" / target_path.relative_to(codex_home)
             if source.is_dir():
                 shutil.copytree(source, staged)
@@ -4181,6 +4184,9 @@ def install_codex_global(
                 staged.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(source, staged)
         for source, target_path in mapping.items():
+            label = str(target_path.relative_to(codex_home))
+            if label in changes["unchanged"]:
+                continue
             if target_path.exists():
                 backup_path = backup_root / target_path.relative_to(codex_home)
                 backup_path.parent.mkdir(parents=True, exist_ok=True)
@@ -4202,7 +4208,9 @@ def install_codex_global(
             "payload": str(payload),
             "codex_home": str(codex_home),
             "backup": str(backup_root),
-            "direct_targets": sorted(changes["add"] + changes["replace"]),
+            "direct_targets": sorted(
+                str(target.relative_to(codex_home)) for target in mapping.values()
+            ),
         }
         write_json_atomic(namespace_target / "installation.json", record)
         required = [codex_home / "AGENTS.md", codex_home / "GLOBAL_MEMORY.md"]

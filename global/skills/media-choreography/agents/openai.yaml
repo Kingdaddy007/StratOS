@@ -1,0 +1,4 @@
+interface:
+  display_name: "Media Choreography"
+  short_description: "Plan spatial media sources, continuity, and web states"
+  default_prompt: "Use $media-choreography to plan the media requirements for this task."

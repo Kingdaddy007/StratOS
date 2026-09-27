@@ -35,7 +35,7 @@ The one stateful Spatial coordination path is `workflow-spatial-project-inceptio
 
 General product UI begins with `workflow-design-ui.md` only when a coordinated design decision is needed. Approved implementation and purposeful motion use direct `ui-ux` work with the matching UI/UX references. Bounded UI operations never create workflow state.
 
-Spatial implementation remains blocked until the five logical contracts or approved equivalents, applicable Director gates, and vertical-slice verdict pass. Video, motion, anchor objects, generated media, and scroll storyboards are conditional. General product and UI work must not be forced through this profile.
+For a substantial Spatial build, record the brand question, concept choice, production constraints, and verification plan in the smallest useful form. Prototype the risk most likely to reverse the choice before broad production. Video, motion, anchor objects, generated media, and scroll storyboards are conditional. General product and UI work must not be forced through this profile.
 
 ## Authority Rule
 

@@ -8,7 +8,9 @@
       "route": "debug-issue",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["staff_engineering"],
+      "functional_leads": [
+        "staff_engineering"
+      ],
       "mode": "diagnose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -20,7 +22,9 @@
       "route": "build-feature",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["staff_engineering"],
+      "functional_leads": [
+        "staff_engineering"
+      ],
       "mode": "implement",
       "maximum_mutation_class": "local_edit",
       "approval_required": false
@@ -32,7 +36,10 @@
       "route": "task-dispatch",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["studio_support", "staff_engineering"],
+      "functional_leads": [
+        "studio_support",
+        "staff_engineering"
+      ],
       "mode": "implement",
       "maximum_mutation_class": "local_edit",
       "approval_required": false
@@ -44,7 +51,10 @@
       "route": "test-strategy",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["staff_engineering", "assurance_quality"],
+      "functional_leads": [
+        "staff_engineering",
+        "assurance_quality"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -56,7 +66,9 @@
       "route": "verify-project",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["assurance_quality"],
+      "functional_leads": [
+        "assurance_quality"
+      ],
       "mode": "diagnose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -68,7 +80,10 @@
       "route": "ship-to-production",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["staff_engineering", "assurance_quality"],
+      "functional_leads": [
+        "staff_engineering",
+        "assurance_quality"
+      ],
       "mode": "implement",
       "maximum_mutation_class": "external_or_production",
       "approval_required": true
@@ -80,7 +95,9 @@
       "route": "security-audit",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["assurance_quality"],
+      "functional_leads": [
+        "assurance_quality"
+      ],
       "mode": "diagnose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -92,7 +109,10 @@
       "route": "project-inception",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["product_strategy", "systems_architecture"],
+      "functional_leads": [
+        "product_strategy",
+        "systems_architecture"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -103,8 +123,13 @@
       "route_kind": "workflow",
       "route": "spatial-project-inception",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["product_strategy", "design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "product_strategy",
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -115,8 +140,12 @@
       "route_kind": "skill",
       "route": "reference-intelligence",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -127,8 +156,12 @@
       "route_kind": "skill",
       "route": "spatial-experience-design",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -139,8 +172,12 @@
       "route_kind": "skill",
       "route": "spatial-experience-design",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -151,8 +188,12 @@
       "route_kind": "skill",
       "route": "storytelling",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -163,8 +204,12 @@
       "route_kind": "skill",
       "route": "ui-ux",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -175,8 +220,12 @@
       "route_kind": "skill",
       "route": "cinematic-motion",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -187,8 +236,12 @@
       "route_kind": "skill",
       "route": "canvas-ui",
       "base_profile": "general",
-      "active_packs": ["spatial"],
-      "functional_leads": ["design_direction"],
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -199,8 +252,13 @@
       "route_kind": "skill",
       "route": "video-generation",
       "base_profile": "general",
-      "active_packs": ["media"],
-      "functional_leads": ["design_direction", "assurance_quality"],
+      "active_packs": [
+        "media"
+      ],
+      "functional_leads": [
+        "design_direction",
+        "assurance_quality"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -211,8 +269,13 @@
       "route_kind": "workflow",
       "route": "commercial-decision-record",
       "base_profile": "general",
-      "active_packs": ["growth"],
-      "functional_leads": ["product_strategy", "design_direction"],
+      "active_packs": [
+        "growth"
+      ],
+      "functional_leads": [
+        "product_strategy",
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -223,8 +286,14 @@
       "route_kind": "workflow",
       "route": "spatial-project-inception",
       "base_profile": "general",
-      "active_packs": ["spatial", "media"],
-      "functional_leads": ["product_strategy", "design_direction"],
+      "active_packs": [
+        "spatial",
+        "media"
+      ],
+      "functional_leads": [
+        "product_strategy",
+        "design_direction"
+      ],
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
@@ -236,9 +305,78 @@
       "route": "task-dispatch",
       "base_profile": "general",
       "active_packs": [],
-      "functional_leads": ["studio_support", "staff_engineering"],
+      "functional_leads": [
+        "studio_support",
+        "staff_engineering"
+      ],
       "mode": "implement",
       "maximum_mutation_class": "local_edit",
+      "approval_required": false
+    },
+    {
+      "id": "v5-spatial-media-feasibility",
+      "request": "Explore whether supplied room photographs can support a continuous media sequence and name honest fallback states; no provider generation.",
+      "route_kind": "skill",
+      "route": "media-choreography",
+      "base_profile": "general",
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "v5-spatial-creative-critique",
+      "request": "Critique these two spatial website concepts for authorship, proof, and full-page coherence without selecting a new brand strategy.",
+      "route_kind": "skill",
+      "route": "master-design-director",
+      "base_profile": "general",
+      "active_packs": [
+        "spatial"
+      ],
+      "functional_leads": [
+        "design_direction"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "v5-private-spatial-outreach",
+      "request": "Build and verify one private prospect-specific interior studio concept in this local repository from supplied evidence. Do not publish or send outreach.",
+      "route_kind": "skill",
+      "route": "spatial-outreach-site-sprint",
+      "base_profile": "general",
+      "active_packs": [
+        "spatial",
+        "growth"
+      ],
+      "functional_leads": [
+        "product_strategy",
+        "design_direction",
+        "staff_engineering",
+        "assurance_quality"
+      ],
+      "mode": "implement",
+      "maximum_mutation_class": "local_edit",
+      "approval_required": false
+    },
+    {
+      "id": "v5-ordinary-product-framing",
+      "request": "Help frame the smallest useful slice of this ordinary inventory SaaS idea without implementing it.",
+      "route_kind": "skill",
+      "route": "product-thinking",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "product_strategy"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
       "approval_required": false
     }
   ]

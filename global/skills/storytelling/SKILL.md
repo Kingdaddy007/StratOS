@@ -1,164 +1,351 @@
 ---
 name: storytelling
-description: 'Use this skill when creating the narrative, emotional journey, copy direction, visual direction, or section sequence for high-end interior decorator, interior design, spatial design, architecture, staging, furniture, decor, showroom, gallery, or luxury home websites. Activated by "story", "position this interior brand", "portfolio narrative", "make it feel seductive", "spatial storytelling", "copy direction", "visual thesis", or any task where rooms, materials, transformations, proof, and inquiry must become a coherent website experience. Do NOT use for backend/API/security work or for writing final long-form copy without first defining the spatial narrative.'
+description: Use when a website or spatial experience needs a narrative premise, visitor journey, chapter or page sequence, proof timing, message hierarchy, project-story structure, emotional pacing, or a clear relationship between words and visual evidence. Trigger on story direction, portfolio narrative, case study structure, section jobs, what should be known first, or why a site feels beautiful but says too little. Do not load for brand diagnosis alone, commercial positioning, visual composition, motion design, reference forensics, final copywriting, or routine implementation.
 ---
 
-# Storytelling
+# Storytelling — V5.3
 
-## WHEN TO USE THIS
+## ROLE
 
-- Load before visual concepting for interior decorators, spatial studios, showrooms, and luxury home brands.
-- Load when the site needs sensation, taste, authority, transformation proof, and inquiry sequence.
-- Load when converting diagnosis and a creative brief into candidate narrative forms, controlling arguments, proof timing, and inquiry posture.
+This skill is the **narrative architecture specialist**.
+
+Its core question is:
+
+> What must become clear, when, and through which evidence?
+
+It shapes the visitor's path through information, proof, feeling, and action without taking ownership of visual composition, motion design, commercial posture, or final copywriting.
+
+Follow the **V5 Creative Constitution** when available.
+
+## WHEN TO USE
+
+Load when a live decision concerns:
+
+- what visitors should understand, believe, feel, or know next;
+- chapter / page order;
+- project or portfolio narrative;
+- proof timing;
+- message hierarchy;
+- copy and image roles;
+- emotional / cognitive pacing;
+- an ending or inquiry that feels unearned;
+- a site that looks strong but communicates too little.
+
+Work directly for a bounded question. Use the project inception workflow only when the wider initiative needs coordinated discovery, concept selection, and production.
+
+## OWNERSHIP
+
+This skill owns:
+
+- narrative premise;
+- governing proposition when useful;
+- communication jobs;
+- chapter / page dependencies;
+- proof timing;
+- project-story logic;
+- copy / evidence relationship;
+- narrative pacing;
+- inquiry readiness.
+
+This skill does not own:
+
+- brand facts or positioning diagnosis — `brand-strategy`;
+- offer, qualification, pricing posture, or commercial selectivity — `expert-positioning`;
+- composition, crop, typography treatment, visual intensity, or Experience Grammar — `spatial-experience-design`;
+- source forensics — `reference-intelligence`;
+- motion behaviour or timelines — `cinematic-motion`;
+- beat-level scroll choreography — `scroll-storyboard`;
+- final marketing copy — copywriting owner;
+- implementation — design / engineering owners.
+
+Send cross-boundary tradeoffs to the Studio Director. When active, the `design-director` functional lead integrates visual and interaction work. Use `master-design-director` for focused critique, not as a second story owner.
 
 ## NEVER DO
 
-- Never structure a spatial brand as hero -> services -> portfolio -> testimonials -> contact.
-- Never write copy direction before naming the controlling argument and the job of each chapter.
-- Never make the brand the hero; make the visitor imagine their space transformed.
-- Never flatten projects into "beautiful work" without decision, constraint, material, and result.
-- Never use generic premium adjectives without sensory or proof evidence.
+- Assume every site needs a transformation arc, visitor-as-hero story, cinematic opening, or dramatic plot.
+- Require one controlling sentence for every bounded question, project collection, or small narrative decision.
+- Reject a conventional structure merely because it is conventional, or choose one merely because it is familiar.
+- Infer selective, concierge, exclusive, luxury, or high-ticket posture from visual style.
+- Invent client anxiety, outcomes, authority, process, or project meaning that the evidence does not support.
+- Treat generated imagery, mood imagery, testimonials, or client claims as proof of outcomes they do not establish.
+- Dictate layout, crop, typography, motion, camera behaviour, visual intensity, or interaction styling.
+- Force emotional pacing when direct orientation or proof matters more.
+- Require a document, feeling curve, or multiple narrative routes for a small question.
+- Treat stored narrative forms or psychological mechanics as the set of available stories.
 
-## STABLE COMMUNICATION JOBS
+# FIND THE STORY IN THE MATERIAL
 
-Interior and spatial brands commonly need some combination of the following jobs. They are not required sections and they do not have a fixed order.
+Start with what actually exists:
 
-| Stage | Story Job | Spatial Translation |
+- completed work;
+- project decisions;
+- constraints;
+- process;
+- people;
+- project context;
+- verified outcomes;
+- imagery;
+- client statements;
+- services;
+- useful absences.
+
+Separate:
+
+- verified fact;
+- reported claim;
+- inference;
+- creative hypothesis;
+- unknown.
+
+Ask:
+
+- What do visitors need to understand before they can appreciate the work?
+- What must they believe before the next step feels reasonable?
+- What question, tension, relationship, demonstration, or point of view is strongest in the material?
+- What would be misleading to dramatize?
+
+A narrative may emerge from meaning or from a visual experiment. If a visual idea reveals a stronger story, keep it provisional until the narrative fit and evidence are tested.
+
+# GOVERNING PROPOSITION — ONLY WHEN USEFUL
+
+Use a governing proposition when it helps select or organize the story.
+
+A useful proposition describes a change in visitor understanding, not a slogan.
+
+Example structure:
+
+> After seeing this evidence, visitors can understand [specific truth about the practice or work].
+
+Do not force a proposition when:
+
+- the task is one bounded chapter;
+- the experience is primarily browsable;
+- a project collection needs editorial clarity more than one overarching argument;
+- the site already has clear chapter jobs and proof relationships;
+- the proposition would add abstraction without improving a decision.
+
+If no proposition is yet earned, name the live narrative questions instead.
+
+# SHAPE CHAPTERS BY DEPENDENCY
+
+Give every included chapter a communication job.
+
+For each chapter ask:
+
+1. What question or need brings the visitor here?
+2. What changes in understanding at this moment?
+3. What evidence or content makes that change credible?
+4. What must already be understood?
+5. What question or action becomes possible next?
+
+Remove chapters that repeat the previous answer.
+
+Combine claim and proof when separation weakens trust.
+
+Split a chapter only when the material needs room to be inspected or understood.
+
+An authored sequence may alternate atmosphere, evidence, reflection, orientation, and action. It does not need to grow continuously in intensity.
+
+Load `references/argument-and-chapter-logic.md` when inventing or comparing routes, designing a full-site journey, or diagnosing arbitrary sequencing.
+
+# PROOF TIMING
+
+Put meaningful proof near the belief it supports unless a deliberate delay improves comprehension without weakening trust.
+
+For each material claim ask:
+
+- What exactly is being asserted?
+- Is it verified, reported, inferred, or proposed?
+- What would a reasonable visitor need to see to believe it?
+- Can the available evidence actually support it?
+- Where should that evidence appear?
+
+Let images show what they can genuinely show.
+
+Let words provide what images cannot verify: identity, brief, constraint, decision, role, method, outcome, limitation, or context.
+
+Do not use copy to praise what the image already makes obvious.
+
+Load `references/proof-timing-and-message-handoff.md` when evidence placement, case-study messaging, copy/image division, inquiry readiness, or weak captions matter.
+
+# NARRATIVE ROUTES
+
+Explore multiple routes only when the choice is real.
+
+Possible route questions include:
+
+- lead with finished work?
+- lead with a decision or transformation?
+- lead with point of view?
+- lead with people or process?
+- lead with service clarity?
+- lead with a collection?
+- lead with proof?
+- another project-specific entry?
+
+These are prompts, not a menu.
+
+Compare routes by:
+
+- what becomes known first;
+- how trust is built;
+- when proof appears;
+- what is sacrificed;
+- what the visitor is asked to do next.
+
+Recommend when the evidence supports a recommendation. Otherwise identify the narrative uncertainty that would change the choice.
+
+# NON-LINEAR VISITS
+
+Websites are not films.
+
+When relevant, check three visitor paths:
+
+- **Directed visit** — follows the intended sequence.
+- **Selective visit** — jumps directly to projects, services, people, or inquiry.
+- **Return visit** — comes back for a remembered fact, project, service, or contact detail.
+
+Each path should retain enough context for identity, project truth, orientation, and action.
+
+Storytelling identifies missing context and sequence risk. Spatial/UI owners decide navigation, layout, and interaction.
+
+# FEELING AND PACING
+
+Use emotional or cognitive pacing when it helps allocate attention.
+
+Possible visitor states include:
+
+- curiosity;
+- orientation;
+- desire;
+- inspection;
+- understanding;
+- trust;
+- surprise;
+- confidence;
+- calm;
+- readiness.
+
+A feeling curve is optional.
+
+A primary remembered peak is optional.
+
+An ending impression is useful when the experience is sufficiently authored for it to matter.
+
+Storytelling diagnoses **where attention, comprehension, proof, or emotional weight needs to rise, fall, pause, or resolve**.
+
+It does **not** choose image scale, whitespace, contrast, crop, motion amplitude, or other visual treatments. Those belong to `spatial-experience-design` and motion owners.
+
+Load `references/feeling-curve-and-pacing.md` when pacing, peaks, inspection zones, or cold-scroll comparison materially affects the experience.
+
+# HAND OFF WITHOUT TAKING THE VISUAL JOB
+
+For each consequential chapter, state:
+
+- communication job;
+- key information or feeling;
+- available evidence;
+- missing evidence;
+- what an image must show or prove;
+- what copy must add;
+- what question the next chapter inherits.
+
+Leave:
+
+- crop;
+- composition;
+- typography treatment;
+- visual intensity;
+- transition style;
+- animation;
+- motion physics;
+
+to the relevant visual and motion owners.
+
+If a narrative need conflicts with the selected visual concept, explain the conflict and propose the smallest useful test or revision. Do not silently redesign the concept.
+
+# INQUIRY READINESS
+
+Storytelling owns the **preparation for inquiry**, not the business model.
+
+Ask:
+
+- What should visitors already know before acting?
+- What uncertainty should already be resolved?
+- Has the site shown relevant work and enough proof?
+- Is the next action understandable?
+- Does the inquiry ask for more commitment than the story has earned?
+
+Consume approved commercial posture from `expert-positioning` when active.
+
+Do not invent qualification gates, exclusivity, pricing, consultation structure, application models, or “concierge” language.
+
+# CRITIQUE THE RESULT
+
+Judge a real concept, prototype, or site by asking:
+
+- Can visitors orient?
+- Can they inspect the work?
+- Is the main claim understandable?
+- Is proof close enough to the claims it supports?
+- Do words add information rather than echo imagery?
+- Does the sequence work for directed, selective, and return visits when relevant?
+- Does inquiry feel earned?
+- What is actually observed versus inferred?
+
+Common narrative failures include:
+
+| Anti-pattern | Problem | Correction |
 | --- | --- | --- |
-| Atmosphere | Make the visitor feel the world | Entry room, threshold, light, silence, dominant material |
-| Taste | Show the designer's eye | Curated rooms, furniture/object choices, material pairings |
-| Transformation | Prove change | Before/after, problem-to-resolution, styling intervention |
-| Proof | Make quality credible | Project facts, client context, press, constraints, outcomes |
-| Method | Show control | Process, fit, collaboration, timeline, decisions |
-| Inquiry | Invite the right client | Selective next step, calm expectations, concierge tone |
+| Pretty work, no argument | Taste is visible but value remains vague | Add context, decision, relationship, or proof |
+| Forced transformation | Every project becomes a dramatic before/after | Use the real contribution instead |
+| Suspense before orientation | Basic identity or navigation is withheld for drama | Give enough context while preserving reveal |
+| Unsupported authority | Copy outruns evidence | Qualify the claim or obtain proof |
+| Formulaic chapters | Stored story template dictates sequence | Reorder, combine, omit, or invent around real questions |
+| Copy repeating imagery | Words merely praise the visible room | Add facts, decisions, context, or meaning the image cannot show |
 
-## CANDIDATE NARRATIVE FORMS
+# REFERENCE ROUTING
 
-Choose or combine a form only after the diagnosis and creative brief make its priority defensible:
+Load only what answers the live question:
 
-- **Atmosphere-led:** Atmosphere -> Taste -> Transformation -> Proof -> Method -> Inquiry.
-- **Transformation-led:** Weak state or tension -> decisive intervention -> reveal -> evidence -> fit -> inquiry.
-- **Point-of-view-led:** Conviction -> examples -> implications for the client -> proof -> method -> inquiry.
-- **Material/process-led:** Material or constraint -> design intelligence -> finished atmosphere -> proof -> collaboration.
-- **Project-led editorial:** One representative project opens the argument; broader work and method follow.
-- **Proof-first:** Credentials, rigor, or project facts establish trust before emotional immersion.
-- **Founder-led:** Creative authority leads only when the founder's judgment is itself demonstrated proof.
+- `references/argument-and-chapter-logic.md` — route invention, chapter dependencies, non-linear visits, project / site structure.
+- `references/proof-timing-and-message-handoff.md` — claim/evidence fit, case-study messaging, copy modes, image/word division, inquiry readiness.
+- `references/feeling-curve-and-pacing.md` — pacing, peaks, inspection zones, cold-scroll review.
+- `references/resource-index.md` — study one named legacy narrative technique only when it clarifies a live story question; do not treat the library as a required sequence or brand archetype.
+- `spatial-experience-design` — composition, visual concept, Experience Grammar, visual intensity.
+- `expert-positioning` — commercial posture, offer, qualification.
+- `scroll-storyboard` — authored beat-level scroll progression after the narrative job exists.
 
-The page may be quiet, still-led, editorial, cinematic, or hybrid. Narrative difference must come from what this studio needs to establish first, not from rearranging decorative sections.
+Do not load every reference for every project.
 
-## CORE ARTIFACT CONTRIBUTION
+# OUTPUT SHAPE
 
-Contribute the following to `creative-brief.md`, `concept-directions.md`, and `experience-blueprint.md` (or approved equivalent documents):
+Return only what the current decision requires.
 
-- One thing the site must make the visitor feel.
-- Controlling argument.
-- Audience and desired self-image.
-- Brand tension: what the client wants to escape.
-- Candidate narrative forms and why each fits.
-- Selected chapter sequence and the job of each chapter.
-- Transformation proof sequence.
-- Project proof strategy.
-- Method reveal.
-- Inquiry posture.
-- Copy rules and banned phrases.
-- Stillness and motion posture: what should remain still, what may move, and why.
+Possible outputs:
 
-### Intended Feeling Curve
+- direct narrative diagnosis;
+- governing proposition when useful;
+- chapter / page jobs;
+- narrative route comparison;
+- proof choreography;
+- project-story structure;
+- message / visual handoff;
+- feeling / pacing diagnosis;
+- inquiry-readiness diagnosis;
+- recommendation or next useful narrative test.
 
-Before approving chapter pacing, write one intended feeling per chapter and
-name the primary remembered peak plus the ending impression. Give the peak the
-strongest justified asset, proof, silence, or interaction budget; do not make
-every chapter equally loud. Let the controlling argument, proof burden,
-inquiry, accessibility, and brand truth override emotional theatre.
+Do not generate paperwork merely to satisfy this skill.
 
-After implementation, run one uninterrupted cold-scroll review without reading
-the code or implementation notes. Record one felt word per chapter, the
-perceived peak, and the ending impression. Compare intended and felt curves;
-revise pacing when the disagreement exposes filler, repetition, premature
-intensity, or an unearned close.
+# NON-NEGOTIABLE CHECKLIST
 
-Legacy projects may keep `spatial-story.md` or `story.md` when those files contain equivalent approved content. Create `scroll-storyboard.md` only when authored scroll timing, pinning, continuity, or media choreography makes a beat-level contract necessary.
-
-## STORY DISCOVERY
-
-Extract these before writing directions:
-
-- What types of spaces does the designer transform?
-- What taste world do they own: quiet luxury, layered eclectic, sculptural minimal, heritage restoration, warm modern, art-led, hospitality, family sanctuary?
-- What material language repeats?
-- What light quality defines their work?
-- What client anxiety do they resolve?
-- What project proof exists: before/after, process photos, floor plans, press, testimonials, budget level, location, timeline?
-- What should wrong-fit clients understand immediately?
-
-## CONTROLLING ARGUMENT AND CHAPTER SEQUENCE
-
-Write one controlling argument. Then build only the chapters needed to prove it. Rooms and thresholds are useful spatial metaphors, not mandatory labels.
-
-One possible atmosphere-led sequence:
-
-1. Entry threshold - atmospheric first room.
-2. Taste room - strongest finished work.
-3. Transformation room - before/after or problem/solution.
-4. Material room - texture, palette, furniture, lighting logic.
-5. Proof room - press, client words, project facts.
-6. Method room - how the studio thinks.
-7. Inquiry room - calm invitation.
-
-If a chapter can be renamed for a SaaS product without changing its evidence or experience logic, rewrite it.
-
-## COPY DIRECTION
-
-- Use short atmospheric lines in visual chapters.
-- Use precise captions for project proof.
-- Use restrained authority for method.
-- Use selective, warm inquiry language.
-- Replace "beautiful spaces" with concrete transformations.
-- Replace "bespoke" with evidence of fit, sourcing, constraints, or process.
-- Replace "luxury" with material, light, craft, or restraint.
-
-## PROOF CHOREOGRAPHY
-
-Choose proof based on the brand:
-
-| Proof Type | Use For | Presentation |
-| --- | --- | --- |
-| Before/after | Transformative decorators/stagers | Cinematic reveal with decision captions |
-| Project gallery | Portfolio-led studios | Curated procession before index |
-| Material/process | Craft-led designers | Macro textures, sourcing notes, sketches |
-| Press/social proof | Premium authority | Quiet ribbon, editorial citation, not logo soup |
-| Method | High-ticket inquiry | Step sequence, expectations, fit rules |
-
-## ANTI-PATTERNS
-
-| Anti-Pattern | What It Is | Fix |
-| --- | --- | --- |
-| Pretty Rooms, No Argument | Images do not explain taste or transformation | Add decision captions and proof sequence |
-| Bio First | Founder story appears before atmosphere | Lead with spatial world, then authority |
-| Service Menu Too Early | Packages/services precede desire | Move services after taste and proof |
-| Generic Luxury Copy | "Elevated, bespoke, timeless" | Use material, room, decision, client tension |
-| Portfolio Dump | Grid of projects with no pacing | Use gallery procession then index |
-
-
-## REFERENCE LOADING RULES
-
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
-## OUTPUT SHAPE
-
-**Narrative direction:** One feeling -> controlling argument -> candidate forms -> intended feeling curve and primary peak -> selected chapter jobs -> proof choreography -> inquiry posture.
-
-**Artifact contribution:** Narrative sections for the creative brief, concept directions, and experience blueprint; legacy story files remain valid equivalents.
-
-**Audit:** Missing story stage -> generic copy risks -> proof gaps -> spatial rewrite direction.
-
-## NON-NEGOTIABLE CHECKLIST
-
-1. The narrative form follows brand evidence and first-known priority.
-2. The controlling argument is specific and testable.
-3. Candidate forms are structurally different, not reordered labels.
-4. Every selected chapter has a communication job.
-5. Proof timing matches the brand's trust burden.
-6. Copy direction bans generic premium language.
-7. Inquiry posture is selective and clear.
-8. Scroll storyboarding is conditional, not universal.
-9. A material cinematic direction states its intended feeling curve, primary remembered peak, and ending impression without letting emotion displace proof or inquiry.
+1. Separate verified work, reported claims, inference, and invention.
+2. Let real material and visitor questions determine the story form.
+3. Use a governing proposition only when it improves the decision.
+4. Give every included chapter a clear communication job.
+5. Place proof where the claim or decision needs it.
+6. Keep words, imagery, interaction, and motion complementary without taking visual ownership.
+7. Respect commercial posture rather than inventing it.
+8. Check non-linear visits when the site is not purely sequential.
+9. Use emotional pacing conditionally.
+10. Give a recommendation with its tradeoff or identify the uncertainty that must be tested.

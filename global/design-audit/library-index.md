@@ -2,7 +2,7 @@
 
 ## What This Is
 
-This directory contains 30 local reports on noteworthy digital experiences.
+This directory contains 31 local reports on noteworthy digital experiences.
 They are a **candidate precedent library** for qualifying Spatial work: interior
 and architectural portfolios, showroom sites, gallery-like experiences, and
 other projects where a reference question can materially improve the direction.
@@ -70,6 +70,7 @@ candidate ideas, not instructions to alter a skill or use a dependency.
 | [28 CALMM](site-28-calmm.md) | Does a layered depth scene have coherent assets and a clear hierarchy? |
 | [29 Lounge Coffee](site-29-lounge-coffee.md) | What meaningful hero event could establish the experience before the grid? |
 | [30 Nauta](site-30-nauta.md) | How can an enterprise story use restrained motion and live proof? |
+| [31 Prosperitaso](site-31-prosperitaso.md) | How can one framed world preserve continuity across changing editorial chapters without shrinking mobile into desktop? |
 
 ## Guardrails
 

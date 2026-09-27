@@ -85,8 +85,8 @@ class SpatialDesignAuditLibraryContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         manifest = json.loads((ROOT / "global" / "manifest.yaml").read_text(encoding="utf-8"))
 
-        self.assertEqual(30, len(reports))
-        for number in range(1, 31):
+        self.assertEqual(31, len(reports))
+        for number in range(1, 32):
             label = f"{number:02d}"
             self.assertIn(f"Site {label}", adaptation_map)
             self.assertIn(f"{label} ", index)
@@ -121,7 +121,7 @@ class SpatialDesignAuditLibraryContractTests(unittest.TestCase):
 
             self.assertFalse((general / "design-audit").exists())
             self.assertTrue((spatial / "design-audit" / "library-index.md").is_file())
-            self.assertEqual(30, len(list((spatial / "design-audit").glob("site-*.md"))))
+            self.assertEqual(31, len(list((spatial / "design-audit").glob("site-*.md"))))
 
 
 if __name__ == "__main__":

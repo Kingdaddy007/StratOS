@@ -1,167 +1,272 @@
 ---
 name: spatial-experience-design
-description: 'Use this skill when designing, auditing, or planning high-end interior decorator, interior design, spatial design, architecture, styling, furniture, decor, showroom, gallery, or luxury home websites. Activated by requests like "build an interior decorator portfolio", "make this spatial design site feel premium", "create a high-end interiors website", "design a decorator portfolio", "make this feel like a 20k website", "use the design audit grammar", or any visual task where rooms, materials, light, objects, before and after transformations, or curated spaces must drive the experience.'
+description: Use when inventing, comparing, shaping, extending, or critiquing the visual-spatial experience of an interior, architecture, furniture, decor, gallery, showroom, staging, or other spatial website. Trigger on concept direction, hero subject, room imagery, portfolio presentation, material story, visual grammar, section invention, composition, or whether a motion/reference technique belongs to a spatial subject. Do not load for brand diagnosis alone, reference forensics alone, media prompting alone, routine UI styling, or implementation with an already-approved direction.
 ---
 
-# Spatial Experience Design
+# Spatial Experience Design — V5.2
 
-## WHEN TO USE THIS
+## ROLE
 
-- Load for interior decorator, interior designer, spatial studio, architecture, staging, furniture, decor, gallery, showroom, or luxury home brand websites.
-- Load when the brief needs atmosphere, taste, transformation, proof, and inquiry instead of a generic section stack.
-- Load before visual brainstorm, mockup, motion, or implementation for any high-end spatial brand surface.
-- Load when the user needs help inventing options, mixing concepts, or defining asset prompts for images and video.
+This skill is the **visual-spatial concept and experience-grammar specialist**.
+
+Its core question is:
+
+> What visual idea belongs to this project, how should the real subject be presented, and what rules make the website feel like one authored experience?
+
+It may work during exploration, after concept selection, or on one bounded visual question. The user should not have to know which internal route is active.
+
+Follow the **V5 Creative Constitution** when available.
+
+## WHEN TO USE
+
+Load when a live spatial-design question involves one or more of:
+
+- concept exploration or comparison;
+- hero / first-state reasoning;
+- room, object, material, project, person, practice, or context treatment;
+- composition and hierarchy;
+- translating a visual reference into project-specific behaviour;
+- extending a concept beyond the hero;
+- section-level visual invention;
+- imagery / typography / transition relationships;
+- asset-dependent visual feasibility;
+- experience grammar;
+- critique of whether an effect belongs to the subject.
+
+Work directly for a bounded question. Use the project inception workflow only when the larger initiative needs coordinated discovery, selection, and production.
+
+## OWNERSHIP
+
+This skill owns:
+
+- visual-spatial concept development;
+- composition and hierarchy;
+- subject integrity;
+- image / type / space / interaction relationships;
+- project-specific experience grammar;
+- visual continuity across major moments;
+- concept-level asset and state requirements;
+- visual critique and the smallest useful visual test.
+
+It does not own:
+
+- factual brand diagnosis — `brand-strategy`;
+- offer, qualification, exclusivity, or commercial posture — `expert-positioning`;
+- controlling argument / narrative logic — `storytelling`;
+- reference provenance / source forensics — `reference-intelligence`;
+- project integration — Studio Director / `design-director` functional lead when active;
+- focused critique at costly moments — `master-design-director`;
+- motion physics / timelines / engineering — `cinematic-motion`;
+- beat-level authored scroll choreography — `scroll-storyboard`;
+- provider-ready media prompting / generation — media owner;
+- implementation — build / coding owner.
+
+Advise across boundaries when useful; do not silently take ownership.
 
 ## NEVER DO
 
-- Never start with "hero, services, portfolio, testimonials, contact."
-- Never treat rooms as cards, projects as a generic grid, or materials as decorative background colors.
-- Never ship beige plus serif plus stock interiors plus fade-ups and call it premium.
-- Never substitute CSS blobs, gradients, or empty rectangles for image-native spatial scenes.
-- Never add cinematic motion before the selected concept, experience architecture, asset reality, and motion job are clear.
-- Never write standalone image/video prompts that do not inherit the approved diagnosis, brief, concept, experience blueprint, and relevant production constraints.
-- Never make CTAs behave like SaaS buttons when the brand needs a quiet concierge invitation.
-- Never use scroll effects that do not physically belong to the room, material, object, or threshold.
-- Never use a reference mechanic as the reason a concept exists. Use a pre-territory pass to expand vocabulary after the brief and a post-territory pass to validate precise design questions.
-- Never copy the section architecture of reference sites 1:1. Always filter reference patterns through the specific scale, capacity, and niche of the target brand (Avoid the Scale Imitation Trap).
-- Never prescribe sections that defend baseline expectations (e.g., 'Render vs Reality' for a Tier 1 builder). This lowers posture from Practitioner to Performer. Replace defensive proof with Process Proof (Avoid the Defensive Vendor Trap).
-- Never prescribe motion/GSAP just because it is technically impressive. Every animation must have a semantic meaning tied directly to the visual thesis (Avoid the Gimmick Trap).
+- Treat stored archetypes, hero layouts, audits, or effects as the set of allowable answers.
+- Demand a fixed number of concepts, mandatory opening animation, cinematic hero, anchor object, or metaphor.
+- Assume premium means beige, quiet, museum-like, selective, concierge, or motion-heavy.
+- Split a coherent room into moving layers without believable geometry, occlusion, lighting, and source support.
+- Let a reference win because it is fashionable, awarded, technically impressive, or already documented.
+- Require every animation to carry a literal metaphor. Motion may serve hierarchy, atmosphere, rhythm, continuity, attention, physicality, or brand character.
+- Infer commercial claims or inquiry posture from visual taste.
+- Pass generated scenes off as verified client work.
+- Create documents, prompts, storyboards, or technical plans merely because templates exist.
+- Override the user's committed direction without making the proposed change and its reason visible.
+- Convert one project's discovery into a universal design rule.
 
 ## CORE MENTAL MODEL
 
-Design the site as a brand-specific argument experienced through space, image, type, proof, interaction, and possibly motion. Interior brands often need atmosphere, taste, transformation or design intelligence, authority, process/fit, and inquiry; these are reusable communication jobs, not a fixed section order.
+Design from **real subject matter + project-specific visual logic**.
 
-Before any token, component, or animation choice, answer:
+Ideas may begin from meaning or from form.
 
-1. What must this studio be known for first?
-2. What should the visitor feel, understand, believe, and do?
-3. Which evidence earns that belief?
-4. Which narrative form best sequences that evidence?
-5. What should remain still, and what—if anything—must move?
-6. Which assets can honestly support the concept?
-7. How does the inquiry feel selective, calm, and high-trust?
+Meaning-led starts can include a perception gap, relationship, transformation, proof burden, process, hierarchy, material truth, spatial condition, or narrative tension.
 
-## SPATIAL ARCHETYPES
+Form-led starts can include an image, crop, composition, type treatment, camera movement, transition, layout, reference, visual rhythm, prototype, or accidental experiment.
 
-Use these as candidate vocabularies, not mandatory menus. A concept may adapt one, combine compatible parts, or use none when the brief calls for a quieter editorial solution.
+Both are legitimate during exploration.
 
-| Archetype | Use When | Candidate Mechanics |
-| --- | --- | --- |
-| Gallery Procession | Portfolio, studio, luxury interiors, editorial projects | Room chapters, one focal image per act, quiet labels, slow plate reveals |
-| Layered Diorama | Hero scenes, object-led decor brands, immersive first folds | Z-axis depth map, foreground blur, midground object, background atmosphere |
-| Signature Object Spine | A fixture/object can carry identity | Object blocking map, scroll role inventory, hero event, object-to-section continuity |
-| Transformation Reveal | Before/after, redesign, staging, renovation | Paired imagery, reveal grammar, proof captions, restraint around the reveal |
-| Material Library Story | Fabric, stone, wood, paint, furniture, lighting | Material script, macro closeups, swatch logic, tactile captions |
-| Invisible Luxury Portfolio | Ultra-premium decorator/studio | Full-bleed media, peripheral UI, concierge CTA, no loud buttons |
-| Spatial Systems Credibility | High-end studio selling process and rigor | Method sequence, living proof map, project index, calm structured grids |
+A form-led idea earns commitment only after testing whether it belongs to this brand, protects the subject, helps the visitor, fits the available assets, and can continue beyond the first moment.
 
-For designing hero and first-fold compositions, load and consult [hero-layout-blueprints.md](../../reference/hero-layout-blueprints.md). Use its 10 custom layout formulas and aesthetic archetypes for negative space balance, typography weights, and motion behavior. Treat these layouts as structural reference benchmarks to adapt or hybridize for the brand's custom needs, never as a rigid menu.
+## DESIGN FROM THE SUBJECT
 
-## ARTIFACT CONTRACT
+Identify what must carry the experience:
 
-Use five logical contracts. They may be five files or equivalent approved documents:
+- complete space;
+- distinct object;
+- material or design decision;
+- project collection;
+- person / practice;
+- site / context;
+- another project-specific subject.
 
-1. `evidence-dossier.md` - source catalog, facts, reported claims, inferences, unknowns, diagnosis, and unresolved gaps.
-2. `creative-brief.md` - visitor response, first-known priority, proof burden, constraints, anti-goals, and selection criteria.
-3. `concept-directions.md` - three structurally distinct whole-page territories, purposeful references, visible rough tests, comparison, and selection record.
-4. `experience-blueprint.md` - controlling argument, narrative form, chapter jobs, hierarchy, proof timing, copy-image relationship, inquiry, responsive intent, and approved visual/motion system.
-5. `production-plan.md` - assets, boundaries, generated-media needs, performance/fallback contract, risk prototype, vertical slice, build slices, and verification plan.
+These are diagnostic lenses, not hero categories.
 
-Create only when required:
+Before proposing movement or layered depth, ask what must remain recognizable, truthful, connected, and spatially coherent.
 
-- a reference question brief and translation ledger; use `reference-analysis-plan.md` and `reference-synthesis.md` for large or mixed-format corpora;
-- `site-fingerprints.md` in a workspace coordinating multiple spatial sites or a reusable production chassis, to detect repeated page grammar without storing client secrets;
-- `scroll-storyboard.md` for authored scroll timing, pinning, persistent continuity, or media choreography.
-- `cinematic-prompt-pack.md` for approved generated imagery or video.
-- `portfolio-proof-chapters.md` for detailed project decision narratives.
-- `DESIGN.md` / `DESIGN.json` for implementation tokens and component rules.
+Load `references/spatial-subject-and-asset-fit.md` when subject choice, source-image limits, parallax, camera movement, generated-scene continuity, crop, or asset feasibility matters.
 
-Legacy spatial projects do not need to delete or rename their existing fourteen files. Map equivalent approved content into the five logical contracts, identify real gaps, and consolidate only with user authorization.
+## EXPLORE WITHOUT TURNING VOCABULARY INTO A MENU
 
-## VISUAL THESIS RULES
+Look for generative structure in the work:
 
-Select the governing concept before final typography or color. A visual thesis may be spatial, editorial, typographic, material, project-led, or transformation-led; it must explain the page as a whole. For a material colour decision, load the UI/UX `color-and-contrast.md` reference and its `color-evidence-and-context.md` reference when scene, material, light, culture, or a research claim affects the decision.
+- relationship;
+- hierarchy;
+- contrast;
+- transformation;
+- sequence;
+- repetition;
+- rhythm;
+- scale;
+- geometry;
+- material;
+- personality;
+- environment;
+- stillness / absence.
 
-If the user is unsure, run the concept forge:
+Also allow a visual spark to lead first. Test its meaning and usefulness later.
 
-1. Ask what sensation the first 5 seconds must create.
-2. Ask what generic category expectation must be rejected.
-3. Ask what evidence, project, material, conviction, transformation, or spatial cue could organize the page.
-4. Offer three structurally different whole-page territories, including one restrained or still-led direction unless evidence rules it out.
-5. Define reference questions from the approved brief and use proportional pre-territory research to expand vocabulary.
-6. Translate reference principles through the brand before assigning them to a territory.
-7. Externalize every territory with a rough styleframe, sequence sketch, or prototype and identify its asset burden.
-8. Run post-territory reference validation only for precise design, evidence, responsive, or feasibility questions.
+Stored layouts, archetypes, references, and motion libraries may teach, challenge, diagnose, implement, or even **spark** an idea.
 
-Good visual theses:
+They cannot win merely because they are available.
 
-- "The visitor walks through a dim limestone residence where each room reveals one layer of the studio's restraint."
-- "A hand-painted mural opens like a curtain into before/after transformations."
-- "A single sculptural lamp guides the scroll from atmosphere to method to inquiry."
-- "Textile, stone, and daylight act as the brand system; UI stays at the edges."
+## CONCEPT DIRECTIONS
 
-These examples are candidates, not a requirement that every site use a room, threshold, or anchor object. Reject theses that are just adjectives:
+Explore as many directions as the uncertainty warrants.
 
-- "Modern luxury"
-- "Clean and elegant"
-- "Premium minimalist"
-- "Warm and inviting"
+One strong direction may need a serious challenge rather than two invented rivals. When comparison helps, directions should differ materially in subject, visitor journey, proof logic, composition, spatial behaviour, interaction character, intensity, or media requirement.
 
-## SCENE KIT REQUIREMENTS
+A palette change or a different hero effect on the same structure is not a new concept.
 
-Classify every visual concept before implementation:
+For each serious candidate, show only enough to judge:
 
-| Boundary | Definition | Examples | Rule |
-| --- | --- | --- | --- |
-| Image-native | Requires real/rendered imagery to be believable | Rooms, murals, furniture, fabrics, stone, before/after images | Do not replace with CSS shapes |
-| CSS-native | Can be authored as layout/material treatment | Grids, captions, overlays, borders, quiet forms | Keep semantic and responsive |
-| SVG-native | Needs editable vector geometry | Floor plans, line art, mural mask, route, reveal edge | Use SVG paths/masks |
-| Canvas/WebGL-native | Needs frame sequence, camera path, or 3D depth | walkthrough, object spine, particle light, product specimen | Require storyboard and fallback |
+- **basis** — fact, inference, or creative hypothesis;
+- **first state / event** — still or moving;
+- **subject** — what the visitor actually looks at;
+- **continuation** — first handoff + one later moment;
+- **grammar seed** — image, type, composition, transition, continuity, stillness / motion;
+- **demand** — assets, responsive changes, fallback, cost;
+- **failure** — what would make it misleading, artificial, generic, or too expensive.
 
-For image-native concepts, define:
+Externalize selectively at the cheapest credible fidelity.
 
-- Camera angle and lens behavior.
-- Light direction and temperature.
-- Shadow softness and contact points.
-- Crop boundaries across desktop and mobile.
-- Foreground blur roles.
-- Material consistency across the family.
-- Which asset is the hero and which assets are supporting.
-- The visitor belief the asset supports.
-- The taste world and enemy/cliche the asset avoids.
-- The website section placement and text-safe zone.
+If evidence does not support a recommendation yet, do not fake confidence: state the deciding uncertainty and run the smallest useful test.
 
-For video-native concepts:
+Load `references/visual-grammar-and-concept-critique.md` when comparing directions, extending an idea past the hero, defining site-wide grammar, or diagnosing sameness.
 
-- Create or request the source image first when continuity matters.
-- Lock subject, camera angle, lighting, material placement, and room geometry in the source image.
-- Then write the video prompt with camera movement, subject movement, duration, end frame, and constraints against warping.
-- Tell the user exactly where to place the source image and final video.
-- Use `reference/cinematic-room-grammar.md` to author light, camera side, depth, focus, human trace, and reveal timing.
-- Use `../cinematic-motion/reference/video-to-website-choreography.md` to define how the video becomes a website section.
-- Reject any prompt that cannot trace its choices back to approved context files.
-## REFERENCE LOADING RULES
+## EXPERIENCE GRAMMAR
 
-Load the `reference-intelligence` skill after the creative brief when external references, award-site recordings, screenshots, transcripts, AI reports, or precedent collections must inform vocabulary or validate a territory. Use its two-pass model and Keep/Adapt/Reject/Defer ledger.
+After a concept earns selection—or when auditing an existing experience—define only the rules this project needs.
 
-Load [reference/project-phase-routing.md](reference/project-phase-routing.md) when a request starts, resumes, or targets one named phase of a substantial Spatial project. It distinguishes the one stateful project-coordination route from focused direct skill work, without discarding the former phase gates.
+Possible dimensions:
 
-Load [reference/page-grammar-and-fingerprint.md](reference/page-grammar-and-fingerprint.md) when concept territories risk sharing one page skeleton, when a reusable production chassis serves multiple clients, or when a selected direction must be compared with earlier site structures. Use its grammar, forbids, signature-move, and workspace-ledger rules without treating a difference count as proof of quality.
+- first visible state / opening behaviour;
+- subject and viewpoint;
+- image treatment;
+- typography behaviour;
+- composition logic;
+- transition language;
+- continuity language;
+- pacing and intentional stillness;
+- interaction character;
+- intensity budget;
+- responsive and reduced-motion behaviour.
 
-Load `references/extended-guidance.md` when the task needs detailed implementation rules, examples, edge cases, diagnostics, or verification beyond the core workflow above. Inspect its Contents first and load only the matching sections.
+A recurring gesture may become identity. Variation should create hierarchy, not randomness.
+
+The opening can be an animation, an initial still state, or no special entrance treatment at all.
+
+## MAKE ASSET REALITY VISIBLE
+
+For every decisive image or scene, identify:
+
+- source and status;
+- subject and proof job;
+- framing / crop / text zone;
+- native quality and likely rendered size;
+- motion role;
+- responsive state;
+- fallback;
+- continuity or rights risk.
+
+Choose the visual requirement here. Route detailed prompts, playback, encoding, motion implementation, and code to their owners.
+
+Ask for the **lightest production method** that can preserve the intended experience.
+
+## SECTION-LEVEL INVENTION
+
+When one section needs design work, do not begin with:
+
+> “What animation should go here?”
+
+Ask what the section must accomplish, what is visually generative in its real content, what composition makes that visible, whether movement improves the idea, and how the section should inherit or deliberately break the site grammar.
+
+Load `references/section-invention-and-composition.md` when a section feels generic, the user does not know what to do next, or an important chapter needs a stronger visual idea.
+
+A section is allowed to be simple. The goal is authored relevance, not maximum novelty.
+
+## CRITIQUE THE FELT RESULT
+
+Judge the actual composition and visitor journey in this order:
+
+1. **Truth** — Does the site show work and authority the practice actually has?
+2. **Subject** — Does the treatment help visitors perceive the space, object, decision, collection, person, or context?
+3. **Visitor** — Can people orient, read, inspect, trust, and act?
+4. **Continuity** — Can the idea survive beyond the first screen?
+5. **Composition** — Do crop, type, light, spacing, and hierarchy work in the viewport?
+6. **Effort** — Does media / motion / complexity earn its cost?
+7. **Distinctiveness** — Would the concept still belong here without the admired reference or luxury styling?
+
+State what was observed, what is inferred, and what remains untested.
+
+## REFERENCE ROUTING
+
+Load references only when they answer a live question.
+
+- `references/spatial-subject-and-asset-fit.md` — subject integrity, source limits, crop, depth, camera / motion feasibility, asset truth.
+- `references/visual-grammar-and-concept-critique.md` — concept comparison, continuation, experience grammar, sameness, critique.
+- `references/section-invention-and-composition.md` — section-level invention, content-to-composition translation, section continuity.
+- `reference-intelligence` — external source forensics and provenance.
+- `master-design-director` — focused critique at costly decisions.
+- `cinematic-motion` — approved motion behaviour and implementation logic.
+- `scroll-storyboard` — authored beat-level scroll progression.
+- `reference/page-grammar-and-fingerprint.md` — compare prior site grammar when a new project risks repeating an earlier structure. Use project-local `site-fingerprints.md` when prior sites exist.
+- `reference/project-phase-routing.md` — distinguish a focused task from a coordinated project route.
+- `references/resource-index.md` — find a named legacy spatial reference only when the current V5 guidance does not answer that question.
+
+Do not load every reference for every project.
 
 ## OUTPUT SHAPE
 
-Deliver the requested artifact or decision, the key rationale and tradeoffs, and a concise verification checklist.
+Return only what the current decision requires.
+
+Possible outputs:
+
+- direct visual critique;
+- one concept or several materially different candidates;
+- concept packet;
+- visual thesis;
+- experience grammar;
+- hero / first-state reasoning;
+- translated reference principle;
+- section concept;
+- asset-state requirements;
+- next useful test.
+
+Do not generate paperwork to satisfy this skill.
 
 ## NON-NEGOTIABLE CHECKLIST
 
-1. Diagnosis and creative brief precede visual prescription.
-2. Three structurally different territories are externally tested before selection.
-3. Every full inception defines reference questions; corpus depth remains proportional.
-4. Pre-territory references expand vocabulary and post-territory references validate; neither dictates the concept.
-5. The five logical contracts or approved equivalents cover the work.
-6. Motion, video, anchor objects, storyboards, and generated media remain conditional.
-7. Load matching extended guidance for substantive or high-risk work.
-8. Preserve user constraints and verify the result before delivery.
-9. Compare page grammar with relevant prior work when a multi-site workspace or reusable chassis makes structural repetition plausible.
+1. Separate observed truth from inference and proposal.
+2. Protect the subject's spatial and visual integrity.
+3. Keep concepts and references provisional until fit is tested.
+4. Use comparison only when it improves a real decision.
+5. Show how a whole-site concept continues beyond the first screen.
+6. Make asset, responsive, accessibility, and fallback implications visible for material decisions.
+7. Do not infer commercial posture from visual luxury.
+8. Motion remains optional and must earn its place.
+9. Explain the recommendation, tradeoff, and highest-value next test.
+10. Keep specialist ownership boundaries intact.

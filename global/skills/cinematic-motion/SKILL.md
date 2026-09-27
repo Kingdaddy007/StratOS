@@ -1,232 +1,471 @@
 ---
 name: cinematic-motion
-description: 'Use this skill when planning or implementing cinematic motion for high-end interior decorator, spatial design, architecture, gallery, showroom, furniture, decor, or luxury home websites. Activated by "add GSAP", "scroll animation", "make this cinematic", "room walkthrough", "parallax interior scene", "before/after reveal", "object spine", "curtain reveal", "image sequence", "WebGL", "canvas", "gallery procession", or any spatial storytelling motion task. Do NOT use for generic product dashboards, backend/API/security/database work, or decorative motion that is not tied to a room, material, threshold, object, proof, or inquiry moment.'
+description: Use when a website needs motion direction, motion grammar, camera-like movement, scroll/interaction behaviour, transition logic, motion critique, or a decision about whether movement belongs at all. Trigger on cinematic motion, parallax, dolly, pan, reveal, scroll animation, before/after movement, image sequence, ambient motion, interaction motion, or transition behaviour. Do not load for visual concept alone, beat-level scroll storyboarding alone, media prompting alone, generic implementation work, or a request that is already fully specified as a small code repair.
 ---
 
-# Cinematic Motion
+# Cinematic Motion — V5.2.1
 
-## WHEN TO USE THIS
+## ROLE
 
-- Load after a territory is selected and `experience-blueprint.md` plus `production-plan.md` (or approved equivalents) define the communication job, assets, constraints, and fallbacks.
-- Consult the motion library only after naming the motion job. Library effects are candidates to adapt, not a compulsory source or a substitute for concept reasoning.
-- Load when motion must express interior atmosphere, spatial transformation, material behavior, gallery pacing, or object-led scrollytelling.
-- Load before writing GSAP, ScrollTrigger, canvas, R3F, image sequence, parallax, mask, or before/after reveal code.
-- Load `reference/lenis-gsap-scroll-foundation.md` when Lenis is used as scroll infrastructure.
-- Load `reference/scroll-driven-3d-cube.md` when the concept is a room box, rotating wall set, material plinth, CSS 3D cube, or scroll-driven cube gallery.
-- Load `canvas-ui` when a contained live DOM/WebGL effect may serve a named
-  spatial communication job. Let `canvas-ui` compare it against still, DOM/CSS,
-  and media alternatives, verify the current upstream source, and own its
-  import/fallback gate.
+This skill is the **motion-direction and motion-grammar specialist**.
+
+Its core question is:
+
+> What should move, why should it move, how should that movement feel, and what is the lightest credible way to produce it?
+
+It treats stillness as a valid motion decision.
+
+Follow the **V5 Creative Constitution** when available.
+
+## WHEN TO USE
+
+Load when a live decision concerns:
+
+- whether motion improves a concept;
+- opening / arrival behaviour;
+- ambient motion;
+- scroll-bound narrative movement;
+- interaction feedback;
+- page / section transition behaviour;
+- camera-like motion;
+- motion physics / character;
+- motion continuity across a site;
+- motion critique;
+- motion production method;
+- responsive / reduced-motion equivalence.
+
+It may be used in two modes:
+
+### Study / Explore
+A motion reference, camera move, prototype, or technical experiment is itself the starting point. Analyze or prototype it provisionally. Do not let it become project truth without brand, subject, visitor, asset, and downstream fit.
+
+### Commit / Produce
+A selected concept already contains a motion job. Define its grammar, production method, fallbacks, and implementation handoff.
+
+Work directly for a bounded motion question. Use `scroll-storyboard` only when beat-level authored scroll timing is actually required.
+
+## OWNERSHIP
+
+This skill owns:
+
+- motion purpose;
+- motion grammar;
+- motion tracks;
+- motion character / physics at the perceptual level;
+- trigger / response relationships;
+- continuity and repetition rules;
+- motion-production-class recommendation;
+- reduced-motion / mobile equivalence at the motion-design level;
+- motion critique and the smallest useful motion test.
+
+It does not own:
+
+- brand strategy or commercial posture;
+- site-wide visual concept / composition — `spatial-experience-design`;
+- narrative argument / chapter order — `storytelling`;
+- external reference provenance — `reference-intelligence`;
+- media generation / source-scene prompting — media choreography owner;
+- beat-level scroll progression — `scroll-storyboard`;
+- project adoption of a motion-library effect before its job and fit are clear — `motion-library`;
+- final engineering architecture / dependency choice — build / coding owner.
+
+Advise across boundaries when useful; do not silently take ownership.
 
 ## NEVER DO
 
-- Never animate before naming the physical law of the space.
-- Never use the same fade-up preset across consecutive sections.
-- Never add motion that could be pasted onto any other industry.
-- Never let scroll-jacking hide proof, navigation, or inquiry.
-- Never run canvas/WebGL/image-sequence work without a performance and fallback plan.
-- Never use video as wallpaper behind ordinary sections without a section-specific spatial job.
-- Never mix ambient loops, arrival timelines, and scroll-bound timelines in one uncontrolled animation chain.
-- Never build a spatial site with placeholder animation when the concept depends on real imagery, rendered frames, or 3D assets.
+- Do not assume cinematic means more motion.
+- Do not require a literal metaphor for every movement.
+- Do not animate merely because a technique is available.
+- Do not reject repeated motion merely because it repeats.
+- Do not use one preset everywhere without checking whether repetition is intentional grammar or accidental sameness.
+- Do not force motion to be unique to interiors; a cross-industry technique is valid when translated to this subject and experience.
+- Do not break spatial integrity to create depth.
+- Do not hide navigation, proof, inquiry, focus, or reading behind choreography.
+- Do not prescribe GSAP, WebGL, R3F, Lenis, or another library before the production requirement justifies it.
+- Do not treat heavy runtime technology as inherently more cinematic.
+- Do not let autoplay, pinning, or scrubbed media become the only way to access essential information.
+- Do not convert an exploratory motion study into a committed site behaviour without making the tradeoff visible.
 
-## MOTION CONTRACT
+# MOTION JOB FIRST
 
-Stillness is an explicit valid decision. Add motion only when it answers one of these spatial jobs better than a still composition:
+Motion should have a job, but the job does not need to be literal or symbolic.
 
-1. Open a threshold.
-2. Reveal a room.
-3. Move light across material.
-4. Transform before into after.
-5. Guide the eye with a signature object.
-6. Let a material behave physically.
-7. Shift from atmosphere to proof.
-8. Slow the visitor into inquiry.
+Useful jobs include:
 
-If the motion does none of these, remove it.
+- **Reveal** — expose content, subject, relationship, or hierarchy.
+- **Orient** — show where the visitor is or how content relates spatially.
+- **Transform** — compare states or show change.
+- **Continue** — carry identity or relationship across sections / pages.
+- **Guide attention** — establish hierarchy or reading order.
+- **Create physicality** — communicate weight, depth, material, resistance, scale.
+- **Create atmosphere** — subtle life, light, texture, environmental movement.
+- **Create rhythm** — pace the experience or prevent mechanical sameness.
+- **Support proof** — compare, inspect, reveal, or sequence evidence.
+- **Respond** — provide interaction feedback or agency.
+- **Transition state** — navigation, filtering, opening / closing, page change.
+- **Character** — express brand personality through speed, precision, softness, restraint, playfulness, or another supported behaviour.
+- **Other** — define the actual job.
 
-For every proposed motion, record: communication job, triggering evidence, why stillness is insufficient, affected content, interaction model, reduced-motion equivalent, mobile simplification, performance cost, and maintenance burden.
+Stillness may perform the job better.
 
-## FOUR MOTION TRACKS
+Before broad motion work, ask:
 
-When motion exists, classify applicable behavior into four separate tracks. A project does not need motion in every track:
+1. What changes for the visitor because this moves?
+2. Could composition, sequencing, crop, or stillness do the job more clearly?
+3. Does the source support the intended movement?
+4. What would reduced motion preserve?
+5. What does this movement cost?
 
-| Track | Purpose | Examples | Guardrail |
-| --- | --- | --- | --- |
-| Arrival | First physical event | curtain split, door open, light wash, mural reveal | Run once; do not block content too long |
-| Ambient | Low-attention life | dust motes, textile drift, light shimmer, plant shadow | Pause offscreen; respect reduced motion |
-| Scroll-bound | Playhead-controlled narrative | stacked panels, room walk, object guide, before/after reveal | Must scrub or hold, not autoplay after scroll stops |
-| Interaction | User feedback | material swatch hover, project index preview, concierge form focus | Subtle, direct, accessible |
+# FIVE MOTION TRACKS
 
-## SPATIAL MOTION ARCHETYPES
+A project may use any subset.
 
-These are candidate grammars. Select only what the approved concept and constraints justify; selecting no cinematic archetype is acceptable.
-
-### Gallery Procession
-
-Use for portfolio and editorial interiors. Pin or hold one focal image/room at a time. Reveal captions like museum labels. Use slow scale from `1.04` to `1`, opacity, and light shifts. Avoid scatter, bouncy easing, and excessive overlays.
-
-### Layered Diorama
-
-Use for immersive hero scenes. Build a depth sandwich: atmosphere, display type, room/object plane, proof/UI plane, foreground blur. Animate layers with different amplitudes. Keep text static when an object is carrying attention.
-
-### Signature Object Spine
-
-Use when one chair, lamp, vase, door, mural, textile roll, or material sample can own the journey. Create an object blocking map with position, scale, rotation, section role, and collision-safe text zones at 0/25/50/75/100%.
-
-### Transformation Reveal
-
-Use for before/after, redesign, staging, renovation, or styling proof. Make the reveal a cinematic argument: slider, curtain, light sweep, plan-to-room morph, or photograph-to-material transition. Caption the decision, not just the result.
-
-### Stacked Media Panels
-
-Use for full-bleed room films or project chapters. Pin the viewport, stack panels vertically, move the entering panel from `yPercent: 100` to `0`, and add restrained shadow or darkening to sell physical overlap.
-
-### Material Wipe
-
-Use scene-native matter as the transition: fabric pull, plaster scrape, glass fog, shadow pass, sunlight spill, brush stroke, stone edge, or curtain veil. Avoid generic CSS diagonals unless the brand has a geometric reason.
-
-### Architectural Room Box
-
-Use for a scroll-driven CSS 3D cube that rotates through four curated room walls or six sides of a material sample. Load `reference/scroll-driven-3d-cube.md`. Every face must have a context-inherited prompt, strategic source, proof job, text-safe zone, and mobile/reduced-motion fallback.
-
-### Cinematic Layout Formation
-
-Use when portfolios, material archives, or process galleries assemble, swing, slide, or sweep dynamically during scroll. Load `reference/on-scroll-layout-formations.md`. Covers:
-- **Spatial Convergence** (exploded 3D items assembling into a clean mosaic).
-- **Cinematic Window** (dual-axis container/image sliding reveals).
-- **Swinging Cabinet** (Y-axis panel rotations).
-- **Arc Procession** (sweeping items around remote centers).
-
-### Canvas-First Walkthrough
-
-Use only when a camera path through a room/world is the concept. DOM becomes edge instrumentation: labels, progress, inquiry, captions. Require camera-path brief, frame/scene map, preload strategy, and mobile still/video fallback.
-
-### Living Proof System
-
-Use for method/process credibility. Animate project index states, press/proof ribbons, material selection, availability notes, or inquiry progress. Keep motion trust-preserving and quiet.
-
-## VIDEO-LED WEBSITE CHOREOGRAPHY
-
-Load `reference/video-to-website-choreography.md` when video, canvas, frame sequence, or scroll-led media is involved.
-
-For a media-heavy experience, create or require a choreography section in `production-plan.md` or an approved equivalent before implementation. A legacy `showroom-choreography.md` remains valid.
-
-For each media-led section define:
-
-- Journey stage.
-- Belief/proof job.
-- Media type.
-- Scroll behavior.
-- Enter and leave range.
-- Text zone.
-- Reveal rhythm.
-- Motion track.
-- Fallback.
-- Prompt requirement.
-
-Video must perform one of these jobs:
-
-1. Establish atmosphere.
-2. Open a threshold.
-3. Reveal taste.
-4. Prove transformation.
-5. Show material intelligence.
-6. Carry portfolio proof.
-7. Slow the visitor into inquiry.
-
-If it does none of these, use a still or remove it.
-
-## IMPLEMENTATION RULES
-
-- Use GSAP + ScrollTrigger when approved scroll choreography needs timeline control, pinning, or scrubbed sequencing; do not add it for simple transitions.
-- Use Lenis only as scroll infrastructure; it must serve the showroom choreography.
-- Use `motion`/Framer only for product-like microstates and small UI transitions.
-- Use CSS transitions for simple hover/focus states.
-- Use canvas image sequences for pre-rendered room/object/camera films that must scrub frame-accurately; load `reference/canvas-frame-scroll-implementation.md`.
-- Use R3F/WebGL only when depth, camera path, object inspection, or material behavior cannot be achieved with DOM/image layers; load `reference/codrops-canvas-cylinder-gallery.md` or `reference/scroll-mapped-3d-camera-scenes.md` when relevant.
-- Use CSS 3D + GSAP when a scroll-controlled cube can tell the spatial story without WebGL; load `reference/scroll-driven-3d-cube.md`.
-- Use dynamic grid assembly, dual-axis window reveals, or Y-axis swing cabinets when scroll layouts must transition dynamically; load `reference/on-scroll-layout-formations.md`.
-- Use IntersectionObserver or ScrollTrigger lifecycle hooks to pause ambient loops offscreen.
-- Use `prefers-reduced-motion` to replace travel with crossfades, static chapter images, or manual navigation.
-- Keep primary navigation and inquiry reachable even during pinned sequences.
-
-## ASSET AND PERFORMANCE GATES
-
-Before implementation, classify the motion:
-
-| Motion Type | Required Production Evidence | Fallback |
+| Track | Purpose | Examples |
 | --- | --- | --- |
-| Image sequence | frame map, preload plan, mobile frame tier | poster image or compressed video |
-| R3F object | 3D spec sheet, material budget, collision zones | transparent PNG or short video loop |
-| Canvas-first walkthrough | camera-path brief, chapter cues, DOM overlay map | still chapter stack |
-| Diorama parallax | depth-map, scene-kit brief, asset-lighting brief | static layered hero |
-| Before/after reveal | paired assets, crop parity, caption logic | static paired gallery |
+| **Opening / Arrival** | First transition into the experience | direct reveal, aperture, title resolution, threshold, no animation |
+| **Ambient** | Low-attention continuous life | light drift, subtle material movement, environmental loop |
+| **Narrative / Scroll** | Movement tied to progression | crop travel, pinned handoff, scrubbed sequence, before/after |
+| **Interaction** | User feedback / agency | hover, drag, cursor response, material comparison, control states |
+| **Navigation / Transition** | Change between states, sections, pages, filters | project handoff, menu open, page transition, modal / panel state |
 
-Performance rules:
+Do not create motion in every track.
 
-- Use no more than one heavy real-time WebGL scene per page unless explicitly justified.
-- Do not combine heavy WebGL, image sequence, and multiple autoplay videos in the first viewport.
-- Preload only the frames/assets required for the first interaction; lazy-load later chapters.
-- Use poster frames and mobile-specific crops for all room films.
-- Dispose WebGL geometries/materials when changing worlds or unmounting scenes.
+Keep tracks conceptually separate even if implementation shares infrastructure.
 
-## ENGINEERING PATTERNS
+# MOTION GRAMMAR
 
-- Canvas sequence: preload frames in chunks, draw closest loaded frame during fast scroll, resize canvas for DPR, and clear between draws.
-- 3D annotation: project named 3D points to CSS pixels, hide labels when occluded, and provide mobile stacked labels.
-- Horizontal scroll transfer: pin the section and map vertical progress to `x` translation; never rely on native horizontal overflow for narrative sections.
-- SVG material masks: animate `clipPath`, `mask-size`, path progress, or transform scale; keep semantic text outside raster masks.
-- Layer sandwich: place background, type, object, UI, and foreground blur in named wrappers; define pointer-events intentionally.
-- Stacked panels: pin a parent, absolutely stack panels, translate active panels, and use z-index based on chapter order.
+A motion grammar is a small set of repeatable rules describing how movement behaves across the experience.
 
-## EASING AND TIMING
+Define only what matters.
 
-- Interior luxury: `power2.out`, `power3.out`, or cubic `0.16, 1, 0.3, 1`; 700-1400ms for arrivals.
-- Gallery: long, smooth ease-outs; no bounce.
-- Industrial/spatial systems: linear or near-linear scrub with dampening.
-- Textile/organic: slow in/out, subtle sine loops, low amplitude.
-- Playful decor object: limited `back.out` only when the brand is visibly playful.
+Possible dimensions:
 
-## ANTI-PATTERNS
+## Trigger
+What initiates movement?
 
-| Anti-Pattern | What It Is | Fix |
-| --- | --- | --- |
-| Universal Fade-Up Syndrome | Same opacity/y reveal everywhere | Use scroll scrub, static holds, material wipes, or distinct chapter timings |
-| Decorative Parallax | Layers move but mean nothing | Tie every layer to depth, light, object, or room transition |
-| WebGL Vanity | 3D asset does not guide, reveal, prove, or transition | Use image/DOM instead |
-| Timeline Collision | Ambient loops are overwritten by scroll timelines | Separate tracks and refs |
-| Hidden Inquiry | Pinned sequence traps access to contact/action | Keep edge CTA or final clear inquiry section |
-| Impossible Reverse | Scrubbed liquid/gravity looks absurd backwards | Use event-triggered clips or non-reversible transitions |
-| Background Video Wallpaper | Video loops behind normal sections without narrative responsibility | Define section job, text zone, scroll behavior, and fallback or remove video |
+- load / first visit;
+- time;
+- scroll progress;
+- viewport entry;
+- pointer / drag;
+- hover / focus;
+- click / tap;
+- navigation / route change;
+- media state;
+- another project-specific trigger.
 
+## Response
+What visually changes?
 
-## REFERENCE LOADING RULES
+- position;
+- scale;
+- crop;
+- mask / reveal;
+- opacity;
+- blur / focus;
+- light / exposure;
+- colour;
+- viewpoint / camera;
+- rotation;
+- frame / time;
+- object / layout relationship.
 
-Load `references/resource-index.md` when the task needs examples, specialist criteria, implementation details, or domain-specific diagnostics beyond this core workflow. Select only the references whose indexed purpose matches the task; do not load the package wholesale.
+## Character
+How should it feel?
 
-Load `reference/scroll-verification.md` after implementing authored scroll,
-pinned scenes, scrubbed media, persistent objects, or scroll-controlled
-Canvas/WebGL. Use its dead-scroll, frozen-media, composited-contrast, focus,
-mobile, reduced-motion, loading, encoding, contact-sheet, and cold-scroll checks
-as bounded project evidence rather than release certification.
-## OUTPUT SHAPE
+- heavy / light;
+- precise / loose;
+- sharp / soft;
+- inertial / direct;
+- restrained / expressive;
+- organic / mechanical;
+- calm / energetic;
+- continuous / stepped;
+- another supported quality.
 
-**Motion plan:** Communication job -> stillness comparison -> applicable tracks -> candidate grammar -> production evidence -> fallback -> implementation notes.
+## Continuity
+What repeats enough to become identity?
 
-**Implementation guidance:** DOM/canvas/WebGL structure -> timeline responsibilities -> asset loading -> reduced-motion -> verification.
+- camera direction;
+- reveal edge;
+- acceleration character;
+- hold behaviour;
+- image / type handoff;
+- recurring object motion;
+- section-entry logic;
+- another project-specific rule.
 
-**Audit:** Motion purpose -> track separation -> template risks -> performance risks -> required fixes.
+**Repeat grammar; vary emphasis.**
 
-## NON-NEGOTIABLE CHECKLIST
+A repeated behaviour can strengthen identity. Change it when hierarchy, content, visitor need, or narrative turning point justifies the change.
 
-1. The communication job and stillness alternative are evaluated.
-2. Applicable motion tracks are separated; unused tracks are explicitly omitted.
-3. Any selected archetype is justified by the approved concept.
-4. Production evidence exists before code.
-5. Video/canvas scenes have choreography maps, not only motion descriptions.
-6. Scene-native transitions replace generic wipes when transitions are needed.
-7. Scroll-bound motion stops when scroll stops unless intentionally ambient.
-8. Reduced-motion and mobile fallbacks exist.
-9. Inquiry and navigation remain reachable.
-10. No repeated fade-up preset across consecutive chapters.
-11. Implemented authored scroll has project-native mechanical and cold-scroll evidence before a completion claim.
+# PHYSICALITY WITHOUT DOGMA
+
+Motion may borrow from physical behaviour, but it does not need to simulate literal physics.
+
+Ask:
+
+- What appears to have weight?
+- What appears attached?
+- What may occlude what?
+- Is this camera movement, object movement, layout movement, or merely a crop?
+- Does the motion preserve contact, perspective, shadow, and scale where those matter?
+- Should motion stop immediately, ease, overshoot, drift, or remain scrubbed?
+
+Do not automatically apply inertia because “luxury has weight.”
+
+Do not automatically remove bounce because “premium is restrained.”
+
+The motion character follows the brand and concept.
+
+Load `references/motion-jobs-and-grammar.md` when motion purpose, tracks, repetition, or physical character needs deeper reasoning.
+
+# CINEMATIC TECHNIQUES ARE VOCABULARY
+
+Techniques are verbs, not concepts.
+
+Examples:
+
+- pan / track;
+- dolly / push;
+- orbit;
+- parallax;
+- crop travel;
+- occlusion reveal;
+- mask reveal;
+- aperture / iris;
+- light pass;
+- focus / blur transition;
+- scale transition;
+- object persistence;
+- match movement;
+- wipe / material pass;
+- before/after compare;
+- frame-sequence scrub;
+- pre-rendered camera travel;
+- layout convergence / dispersal;
+- typography movement.
+
+A technique may spark a concept during exploration.
+
+For adoption, test subject fit, source requirements, mobile equivalence, accessibility, continuity, and cost.
+
+Load `references/cinematic-technique-vocabulary.md` when the designer is learning techniques, translating a reference, or deciding what movement family fits a named job.
+
+# PRODUCTION METHOD
+
+Choose the lightest production method that can preserve the intended result.
+
+Possible classes:
+
+1. **Still / simple transition**
+2. **Live DOM / CSS / SVG**
+3. **Live Canvas / WebGL / 3D**
+4. **Pre-rendered motion**
+5. **Scrubbed pre-rendered motion**
+
+The class is not a quality ranking.
+
+A technically simple crossfade may be more appropriate than a WebGL camera.
+
+A pre-rendered camera move may be more visually reliable than real-time 3D.
+
+A live DOM treatment may be more responsive and accessible than video.
+
+Load `references/production-classes-and-fallbacks.md` when choosing between runtime, rendered, scrubbed, or still production.
+
+# OPENING MOTION
+
+An opening is optional.
+
+Possible forms include:
+
+- immediate resolved hero;
+- still initial state;
+- short title / brand resolution;
+- media state that resolves into the hero;
+- threshold / reveal;
+- direct content with no special entrance.
+
+When an opening exists:
+
+- avoid fake loading unless actual loading state requires it;
+- make the resolved end state belong to the live page;
+- do not spend the entire site's attention budget before visitors understand the experience;
+- shorten or bypass for repeat visits / reduced motion when appropriate;
+- preserve basic orientation and access.
+
+Opening motion should not be treated as a separate short film pasted before the website.
+
+# SCROLL-BOUND MOTION
+
+Scroll may control progression when user-controlled timing improves the experience.
+
+Use `scroll-storyboard` when:
+
+- meaning changes at authored depths;
+- content is pinned;
+- media is scrubbed;
+- persistent objects cross multiple beats;
+- synchronized states would otherwise collide;
+- mobile / reduced-motion translation becomes complex.
+
+Do not require a storyboard for ordinary document flow or a simple in-view transition.
+
+Scroll-bound motion should respond coherently when:
+
+- the user scrolls quickly;
+- reverses direction;
+- stops mid-state;
+- resizes;
+- enters at a deep link;
+- uses reduced motion.
+
+Detailed beat timing belongs to `scroll-storyboard`.
+
+# INTERACTION MOTION
+
+Interaction motion should make state or agency legible.
+
+Useful jobs include:
+
+- confirming focus / hover;
+- previewing a project;
+- showing selection;
+- revealing comparison;
+- indicating drag / inspect behaviour;
+- clarifying navigation state.
+
+Do not make interaction dependent on hover alone.
+
+Do not animate inputs so aggressively that completion becomes slower or less legible.
+
+# MOTION AND SOURCE REALITY
+
+Before approving movement, check the source.
+
+A single still image may support:
+
+- modest crop travel;
+- restrained push;
+- mask reveal;
+- typography / frame movement;
+- limited layered depth only when real separation exists.
+
+It does not automatically support a long camera journey through unseen geometry.
+
+Use `spatial-experience-design` subject/asset-fit guidance when source integrity is the main uncertainty.
+
+# REDUCED MOTION AND MOBILE
+
+Reduced motion is not “remove everything.”
+
+Preserve:
+
+- meaning;
+- hierarchy;
+- state change;
+- proof;
+- orientation;
+- agency.
+
+Possible equivalents:
+
+- still resolved state;
+- crossfade;
+- manual control;
+- shorter distance;
+- no parallax;
+- direct section order;
+- poster frame;
+- static before/after pair.
+
+Mobile may need a different motion composition, not merely smaller values.
+
+# MOTION CRITIQUE
+
+Review movement in this order:
+
+1. **Purpose** — What does motion improve?
+2. **Subject integrity** — Does the source remain believable?
+3. **Hierarchy** — Does movement guide or compete?
+4. **Continuity** — Does it belong to the site grammar?
+5. **Control** — Can the visitor pause, reverse, navigate, and act?
+6. **Fallback** — Is the meaning preserved without the full effect?
+7. **Cost** — Does the experience justify production, performance, accessibility, and maintenance burden?
+8. **Character** — Does the motion feel specific to this project rather than merely polished?
+
+If the answer is unclear, identify the missing evidence and run the smallest useful motion test.
+
+# IMPLEMENTATION HANDOFF
+
+When a motion direction is approved, hand downstream owners:
+
+- motion job;
+- trigger;
+- affected subject / layers;
+- perceptual character;
+- start / end states;
+- continuity rule;
+- interaction model;
+- mobile intent;
+- reduced-motion equivalent;
+- production class;
+- known asset requirements;
+- performance / accessibility risks;
+- what remains unresolved.
+
+Do not prescribe a framework unless the requirement itself depends on it.
+
+A `motion-library` entry may spark an exploratory study. Adopt or apply a library effect to the project only after its motion job, subject fit, visitor value, asset requirements, and cost are clear.
+
+When implementation is authorized and a named technical question exists, load `references/runtime-contract-and-verification.md` and then only the exact engineering reference needed for GSAP, ScrollTrigger, Canvas, WebGL, image sequences, Lenis, encoding, or scroll verification. Do not reopen V4 effect presets merely because implementation has begun.
+
+# REFERENCE ROUTING
+
+Load only what answers the live question:
+
+- `references/motion-jobs-and-grammar.md` — jobs, tracks, perceptual physics, repetition, continuity.
+- `references/cinematic-technique-vocabulary.md` — technique learning / translation / fit.
+- `references/production-classes-and-fallbacks.md` — still vs runtime vs rendered vs scrubbed production, asset / fallback / performance consequences.
+- `motion-library` — may inspire an exploratory study; project adoption waits until the job and fit are clear.
+- `scroll-storyboard` — authored beat-level scroll timing.
+- `spatial-experience-design` — subject integrity, composition, Experience Grammar.
+- media choreography owner — source media, generated-scene continuity, playback states.
+- `references/runtime-contract-and-verification.md` — property/playhead ownership, lifecycle, loading, accessibility, and browser verification when code is actually in scope.
+- `reference/scroll-verification.md` — detailed browser checks for authored scroll, scrubbed media, focus, and fallbacks when that behavior is implemented.
+- `references/resource-index.md` — select one exact legacy technical reference after the motion job and production method are understood; do not choose an effect from the library by default.
+- engineering references — load only for a named technical question after direction is approved.
+
+Do not load all references by default.
+
+# OUTPUT SHAPE
+
+Return only what the current decision requires.
+
+Possible outputs:
+
+- stillness vs motion recommendation;
+- motion job;
+- motion grammar;
+- technique comparison;
+- opening-motion direction;
+- motion-track plan;
+- production-class recommendation;
+- reduced-motion / mobile equivalent;
+- critique;
+- implementation handoff;
+- smallest useful prototype.
+
+# NON-NEGOTIABLE CHECKLIST
+
+1. Stillness was considered.
+2. Motion has a named job or explicit exploratory purpose.
+3. Literal metaphor is not required.
+4. Source / subject integrity is preserved.
+5. Repetition is judged as grammar vs preset, not banned automatically.
+6. Motion tracks are separated when useful.
+7. Production class is chosen by requirement, not prestige.
+8. Essential information remains available without the full effect.
+9. Mobile and reduced-motion equivalents are visible.
+10. Implementation technology remains downstream until justified.

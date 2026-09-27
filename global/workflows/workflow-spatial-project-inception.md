@@ -1,239 +1,352 @@
 ---
 name: workflow-spatial-project-inception
-description: Discover, select, prototype, and produce a brand-specific interior or spatial website experience
+description: Coordinate V5.2 spatial website discovery, concept testing, and production through conditional decision loops
 id: spatial-project-inception
-version: 4
+version: 6
 status: active
-intent: Coordinate a material spatial website decision through conditional evidence, concept, and delivery lenses without imposing a fixed public sequence.
-use_when: [starting or substantially redesigning an interior, spatial, decor, showroom, gallery, furniture, staging, luxury-home, or architecture-adjacent brand website]
-do_not_use_when: [general product or SaaS UI, a small implementation task with approved context, backend-only work, or Project 003 before separate authorization]
-inputs: [user objective, available brand evidence, workspace context, constraints, requested authority mode]
-required_resources: [applicable AGENTS.md files, brand-strategy, reference-intelligence, storytelling, spatial-experience-design, master-design-director]
+intent: Help a designer understand a spatial brand, test a fitting website idea, and carry an earned direction into a coherent experience.
+use_when: [starting or substantially redesigning an interior, spatial, decor, showroom, gallery, furniture, staging, luxury-home, or architecture-adjacent brand website; building an authorized private prospect-specific spatial website concept]
+do_not_use_when: [general product or SaaS UI, bounded reference study or screen critique, a small implementation task with approved context, backend-only work]
+inputs: [user objective, available brand evidence, accepted decisions, workspace context, constraints, requested authority mode]
+required_resources: [applicable AGENTS.md files, reference/v5-creative-constitution-v1.0.0.md, brand-strategy, storytelling, spatial-experience-design, master-design-director]
 mutation_class: local_edit
-approval_gates: [material creative direction, source or reference scope, project-context write, dependency or source import, implementation authority, final release or external effect]
+approval_gates: [material creative commitment, source or reference scope, project-context write, dependency or source import, implementation authority, final release or external effect]
 states: [received, orient, evidence, diagnose, brief, reference, diverge, select, architect, prototype, produce, verify, deliver, stopped]
-outputs: [decision-ready direction, only the logical contracts needed to support it, proportional reference-intelligence outputs, conditional artifacts when justified, implementation when separately authorized, verification evidence, residual risks]
-verification: [trace evidence to decisions and downstream consumers, run spatial consistency checks, record raw evidence, label anything unverified]
-failure_paths: [return to the earliest invalidated gate, stop on authority or contract conflict, preserve state, report blocker and safe next action]
+outputs: [decision-ready direction, proportional working records, risk prototype when needed, authorized implementation, verification evidence, residual risks]
+verification: [trace evidence to decisions, inspect the risky assumption, check implemented scope in its real environment, label anything unverified]
+failure_paths: [return to the earliest invalidated decision, stop on authority or contract conflict, preserve state, report blocker and safe next action]
 resume_contract: task-scoped .agents/workflows/spatial-project-inception.json using the workflows directory contract
 next_workflows: [build-feature, verify-project, none]
 profiles: [spatial]
 ---
 
-# WORKFLOW: SPATIAL PROJECT INCEPTION
+# Spatial Project Inception — V5.2
 
-## PURPOSE
+## What this workflow does
 
-Turn evidence about one interior or spatial brand into a distinct, testable
-website direction and then, when authorised, controlled production. The Studio
-Director brings in the Design Director when the request qualifies; Beloved does
-not need to invoke this workflow or complete it as a public checklist.
+Help the designer understand a spatial brand, discover a fitting website idea, test its most uncertain parts, and carry the selected idea into a coherent site.
 
-This workflow is a set of **conditional decision lenses and resume support**.
-It does not assume a cinematic hero, fixed story sequence, video, motion,
-anchor object, effect-library choice, reference-derived architecture, or a
-ten-step relay. Start at the lens that protects the next decision, skip a lens
-whose risk is absent or already controlled, and return to any earlier lens when
-new evidence invalidates the direction.
+The AI brings professional knowledge, useful proposals, critique, and production ability. The designer can interrupt, redirect, reject, or choose a direction in ordinary conversation. Internal routing should rarely be visible. Consequential choices and their reasons should be.
 
-Reference questions follow a useful creative brief when references can change a
-decision; their depth is proportional to that decision. The point is to make a
-good design conversation and a buildable vertical slice, not to generate a
-complete set of documents.
+Use this workflow for a new spatial website or a substantial change in its creative direction. A request to discuss a reference, critique one screen, repair an animation, or change a known section can be handled directly. Do not restart inception merely because the subject is an interior designer.
 
-## ARTIFACT CONTRACT
+The [**V5 Creative Constitution v1.0.0**](../reference/v5-creative-constitution-v1.0.0.md) governs creative judgement. This workflow describes how to move work forward. It does not impose a house aesthetic, cinematic hero, opening animation, fixed number of concepts, fixed set of files, or required skill chain.
 
-Use one or more of these five logical contracts in `.agents/contexts/` or an
-approved equivalent location **only when they make an active decision,
-handoff, or resume state clearer**:
+## Start with the decision at hand
 
-1. `evidence-dossier.md`
-2. `creative-brief.md`
-3. `concept-directions.md`
-4. `experience-blueprint.md`
-5. `production-plan.md`
+At entry, establish four things in the smallest useful form:
 
-They are contracts, not a file-count ritual. Existing approved documents may
-satisfy them. Legacy spatial projects may retain fourteen-file context sets;
-map their content, identify genuine gaps, and consolidate only with user
-approval. Do not create every file before making a useful creative decision.
+1. **The job** — Is the user learning, exploring, choosing, prototyping, building, or reviewing? What decision would make this conversation useful?
+2. **The authority** — What local work has the user authorized? What source, asset, generation, dependency, publication, or external action remains outside that scope?
+3. **The project truth** — What is observed, what the client reports, what is inferred, what is proposed, and what is still unknown? Which existing decisions should be respected?
+4. **The cost of being wrong** — Which assumption would waste the most design or production effort if it fails?
 
-Conditional outputs:
+Do useful work with the available evidence. Ask for missing information only when it would change the next consequential choice. The user should not have to complete a questionnaire before the AI can sketch an idea, explain a reference, or identify an obvious risk.
 
-- a reference question brief and translation ledger, embedded in an approved contract or stored separately;
-- `reference-analysis-plan.md` and `reference-synthesis.md` for large, mixed-format, or implementation-oriented corpora;
-- `scroll-storyboard.md` for authored scroll timing, pinning, continuity, or media choreography;
-- `cinematic-prompt-pack.md` for approved generated imagery/video;
-- `portfolio-proof-chapters.md` for detailed project decision narratives;
-- `DESIGN.md` / `DESIGN.json` for implementation tokens and component rules.
+## Decision states
 
-## CONDITIONAL DECISION LENSES
+Creative work may be:
 
-The following lenses remain available because each prevents a real failure
-mode. They are not mandatory phases or a public script. The Design Director
-selects, combines, repeats, or omits them according to the client, evidence,
-and next decision. A "Gate" below means a condition to meet *when that lens is
-material*, not an automatic request for another Beloved approval.
+- **Study** — learn, inspect, recreate, or understand a reference, technique, or mechanism without requiring immediate project fit.
+- **Explore** — reversible research, sketches, recreations, comparisons, prototypes, and experiments. Not project truth.
+- **Provisional** — a low-risk working choice used to keep moving while uncertainty remains. Record what could change it.
+- **Committed** — a consequential direction with enough evidence, fit, or prototype support to justify downstream dependency.
 
-## ROUTE VISIBILITY CONTRACT
+Do not ask for approval on every reversible move. Make consequential commitments visible. Full production follows commitment; experiments may precede it.
 
-Keep route selection private, but make material handoffs observable. At every
-approval gate, resume point, or change of owning lens, report only the fields
-that changed:
+# Three working loops
 
-```text
-Route and current lens:
-Decision being protected:
-Capabilities: selected | loaded | used
-Evidence or artifact produced:
-Unknown, conflict, or approval required:
-Next route and activation reason:
-Return condition:
-```
+The loops are areas of responsibility, not stages that must be completed in order. A reference or visual experiment may open the work. New evidence or a failed prototype may send the project back to an earlier question.
 
-Do not report an available capability as selected or used. Compress this to one
-or two lines for a small conversational move. The user should never need to
-remember a skill name, infer the current phase, or reconstruct what must happen
-next.
+## 1. Understand the brand and its constraints
 
-The `design-director` is the functional lead that integrates design decisions.
-`master-design-director` is a conditional critique and gate skill used by that
-lead or the Studio Director; it is not a second owner or a competing agent.
+Investigate the studio's work, clients, audience, aims, capacity, current presentation, available assets, and the claims it can support. Look for what visitors should notice, understand, believe, and be able to do. Distinguish the client's desired perception from what its evidence currently earns.
 
-### 1. Evidence Intake
+Build a **Constraint Box** when it will sharpen the work:
 
-Use `brand-strategy`. Catalog website, social, projects, assets, communications, proof, constraints, dates, and unknowns. Separate facts, reported claims, inferences, and unknowns. Write `evidence-dossier.md`.
+- truth and claims the site must respect;
+- real project images, film, people, writing, and proof available;
+- visitor needs, including orientation, trust, access, and inquiry;
+- production limits such as time, asset rights, loading, mobile, accessibility, maintenance, and budget;
+- subject integrity: what must remain visually or spatially coherent;
+- useful creative freedoms and specific clichés this brand should avoid.
 
-**Decision check:** Surface coverage and unresolved gaps when they could change
-the direction. Missing evidence may remain, but it must be visible.
+The Constraint Box is provisional. It protects truth and resources without deciding the visual solution.
 
-### 2. Brand Diagnosis
+If commercial posture, price, exclusivity, qualification, or offer structure is unresolved, treat it as a business question. Do not infer a concierge or selective model from luxurious imagery.
 
-Inside the dossier, diagnose perception gap, desired authority, audience, taste patterns, founder authority, proof burden, premium leaks, category conventions, wrong-fit audience, and inquiry posture. Do not prescribe visuals.
+**Useful result:** a concise Creative Brief or equivalent conversation record containing the perception task, strongest proof, key constraints, live unknowns, and criteria by which concepts will be judged.
 
-**Cognitive Engine checkpoint — Type 1.5 creative decision:** Load `core/system-thinking.md`, `core/expert-cognitive-patterns.md`, and `core/first-principles.md`. Decompose current perception, desired authority, evidence gap, real constraints, and unknowns. Reframe the diagnosis from the visitor's likely misunderstanding as well as the studio's self-description. Challenge any conclusion that relies on an attractive inference rather than observed proof, and record second-order implications for asset reality, proof burden, and inquiry posture.
+Do not create a document when a few lines in an existing project record are enough.
 
-**Decision check:** Bring the diagnosis to Beloved when it materially changes
-the creative direction, client posture, or requested scope.
+## 2. Discover and select a concept
 
-### 3. Creative Brief
+Ideas may enter through brand meaning, content relationships, a visual asset, an unusual reference, motion, typography, a stored layout, a technical experiment, or the designer's intuition.
 
-Write `creative-brief.md`: what visitors should feel, understand, believe, and do; what must be known first; controlling problem; proof requirements; constraints; anti-goals; and territory-selection criteria.
+An idea is not disqualified because of where it began. A stored pattern also does not earn adoption merely because it is available.
 
-**Decision check:** Use the Creative Brief Gate when a brief is the smallest
-way to resolve a material creative conflict; otherwise capture its conclusion
-in the active decision packet.
+The AI should explore promising leads and offer alternatives when comparison would improve judgement. Stored archetypes, audits, layouts, and motion libraries expand vocabulary; they never define all possible answers.
 
-### 4. Reference Intelligence
+### References
 
-Run the direct `reference-intelligence` skill after a brief establishes
-selection criteria **when references can change a live choice**. Choose
-proportional depth:
+For an interesting reference without a client brief, run **source forensics**:
 
-- **Lightweight:** record the questions and why no external corpus is required.
-- **Focused:** analyze one or two references that answer bounded questions.
-- **Corpus:** analyze three or more references, mixed formats, or an explicit comparison using per-source forensics, cross-corpus synthesis, and a translation ledger.
+- what is actually visible;
+- how the experience unfolds;
+- what subject supports it;
+- what produces the perceived effect;
+- what assets and technology it requires;
+- where it may fail.
 
-Use the pre-territory pass to expand vocabulary, identify candidate principles, expose costs, and preserve negative patterns. Do not select the concept or copy section architecture.
+Keep the result as learning.
 
-**Decision check:** Run the Reference Integrity Gate when external references
-influence direction. Then make source scope, provenance,
-observation/inference boundary, Keep/Adapt/Reject/Defer decisions, and
-unresolved gaps explicit.
+When a project is present, translate the underlying principle through that project's subject, assets, visitors, and purpose before recommending adoption. Record source and uncertainty when reference evidence affects a decision.
 
-### 5. Concept Territories, Rough Externalization, and Reference Validation
+A private recreation may teach mechanics. A client-facing concept needs its own reason to exist.
 
-Use the direct `spatial-experience-design` skill, with `reference-intelligence` when applicable, to generate three structurally different directions for the whole page, not hero, palette, or animation variations. Include one restrained or still-led option unless the evidence rules it out.
+### Find generative structure
 
-For every territory, produce a visible rough styleframe, sequence sketch, or prototype with realistic-enough assets. Run the second reference pass only for precise questions about continuity, hierarchy, proof, interaction, motion, responsive translation, assets, or feasibility. Record provenance, translation, rejection decisions, and pattern concentration in `concept-directions.md`.
+Look for what can generate form:
 
-**Decision check:** Before selecting a territory, verify genuine divergence,
-brand-specific translation, and no reference collage. Use a visible rough test
-when the choice cannot be judged from the available evidence alone.
+- relationship;
+- hierarchy;
+- contrast;
+- sequence;
+- repetition;
+- scale;
+- geometry;
+- rhythm;
+- material;
+- transformation;
+- personality;
+- environment;
+- spatial behaviour.
 
-### 6. Concept Selection
+Also permit visual form to lead and test its meaning later. No section owes the system a literal metaphor.
 
-Use `spatial-experience-design`, `storytelling`, and `master-design-director` to compare territories on brand truth, first impression, proof, full-page potential, asset feasibility, motion necessity, accessibility, performance, responsiveness, and maintenance. Record the decision.
+### Diverge only as much as the decision requires
 
-**Decision check:** Beloved selects a territory or an explicitly reasoned
-hybrid before work is committed to a direction that would be costly to undo.
+Create as many directions as the decision warrants.
 
-### 7. Experience Architecture
+One strong direction may need a challenge rather than two invented competitors. When the choice is genuinely open, compare materially different possibilities, including stillness where relevant.
 
-Use `storytelling` and `spatial-experience-design`. Decide controlling argument, narrative form, chapter jobs, hierarchy, proof timing, copy-visual relationship, inquiry, navigation, and responsive intent. Write `experience-blueprint.md`.
+A direction is meaningfully different because its subject, visitor journey, proof logic, composition, or spatial behaviour changes—not because the palette changes.
 
-Load the Design Director's `ui-ux` baseline when navigation, inquiry forms,
-interaction states, accessibility, responsive behaviour, or recovery paths
-become concrete. Do not postpone these decisions until implementation merely
-because the visual territory is spatial.
+### Make a small concept packet
 
-**Decision check:** Use the Experience Gate only for a material narrative,
-hierarchy, proof, inquiry, or interaction decision.
+For each serious candidate, show enough to judge:
 
-### 8. Visual, Motion, and Asset Systems
+| Question | Show enough to judge |
+| --- | --- |
+| **Why this brand?** | The observed fact, meaningful inference, or explicit creative hypothesis behind it. |
+| **What does the visitor experience?** | The first visible state, hero subject, first meaningful transition, and the feeling or understanding gained. An opening animation is optional. |
+| **Can it continue?** | One later section and a seed of the site's image, type, transition, interaction, and continuity rules. |
+| **What must exist?** | Asset, media, content, accessibility, mobile, and production requirements. |
+| **Why might it fail?** | The weakest claim, illusion, crop, source, visitor assumption, or technical cost. |
 
-Complete the blueprint and `production-plan.md`: type, color, composition, crop, material, density, stillness, motion grammar when justified, asset boundary, generated-media needs, performance, accessibility, fallbacks, and build slices.
+Externalize promising directions at the cheapest credible fidelity: sketch, styleframe, motion study, rough layout, asset test, AI media test, or small coded prototype.
 
-Select conditional capabilities by the decision they own:
+Do not spend equal effort on every candidate.
 
-| Decision present | Select | Boundary |
-| --- | --- | --- |
-| Several scenes, room films, text-safe media states, portfolio proof, and prompts must operate as one media-heavy experience | `cinematic-showroom-strategy` | Own the whole-site media and scene choreography, not motion code or provider execution. |
-| A named spatial job is served better by movement than stillness | `cinematic-motion` | Own motion grammar, tracks, implementation constraints, performance, and fallbacks. |
-| Meaning changes at authored scroll depths, or pinning, scrubbing, persistent continuity, or synchronized media is required | `scroll-storyboard` | Translate the approved story and experience into beat-level scroll behavior. |
-| An approved motion job needs an existing effect candidate | `motion-library` | Compare only relevant internal candidates; do not let the library choose the concept. |
-| One contained realtime DOM/WebGL effect may outperform still, DOM/CSS, or pre-rendered media | `canvas-ui` | Compare alternatives first; own the component import, lifecycle, fallback, and isolated-slice gate. |
-| A reference must validate continuity, hierarchy, motion, responsive translation, assets, or feasibility | `reference-intelligence` | Run the focused post-territory pass and preserve provenance and translation decisions. |
-| An approved scene requires generated video | Media profile plus `video-generation`; add `prompt-engineering` only for a provider-ready prompt | Keep provider access, uploads, credits, generation, and external effects behind just-in-time approval. |
+### Test the risk that could change the decision
 
-These routes may recur when a prototype changes the design question. Selecting
-one never implies selecting the others, and a still-led production plan may
-reject all of them.
+The usual front-door test—opening/initial state -> hero -> first handoff plus one later chapter—is useful because it exposes whether the concept has a transferable grammar.
 
-**Decision check:** Obtain implementation authority before a production contract
-causes local edits, source imports, dependency changes, or external effects.
+But it is not mandatory.
 
-### 9. Risk Prototype and Vertical Slice
+If the deciding risk is elsewhere, test that instead: an impossible mobile crop, inconsistent generated imagery, cross-project transition, long scroll, asset-generation continuity, performance burden, accessibility issue, or proof gap.
 
-Prototype the most dangerous assumption first. Then create one representative sequence using real-enough imagery, typography, mobile behavior, and signature motion only when applicable. Store evidence and findings in `production-plan.md`.
+Prototype the assumption most likely to overturn the concept.
 
-**Decision check:** A vertical-slice verdict is `expand`, `revise`,
-`simplify`, or `return to concept`. A small, low-risk website may not need a
-formal prototype if direct implementation is itself the cheapest credible test.
+### Critique and commitment
 
-### 10. Full Production and Verification
+Use critique to ask whether the result:
 
-After implementation authority, use `build-feature` with `ui-ux`, `spatial-experience-design`, and `coding`; add `cinematic-motion` only when motion is approved. Build coherent slices and critique each slice. Verify accessibility, performance, responsive composition, reduced-motion/fallback behavior, proof, inquiry, and concept continuity. See `spatial-experience-design/reference/project-phase-routing.md` for the preserved phase gates and direct-work boundaries.
+- respects the subject;
+- reveals something specific;
+- helps visitors;
+- produces a language the rest of the site can carry;
+- earns its complexity.
 
-When authored scroll, pinned scenes, scrubbed media, persistent objects, or
-scroll-controlled Canvas/WebGL exists, load
-`cinematic-motion/reference/scroll-verification.md`. Verify sampled beat
-transitions, dead scroll, frozen media, composited contrast, focus reachability,
-loading/failure, mobile, reduced motion, and the intended-versus-felt cold
-scroll. Record the actual browser/device scope and residual uncertainty.
+The AI should give its own recommendation and explain the tradeoff.
 
-**Decision check:** Verify the implemented scope and obtain any required
-release or external-effect approval.
+The designer chooses a costly creative commitment unless that authority has explicitly been delegated. Reversible implementation choices may remain delegated.
 
-## STABLE NICHE JOBS, VARIABLE DESIGN
+Record the selection, strongest rejected alternative when relevant, major assumptions, sacrifices, and the condition that would reopen the decision.
 
-Interior brands commonly need atmosphere/point of view, curated work/taste, transformation or design intelligence, authority/proof, process/fit, and selective inquiry. These are reusable communication jobs, not required sections or a fixed order.
+**Useful result:** a selected concept and decision record. Its shape may be a short conversation summary, an existing project brief, or a dedicated file when handoff/resume requires one.
 
-Every project independently decides what is known first, emotional register, controlling argument, narrative form, opening form, typography, color, crop, material, density, motion amount, proof strategy, and inquiry posture.
+## 3. Shape, produce, and inspect the experience
 
-## QUALITY GATE
+Translate the selected concept into a site-wide experience.
 
-- [ ] Evidence and inference are visibly separated.
-- [ ] Diagnosis precedes visual prescription.
-- [ ] Reference questions are defined after the creative brief when references can change the direction.
-- [ ] Reference depth is proportional, provenance is explicit, and translated principles remain subordinate to brand truth.
-- [ ] Three whole-page territories diverge structurally and have visible rough tests.
-- [ ] Pre-territory references expand vocabulary; post-territory references validate named design questions.
-- [ ] Keep, Adapt, Reject, and Defer decisions prevent copied architecture and reference collage.
-- [ ] Selection rationale traces to brief criteria.
-- [ ] The decision, handoff, or resume state is supported by the necessary contracts or approved equivalents.
-- [ ] Optional complexity is explicitly accepted or rejected.
-- [ ] A risk prototype and vertical slice precede broad production.
-- [ ] Material handoffs expose the current lens, used capabilities, evidence,
-      next route, and return condition without turning the lenses into a public ritual.
-- [ ] The general project/UI workflow remains untouched.
+Define only the rules this project needs.
+
+### Experience Grammar
+
+As relevant, define:
+
+- the first visible state and how visitors reach the resolved hero;
+- hero subject and subject integrity;
+- what each chapter helps visitors understand;
+- proof timing;
+- camera or viewpoint language;
+- typography behaviour;
+- image behaviour;
+- recurring transition and continuity language;
+- navigation and interaction character;
+- motion physics and intensity;
+- where the experience intentionally pauses or changes register;
+- inquiry behaviour;
+- asset states and text-safe areas;
+- responsive compositions;
+- loading and failure behaviour;
+- reduced-motion and bandwidth fallbacks.
+
+Intentional repetition may create identity. Variation should create hierarchy.
+
+Treat a full interior as a coherent volume. Separate or move visual planes only when the source supports the illusion. Preserve architectural perspective, materials, light, project identity, and truthful proof.
+
+If an effect is impressive but competes with the work, alter or remove it.
+
+### Specialist ownership
+
+Let a specialist answer a named question:
+
+| Question | Primary owner |
+| --- | --- |
+| Claims and brand diagnosis | `brand-strategy` |
+| Offer, qualification, commercial posture | `expert-positioning` when needed |
+| Narrative argument and chapter logic | `storytelling` |
+| Reference forensics and translation | `reference-intelligence` |
+| Visual-spatial concept and experience grammar | `spatial-experience-design` |
+| Focused critique at a consequential or costly decision | `master-design-director` |
+| Approved motion behaviour | `cinematic-motion` |
+| Beat-level authored scroll progression | `scroll-storyboard` |
+| Media source, state, continuity, prompt inheritance, poster, and fallback requirements | `media-choreography` |
+| Known implementation candidates | `motion-library` |
+| Navigation, inquiry, responsive interaction, and accessible states | `ui-ux` with the Design Director |
+| One contained live effect after still, DOM/CSS, and pre-rendered options are compared | `canvas-ui` |
+| Approved provider generation | Media pack plus `video-generation`; add `prompt-engineering` only for a provider-ready prompt |
+| Engineering implementation | build/coding workflow |
+
+**One owner per question.**
+
+The **Studio Director integrates the project decision**. When involved, the `design-director` functional lead integrates visual and interaction work. The selected concept and Experience Blueprint (or equivalent record) preserve those integrated decisions. `master-design-director` provides focused critique at consequential moments and does not become a second concept owner.
+
+A specialist's example, archetype, or library entry cannot become an unexamined project decision. Not every specialist is needed on every project.
+
+### Choose the production method
+
+For each demanding moment, choose the lightest production class that can deliver the required experience:
+
+- **Live Motion** — DOM, CSS, SVG, GSAP, Canvas, or WebGL generated at runtime.
+- **Pre-Rendered Motion** — Blender, AI video, compositor, or conventional video rendered beforehand.
+- **Scrubbed Pre-Rendered Motion** — pre-rendered media whose playhead is controlled by scroll or interaction.
+- **Still / Simple** — static imagery or minimal runtime behaviour when additional motion adds no value.
+
+Choose by visual requirement, responsiveness, composability, file weight, interaction needs, production cost, accessibility, and maintenance.
+
+### Produce proportionally
+
+Before broad production, test a representative slice when the risk justifies it.
+
+When implementation is authorized, build coherent slices. Judge mechanics and feeling in the real browser:
+
+- first view;
+- scroll progression;
+- image quality;
+- typography over media;
+- navigation;
+- focus and keyboard;
+- inquiry;
+- loading/failure states;
+- mobile;
+- reduced motion;
+- performance;
+- real media quality.
+
+A passing build or polished still does not establish that the experience works.
+
+Record what was observed and what remains untested.
+
+**Useful result:** an Experience Blueprint and Production Plan only as detailed as the build or handoff requires, followed by a working site and proportionate verification evidence when production is in scope.
+
+# Working records, kept light
+
+There are four questions worth preserving when another person, agent, or later session must continue the work:
+
+1. **What do we know?** Sources, claims, inferences, constraints, and important unknowns.
+2. **What have we chosen?** The concept, why it fits, what it sacrifices, and what could reverse it.
+3. **How should it behave?** Site-wide visual and interaction rules, with meaningful fallbacks.
+4. **What must be made and proven?** Assets, build slices, risky assumptions, and checks.
+
+These answers may live in existing project documents, one concise project brief, or a few task notes.
+
+Do not create files to satisfy a file count.
+
+Make consequential changes visible in the conversation; keep routine routing and exploratory scraps out of the user's way.
+
+A principle learned from one project may be explained to the designer, but it does not silently become a global rule.
+
+# Private speculative concepts
+
+If the user authorizes a private, local concept for a prospective client, the AI may compress the loops into one execution pass.
+
+Use supplied or authorized public evidence, label inference and unverified claims, and make reversible creative choices within scope.
+
+Build a bounded proof slice or fuller local prototype according to the request and available resources.
+
+Show why the direction belongs to that prospect and what it would take to develop it responsibly.
+
+The concept is independent and uncommissioned unless the client has actually commissioned it. Local prototype authority does not imply permission to send outreach, upload private assets, purchase media, publish, deploy, or make public claims on the client's behalf.
+
+When the private concept is a complete build-first prospect website, select
+`spatial-outreach-site-sprint` for the local production loop and
+`speculative-outreach` when its evidence, claim, or privacy boundary matters.
+The sprint's three whole-page territories and three continuity candidates are
+specific to that delegated route; they are not a rule for every V5 project.
+Preserve its prospect-specific proof spine, honest limit, source rights, risk
+prototype, whole-sequence browser review, mobile and reduced-motion equivalents,
+and verification handoff. Record a reversible self-selection only when the user
+delegated that choice. Do not present it as client approval.
+
+# Legacy compatibility bridge
+
+For retained V4 callers and references:
+
+- “Exactly three territories” means **enough genuinely different directions to expose the real choice**.
+- Stored hero layouts, narrative forms, aesthetic archetypes, and motion archetypes are **vocabularies, not mandatory starting menus**.
+- A stored layout may spark an idea, but it cannot win merely because it is available.
+- `spatial-experience-design` must not select a known hero formula before the project-specific reasoning exists.
+- `master-design-director` critiques; it does not become a second concept owner.
+- Legacy `cinematic-showroom-strategy` routes delegate media-only work to `media-choreography`; media choreography must not redefine brand, narrative, visual concept, or commercial posture.
+- Do not infer “selective,” “concierge,” “quiet,” “museum-like,” or similar luxury postures without evidence.
+- Reject meaningless repetition, not intentional motion identity.
+- Reject unreasoned conventional structures, not convention itself.
+
+This section is temporary. Remove bridge rules as the relevant V4 skills are replaced.
+
+# Return conditions
+
+Return to **understanding** if a claim, audience assumption, project scope, commercial posture, asset reality, or usage right changes.
+
+Return to **concept exploration** if the selected visual mechanism cannot carry the real subject, the visitor journey is weak, or the concept has no downstream language.
+
+Return to **experience shaping** if the concept stands but a crop, interaction, fallback, media, or production choice fails.
+
+Explain the smallest change that follows from the evidence instead of restarting the whole process.
+
+# Completion standard
+
+For a direction-only request, completion means the designer can see the proposed concept, its basis, tradeoffs, and next useful test.
+
+For an authorized build, completion means the requested local experience works at the tested scope, consequential defects are addressed, and unresolved limits are reported plainly.
+
+External release remains a separate decision.
+
+## Recurring question
+
+**Does this reveal something specific about the brand, reward the visitor's attention, respect the work, serve the people using the site, and give the experience somewhere to go?**
+
+If the answer is unclear, identify the missing evidence and run the smallest useful test. When the risk is low, make a provisional choice and continue.

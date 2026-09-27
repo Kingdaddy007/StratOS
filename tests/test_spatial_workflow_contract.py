@@ -28,6 +28,8 @@ AFFECTED_SKILLS = (
     "master-design-director",
     "motion-library",
     "cinematic-showroom-strategy",
+    "media-choreography",
+    "spatial-outreach-site-sprint",
 )
 
 HIGH_STAKES_WORKFLOWS = ("workflow-spatial-project-inception.md",)
@@ -82,18 +84,16 @@ class SpatialWorkflowContractTests(unittest.TestCase):
             for filename in CORE_ARTIFACTS:
                 self.assertFalse((root / "context_templates" / filename).exists())
 
-    def test_high_stakes_workflows_keep_explicit_cognitive_engine_gates(self) -> None:
-        required = (
-            "Cognitive Engine checkpoint",
-            "Type 1.5",
-            "core/system-thinking.md",
-            "core/expert-cognitive-patterns.md",
-            "core/first-principles.md",
-        )
-        for filename in HIGH_STAKES_WORKFLOWS:
-            text = read(GLOBAL / "workflows" / filename).lower()
-            for phrase in required:
-                self.assertIn(phrase.lower(), text, msg=f"{filename} lost required cognitive gate: {phrase}")
+
+    def test_spatial_workflow_uses_v5_constitution_and_risk_first_prototype(self) -> None:
+        inception = read(GLOBAL / "workflows" / HIGH_STAKES_WORKFLOWS[0])
+        self.assertIn("v5-creative-constitution-v1.0.0.md", inception)
+        self.assertIn("Study", inception)
+        self.assertIn("Explore", inception)
+        self.assertIn("Provisional", inception)
+        self.assertIn("Committed", inception)
+        self.assertIn("test the risk that could change the decision", inception.lower())
+        self.assertIn("not stages that must be completed in order", inception)
 
     def test_motion_library_is_spatial_only_and_profile_resources_close(self) -> None:
         skill = next(record for record in self.manifest["skills"] if record["id"] == "motion-library")
@@ -163,112 +163,73 @@ class SpatialWorkflowContractTests(unittest.TestCase):
         for phrase in forbidden:
             self.assertNotIn(phrase, corpus)
 
-    def test_conditional_artifacts_are_not_core_gates(self) -> None:
+
+    def test_v5_working_records_do_not_require_a_fixed_file_set(self) -> None:
         inception = read(GLOBAL / "workflows" / "workflow-spatial-project-inception.md")
         spatial_skill = read(GLOBAL / "skills" / "spatial-experience-design" / "SKILL.md")
+        self.assertIn("Working records, kept light", inception)
+        self.assertIn("Do not create files to satisfy a file count", inception)
+        self.assertIn("Do not generate paperwork", spatial_skill)
         for filename in CORE_ARTIFACTS:
-            self.assertIn(filename, inception)
-            self.assertIn(filename, spatial_skill)
-        self.assertIn("Conditional outputs", inception)
-        self.assertIn("Create only when required", spatial_skill)
-        self.assertIn("Legacy spatial projects", spatial_skill)
+            self.assertTrue((GLOBAL / "context_templates" / filename).is_file())
 
-    def test_spatial_inception_is_director_led_and_not_a_public_phase_ritual(self) -> None:
+
+    def test_spatial_inception_is_director_led_and_conversational(self) -> None:
         inception = read(GLOBAL / "workflows" / "workflow-spatial-project-inception.md")
         studio_director = read(GLOBAL / "agents" / "studio-director" / "AGENT.md")
         design_director = read(GLOBAL / "agents" / "design-director" / "AGENT.md")
+        self.assertIn("Three working loops", inception)
+        self.assertIn("not stages that must be completed in order", inception)
+        self.assertIn("The designer can interrupt, redirect, reject, or choose", inception)
+        self.assertIn("Do not restart inception merely because", inception)
+        self.assertIn("do not make Beloved invoke a workflow", " ".join(studio_director.split()))
+        self.assertIn("functional design owner", design_director)
 
-        normalized_inception = " ".join(inception.split())
-        normalized_studio = " ".join(studio_director.split())
-        normalized_design = " ".join(design_director.split())
 
-        self.assertIn("conditional decision lenses and resume support", normalized_inception)
-        self.assertIn("does not need to invoke this workflow", normalized_inception)
-        self.assertIn("not mandatory phases or a public script", normalized_inception)
-        self.assertNotIn("Execute the ten-phase BEVAMPED spatial project workflow", inception)
-        self.assertIn("do not make Beloved invoke a workflow", normalized_studio)
-        self.assertIn("work conversationally", normalized_design)
-        self.assertIn("a Spatial project may need only some of them", normalized_design)
-
-    def test_spatial_route_handoffs_are_visible_and_conditional_tools_are_explicit(self) -> None:
+    def test_spatial_route_handoffs_and_specialist_ownership_are_explicit(self) -> None:
         inception = read(GLOBAL / "workflows" / "workflow-spatial-project-inception.md")
-        phase_router = read(
-            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md"
-        )
+        phase_router = read(GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md")
         design_director = read(GLOBAL / "agents" / "design-director" / "AGENT.md")
         global_router = read(GLOBAL / "GLOBAL_MEMORY.md")
         corpus = "\n".join((inception, phase_router, design_director, global_router))
-
-        for phrase in (
-            "current route",
-            "current lens",
-            "selected/loaded/used",
-            "next route",
-            "return condition",
-        ):
+        for phrase in ("current route and lens", "selected/loaded/used", "next route", "return condition"):
             self.assertIn(phrase, corpus)
-
-        for route in (
-            "ui-ux",
-            "cinematic-showroom-strategy",
-            "cinematic-motion",
-            "scroll-storyboard",
-            "motion-library",
-            "canvas-ui",
-            "reference-intelligence",
-            "video-generation",
-            "prompt-engineering",
-        ):
+        for route in ("ui-ux", "media-choreography", "cinematic-motion", "scroll-storyboard", "motion-library", "canvas-ui", "reference-intelligence", "video-generation", "prompt-engineering"):
             self.assertIn(route, inception)
-
         self.assertIn("functional design owner", design_director)
         self.assertIn("conditional critique and gate method", design_director)
-        self.assertIn("a still-led production plan may", inception)
+        self.assertIn("master-design-director", global_router)
+        self.assertIn("does not impose a house aesthetic", inception)
 
-    def test_scroll_craft_findings_are_adapted_without_a_competing_runtime(self) -> None:
+
+    def test_v5_keeps_prior_site_and_scroll_verification_resources(self) -> None:
         spatial_skill = read(GLOBAL / "skills" / "spatial-experience-design" / "SKILL.md")
-        grammar = read(
-            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "page-grammar-and-fingerprint.md"
-        )
+        grammar = read(GLOBAL / "skills" / "spatial-experience-design" / "reference" / "page-grammar-and-fingerprint.md")
         storytelling = read(GLOBAL / "skills" / "storytelling" / "SKILL.md")
         storyboard = read(GLOBAL / "skills" / "scroll-storyboard" / "SKILL.md")
         motion = read(GLOBAL / "skills" / "cinematic-motion" / "SKILL.md")
-        scroll_verification = read(
-            GLOBAL / "skills" / "cinematic-motion" / "reference" / "scroll-verification.md"
-        )
+        scroll_verification = read(GLOBAL / "skills" / "cinematic-motion" / "reference" / "scroll-verification.md")
         production_plan = read(GLOBAL / "context_templates" / "production-plan.md")
         template_ids = {record["id"] for record in self.manifest["context_templates"]}
-
         self.assertIn("page-grammar-and-fingerprint.md", spatial_skill)
         self.assertIn("site-fingerprints.md", spatial_skill)
         self.assertIn("site-fingerprints", template_ids)
         self.assertIn("Grammar forbids", grammar)
-        self.assertIn("fewer than four", grammar)
-        self.assertIn("Intended Feeling Curve", storytelling)
+        self.assertIn("A feeling curve is optional", storytelling)
         self.assertIn("cold-scroll", storytelling)
         self.assertIn("primary remembered peak", storyboard)
         self.assertIn("scroll-verification.md", motion)
-        for check in (
-            "Dead scroll",
-            "Frozen media",
-            "Composited contrast",
-            "Focus and reachability",
-            "Mobile and reduced motion",
-            "contact sheet",
-            "cold scroll",
-        ):
+        for check in ("Dead scroll", "Frozen media", "Composited contrast", "Focus and reachability", "Mobile and reduced motion", "contact sheet", "cold scroll"):
             self.assertIn(check, scroll_verification)
         self.assertIn("keyframe interval/GOP", production_plan)
         self.assertNotIn("--sc-p", "\n".join((grammar, storytelling, storyboard, motion, scroll_verification)))
 
-    def test_focused_spatial_phases_are_direct_skills_not_public_workflows(self) -> None:
+
+    def test_focused_spatial_questions_remain_direct_skills(self) -> None:
         workflow_ids = {record["id"] for record in self.manifest["workflows"]}
-        phase_router = read(
-            GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md"
-        )
+        phase_router = read(GLOBAL / "skills" / "spatial-experience-design" / "reference" / "project-phase-routing.md")
         fixture = json.loads(read(REPO_ROOT / "tests" / "fixtures" / "routing.json"))
         scenarios = {scenario["id"]: scenario for scenario in fixture["scenarios"]}
-
         for filename in RETIRED_SPATIAL_ROUTE_FILES:
             self.assertFalse((GLOBAL / "workflows" / filename).exists())
             self.assertNotIn(filename.removeprefix("workflow-").removesuffix(".md"), workflow_ids)
@@ -281,17 +242,15 @@ class SpatialWorkflowContractTests(unittest.TestCase):
             "spatial-story-development": "storytelling",
             "spatial-ui-vertical-slice": "ui-ux",
             "spatial-motion-design": "cinematic-motion",
+            "v5-spatial-media-feasibility": "media-choreography",
         }
         for scenario_id, skill_id in expected_direct_routes.items():
             self.assertEqual("skill", scenarios[scenario_id]["route_kind"])
             self.assertEqual(skill_id, scenarios[scenario_id]["route"])
             self.assertEqual(["spatial"], scenarios[scenario_id]["active_packs"])
             self.assertEqual("read_only", scenarios[scenario_id]["maximum_mutation_class"])
-
-        self.assertIn("Generate three concept territories", phase_router)
+        self.assertIn("Explore whole-page concept directions", phase_router)
         self.assertIn("Compare and select a territory", phase_router)
-        self.assertIn("Turn an approved blueprint into spatial UI or a vertical slice", phase_router)
-        self.assertIn("one visible rough test and failure condition per territory", phase_router)
         self.assertIn("risk prototype first", phase_router)
 
     def test_every_affected_skill_resource_is_reachable_from_a_router(self) -> None:

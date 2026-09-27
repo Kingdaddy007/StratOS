@@ -1,6 +1,6 @@
 # Audit Mechanics Map
 
-Use the 30 local audit reports in `design-audit/` as a candidate reference library after a concept territory has named a design question. No concept is required to use or cite a mechanic. When a mechanic is useful, record what question it answers and how it is adapted for the current brand.
+Use the 31 local audit reports in `design-audit/` as a candidate reference library after a concept territory has named a design question. No concept is required to use or cite a mechanic. When a mechanic is useful, record what question it answers and how it is adapted for the current brand.
 
 ## Design Audit Directory Paths
 
@@ -40,6 +40,7 @@ To inspect the raw reports, load the corresponding `.md` file from the canonical
 | Site 28 CALMM | depth sandwich, scene kit coherence, curtain veil | layered interior hero with foreground blur, room, object, proof overlays |
 | Site 29 Lounge Coffee | hero event, split mask, experience-then-store, palette cleanser | mural/fabric/door/light reveal before project grid or inquiry |
 | Site 30 Nauta | living mockup ticker, hard-cut segmentation, trust-preserving motion | live process/proof panel for design method, availability, project phases |
+| Site 31 Prosperitaso | framed-world continuity, loader-to-world morph, rebus typography, controlled colour migrations, one pinned typographic peak | preserve one changing spatial world across chapters; adapt the frame and peak to the brand, keep mobile native, and reject universal fade-ups |
 
 ## Adaptation Record
 

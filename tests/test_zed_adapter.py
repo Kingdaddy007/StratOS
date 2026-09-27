@@ -60,7 +60,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_payload_labels_roles_as_references(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            payload = self.build_payload(Path(directory))
+            payload = self.build_payload(Path(directory).resolve())
             self.assertTrue((payload / "AGENTS.md").exists())
             self.assertIn(
                 "does not turn Markdown role contracts into selectable custom agents",
@@ -85,7 +85,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_global_install_merges_policy_and_preserves_unrelated_skill(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             zed_home = root / "Zed"
             zed_home.mkdir()
@@ -142,7 +142,7 @@ class ZedAdapterTests(unittest.TestCase):
             self.assertFalse((zed_home / "memory").exists())
             self.assertFalse((zed_home / "schemas").exists())
             self.assertEqual(
-                str(skills_root / "antigravity-v4"),
+                str((skills_root / "antigravity-v4").resolve()),
                 result["direct_discovery"]["runtime_support_skill"],
             )
 
@@ -154,7 +154,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_global_install_creates_missing_config_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             zed_home = root / "Zed"
             skills_root = root / "home" / ".agents" / "skills"
@@ -167,7 +167,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_workspace_install_uses_project_discovery_and_merges_policy(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             workspace = root / "project"
             workspace.mkdir()
@@ -216,7 +216,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_install_refuses_unmanaged_skill_collision(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             workspace = root / "project"
             workspace.mkdir()
@@ -228,7 +228,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_global_install_refuses_reparse_point_parent(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             zed_home = root / "Zed"
             zed_home.mkdir()
@@ -249,7 +249,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_workspace_install_refuses_higher_priority_instruction_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             payload = self.build_payload(root)
             workspace = root / "project"
             workspace.mkdir()
@@ -259,7 +259,7 @@ class ZedAdapterTests(unittest.TestCase):
 
     def test_zed_cli_requires_explicit_native_install_mode(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            target = Path(directory) / "Zed"
+            target = Path(directory).resolve() / "Zed"
             result = self.os_cli.main(
                 [
                     "install",
