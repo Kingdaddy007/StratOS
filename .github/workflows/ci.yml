@@ -60,13 +60,13 @@ jobs:
       - name: Verify generated payload inventory
         shell: bash
         run: |
-          test -f dist/gemini/adapter.json
-          test -f dist/codex/adapter.json
-          test -f dist/cursor/adapter.json
-          test -f dist/windsurf/adapter.json
-          test -f dist/opencode/adapter.json
-          test -f dist/zed/adapter.json
-          test -f dist-spatial/gemini/profile.json
+          test -f dist/gemini/general/adapter.json
+          test -f dist/codex/general/adapter.json
+          test -f dist/cursor/general/adapter.json
+          test -f dist/windsurf/general/adapter.json
+          test -f dist/opencode/general/adapter.json
+          test -f dist/zed/general/adapter.json
+          test -f dist-spatial/gemini/spatial/profile.json
           if find dist dist-spatial -type f -name '*.bak' | grep -q .; then
             echo "Generated payload contains a forbidden backup file"
             exit 1
