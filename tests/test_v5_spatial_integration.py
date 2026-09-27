@@ -90,6 +90,30 @@ class V5SpatialIntegrationTests(unittest.TestCase):
             self.assertFalse((payload / ".agents" / "skills" / "media-choreography").exists())
             self.assertFalse((payload / ".agents" / "reference" / "v5-creative-constitution-v1.0.0.md").exists())
 
+    def test_native_global_install_exposes_router_linked_constitution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            payload = self.os_cli.build_payload(
+                host="antigravity",
+                profile="spatial",
+                repo_root=ROOT,
+                output_root=root / "build",
+            )
+            gemini_home = root / ".gemini"
+            gemini_home.mkdir()
+            preview = self.os_cli.install_antigravity_global(
+                payload, gemini_home, True, False
+            )
+            self.assertIn("reference/v5-creative-constitution-v1.0.0.md", preview["changes"]["add"])
+            result = self.os_cli.install_antigravity_global(
+                payload, gemini_home, False, True
+            )
+            self.assertEqual("installed", result["status"])
+            self.assertEqual(
+                (GLOBAL / "reference" / "v5-creative-constitution-v1.0.0.md").read_bytes(),
+                (gemini_home / "reference" / "v5-creative-constitution-v1.0.0.md").read_bytes(),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
