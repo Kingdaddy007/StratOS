@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spatial Outreach Site Sprint"
+  short_description: "Build private prospect-specific spatial site concepts"
+  default_prompt: "Use $spatial-outreach-site-sprint to build and verify a private spatial prospect website concept from supplied evidence and assets."

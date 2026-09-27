@@ -16,14 +16,17 @@ The optional spatial profile adds:
 - `brand-strategy`
 - `storytelling`
 - `cinematic-motion`
-- `cinematic-showroom-strategy`
+- `media-choreography`
 - `master-design-director`
 - `motion-library`
 - `scroll-storyboard`
+- `spatial-outreach-site-sprint`
 
 Use it for interior, showroom, gallery, furniture, decor, staging, luxury-home, or architecture-adjacent work. Do not activate it merely because a task has a frontend.
 
-Within the spatial profile, `cinematic-showroom-strategy`, `cinematic-motion`, and `scroll-storyboard` are conditional specialists. A restrained still-image experience can complete the workflow without activating them.
+Within the spatial profile, `media-choreography`, `cinematic-motion`, and `scroll-storyboard` are conditional specialists. `cinematic-showroom-strategy` remains a temporary compatibility route for legacy callers. A still-image experience can complete the workflow without media or motion specialists.
+
+`spatial-outreach-site-sprint` is the private local build route for a prospect-specific spatial concept. It keeps evidence, claim, rights, verification, and external-sending boundaries explicit.
 
 ## Resource contract
 

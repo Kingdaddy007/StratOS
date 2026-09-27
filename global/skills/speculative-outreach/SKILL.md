@@ -90,6 +90,7 @@ For speculative websites:
 - Present depth honestly; do not manufacture portfolio scale, testimonials, services, results, or project relationships.
 - Let the experience prove the pitch. Keep meta-commentary about the prospect's current weakness in the outreach narration, not in the customer-facing concept.
 - Treat cinematic motion as semantic choreography: it must change understanding, organize proof, reveal a relationship, or create a justified perception shift.
+- When the Spatial pack is active and the user authorizes a complete private local build, select `spatial-outreach-site-sprint` for the site-production loop. Keep this skill's evidence, claim, privacy, honest-limit, and external-sending boundaries.
 
 ## MESSAGE ARCHITECTURE
 

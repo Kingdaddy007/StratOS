@@ -354,6 +354,33 @@ class InstallerSafetyTests(unittest.TestCase):
                 (codex_home / "antigravity" / ".agents" / "agents" / "studio-director" / "agent.md").exists()
             )
 
+            preview = self.os_cli.install_codex_global(
+                payload=payload,
+                target=codex_home,
+                dry_run=True,
+                assume_yes=False,
+            )
+            self.assertEqual([], preview["changes"]["add"])
+            self.assertEqual([], preview["changes"]["replace"])
+            self.assertTrue(preview["changes"]["unchanged"])
+
+            repeated = self.os_cli.install_codex_global(
+                payload=payload,
+                target=codex_home,
+                dry_run=False,
+                assume_yes=True,
+            )
+            self.assertEqual("installed", repeated["status"])
+            record = json.loads(
+                (codex_home / "antigravity" / "installation.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                len(self.os_cli.codex_global_file_map(payload, codex_home)),
+                len(record["direct_targets"]),
+            )
+
     def test_codex_workspace_install_uses_project_discovery_paths(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "build"

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Cinematic Showroom Strategy"
-  short_description: "Guidance for cinematic showroom strategy tasks"
-  default_prompt: "Use $cinematic-showroom-strategy to help complete this task with its domain workflow."
+  display_name: "Cinematic Showroom Strategy (Legacy)"
+  short_description: "Compatibility route to current V5 spatial specialists"
+  default_prompt: "Use $cinematic-showroom-strategy to route this legacy request to the matching current specialist."

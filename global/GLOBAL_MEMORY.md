@@ -1,4 +1,4 @@
-# Global Memory — V4 Studio Router
+# Global Memory — V5.2.1 Spatial Router
 
 **Purpose:** Choose the smallest useful agent, skill, workflow, reference, pack,
 and evidence level for a task.
@@ -8,10 +8,9 @@ surfaces.
 This file routes resources. The manifest is the exact canonical inventory.
 None of these files grants authority.
 
-**Live V4 checkpoint (2026-08-31):** the manifest contains 49 skills, 17
-workflows, 6 agents, and 4 profiles. These counts are inventory facts, not a
-quality score or a target to increase. The research synthesis and workflow
-survival ledgers record the current upgrade decisions.
+The manifest is the live inventory; counts are not a quality score. V5 spatial
+creative judgement follows `reference/v5-creative-constitution-v1.0.0.md`
+when the Spatial pack is active.
 
 Use this as a router, not a giant prompt. No route is mandatory for a small reversible task.
 
@@ -134,7 +133,7 @@ change authority or force a style. A pack changes discoverability only; it never
 | Pack | Activate for | Do not activate for |
 | --- | --- | --- |
 | Spatial | Interior/showroom, architecture-adjacent, furniture/decor, staging, or an expressly cinematic spatial experience | Ordinary SaaS, backend, dashboard, or general UI |
-| Media | Image/video generation, provider-aware media planning, or named media models | A product merely displaying an image or video |
+| Media | Actual image/video generation, named providers/models, or provider-aware production | A product merely displaying media, or Spatial media planning without provider execution |
 | Growth | Positioning, offers, copy, conversion, prospecting, outreach, or sales collateral | Routine product requirements, engineering, debugging, or security |
 
 ## 5. Core routes
@@ -194,16 +193,16 @@ workflow state merely because one of those words appears in a request.
   Director may select `reference-intelligence` in General work. It stays
   conditional: use it only when a named design question needs evidence.
 
-- **Spatial:** Design Director selects the smallest useful set of
-  `brand-strategy`, `storytelling`, `spatial-experience-design`,
-  `reference-intelligence`, `motion-library`, `cinematic-motion`, and
-  `canvas-ui`. Use `spatial-project-inception` only for a complex specialist
-  project that needs coordination. `motion-library` is a Spatial reference selector, not a command to add animation.
-  At every material `spatial-project-inception` handoff, expose the current
-  lens, decision being protected, capabilities selected/loaded/used, evidence
-  or artifact produced, approval or unresolved question, next route, and the
-  condition that would return the work to an earlier lens. Keep this compact;
-  do not make Beloved reconstruct hidden workflow state or recite the workflow.
+- **Spatial:** Handle a bounded reference study, screen critique, section idea,
+  media-feasibility question, motion repair, or known implementation directly.
+  Select `spatial-project-inception` for a major new or substantially redesigned
+  spatial website needing coordinated decisions. For a private build-first
+  prospect site with authorized local edits, select
+  `spatial-outreach-site-sprint`; the same workflow may run its compressed
+  speculative lane. Use the V5 ownership table below for specialist questions.
+  At material workflow handoffs, expose the current decision, selected/loaded/used
+  capabilities, evidence, unresolved question, next route, and return condition.
+
 - **Media:** Use `video-generation` for concept, provider-aware planning,
   prompting, comparison, or diagnosis. `prompt-engineering` is for an actual
   provider-ready prompt. These are guidance skills, not direct provider access.
@@ -214,6 +213,66 @@ workflow state merely because one of those words appears in a request.
   are hard gates, not defaults.
 
 `customer-market-demand-evidence.md` and `meaning-and-evidence-foundation.md` are conditional shared references. Each is not a baseline and not a sixth permanent Growth capability. This reference never authorises external research or external effects; a low-risk copy improvement remains direct work.
+
+### V5 spatial creative route
+
+A V5 idea may begin with a brand fact, image, reference, composition, camera move,
+material, or technical experiment. Treat **Study** as learning without project
+adoption; **Explore** as reversible work; **Provisional** as a low-risk working
+choice; and **Committed** as a consequential direction supported by fit, truth,
+visitor value, available material, and enough evidence. Do not turn every
+experiment into project truth or ask for approval on each reversible move.
+
+For a named spatial question, choose one primary owner and only the other
+specialists needed to resolve a real dependency:
+
+| Live question | Primary owner |
+| --- | --- |
+| Brand, audience, evidence, or claim truth | `brand-strategy` |
+| Offer, qualification, or commercial posture | `expert-positioning` when needed |
+| Argument, chapter jobs, proof timing, or feeling curve | `storytelling` |
+| Source forensics and transfer of a reference principle | `reference-intelligence` |
+| Visual-spatial concept, subject treatment, composition, section invention, or Experience Grammar | `spatial-experience-design` |
+| Motion job, character, grammar, production class, or fallback | `cinematic-motion` |
+| Obtainable media source, continuity, crop, text zone, poster, playback, or fallback | `media-choreography` |
+| Authored beat-level scroll depth | `scroll-storyboard` when needed |
+| Known effect candidate for an understood motion job | `motion-library` when needed |
+| Focused critique at a costly creative decision | `master-design-director` |
+| Interface integration, implementation, or independent completion check | Design Director, engineering, or Assurance as the task warrants |
+
+The Studio Director integrates project decisions. The Design Director integrates
+visual and interaction decisions when involved. `spatial-experience-design`
+owns the visual concept; `master-design-director` critiques it without becoming
+a second concept owner or independent Assurance. A specialist may reveal a
+conflict outside its domain; route that conflict to its owner.
+
+`media-choreography` belongs to Spatial planning and does not by itself
+activate the Media pack. Activate Media for actual provider-aware generation or
+production. The former `cinematic-showroom-strategy` remains a temporary
+compatibility route only for legacy callers: its media questions hand to
+`media-choreography`; it does not choose the brand, story, visual concept, or
+motion grammar.
+
+Motion and media planning may iterate during Study or Explore. Motion can define
+source requirements; media feasibility can change the feasible movement or
+production class. Provider generation follows a clear media requirement and its
+own authority gate. Use `scroll-storyboard` only when authored scroll creates a
+real coordination problem. Stored archetypes, layouts, audits, and techniques
+are vocabularies, never the allowable answer set. `motion-library` is a Spatial reference selector, not a command to animate.
+
+Prototype the uncertainty most capable of reversing the decision. The opening,
+resolved hero, first handoff, and one later section are a useful slice when
+continuity is the risk, not a compulsory sequence. The decisive risk may instead
+be source quality, mobile crop, long scroll, navigation, proof, accessibility,
+performance, or loading and failure states. Complexity earns its cost through
+visitor value, subject integrity, source reality, accessibility, responsiveness,
+and maintenance.
+
+A screenshot does not prove scroll; a desktop slice does not prove mobile; a
+generated preview does not prove client truth; and a passing build does not
+prove the whole experience. Preserve the live decision, provenance, authority
+ceiling, uncertainty, and reopen condition at a material handoff. Keep routine
+routing out of the user's way.
 
 ## 6. Evidence, contexts, and learning
 

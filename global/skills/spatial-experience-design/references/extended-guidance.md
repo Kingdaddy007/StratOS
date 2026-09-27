@@ -99,22 +99,22 @@ Load [resource-index.md](resource-index.md) when the task needs examples, specia
 
 **Concept audit:** Brief status -> territory divergence -> visible-test evidence -> anti-template risks -> next decision gate.
 
-**New spatial concept:** Evidence -> creative brief -> three territories -> purposeful references -> visible rough tests -> selection record -> experience blueprint -> production plan.
+**New spatial concept:** Evidence -> creative brief -> useful alternatives when comparison helps -> purposeful references -> risk prototype -> selection record -> production plan.
 
-**Concept options:** 3 structurally different whole-page territories -> reference questions -> visible rough tests -> asset directives -> risk/feasibility notes.
+**Concept options:** Distinct whole-page territories when comparison helps -> reference questions -> rough tests -> asset directives -> risk/feasibility notes.
 
-**Implementation handoff:** Five contracts or equivalents -> conditional artifacts -> risk prototype -> vertical-slice verdict -> build slices -> verification criteria.
+**Implementation handoff:** Decision record in the smallest useful form -> conditional artifacts -> risk prototype -> build slices -> verification criteria.
 
 ## NON-NEGOTIABLE CHECKLIST
 
 1. Diagnosis and creative brief exist before visual prescription.
-2. Three structurally different territories have visible rough tests.
+2. Alternatives and rough tests are used when they improve the decision.
 3. References answer named questions and remain adapted candidates.
 4. Selection traces to brief criteria and full-page logic.
-5. The five logical contracts or approved equivalents cover production.
+5. The production record covers the concept, evidence, constraints, and verification needs without a fixed file set.
 6. Brand-to-scene and prompt inheritance exist before generated prompts when generated media is needed.
 7. Media choreography maps text, scroll, proof, loading, and fallback when the project is media-heavy.
 8. Scene-kit and asset boundaries protect image-native requirements.
 9. Applicable motion tracks are separated; stillness and unused tracks are valid.
-10. Inquiry posture is quiet, selective, and high-trust.
+10. Inquiry posture follows the brand and commercial evidence.
 11. The result would not survive as the same layout after swapping interiors for another industry.

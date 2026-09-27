@@ -9,7 +9,7 @@
 [![CI](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml/badge.svg)](https://github.com/Kingdaddy007/StratOS/actions/workflows/ci.yml)
 ![Release](https://img.shields.io/badge/release-4.0.0-38bdf8)
 ![Agents](https://img.shields.io/badge/custom%20agents-6-8b5cf6)
-![Skills](https://img.shields.io/badge/skills-49-22d3ee)
+![Skills](https://img.shields.io/badge/skills-51-22d3ee)
 ![Workflows](https://img.shields.io/badge/workflows-17-6366f1)
 ![Hosts](https://img.shields.io/badge/hosts-7-334155)
 
@@ -57,12 +57,14 @@ Specialists are used only when their distinct judgement helps.
 | --- | --- |
 | 1 Studio Director | Your normal entry point. It routes work and returns one clear result. |
 | 5 specialist agents | Product strategy, systems architecture, design direction, staff engineering, and independent assurance. |
-| 49 skills | Focused expertise for product, engineering, testing, design, media, research, and growth work. |
+| 51 skills | Focused expertise for product, engineering, testing, design, media, research, and growth work. |
 | 17 workflows | Repeatable routes only where state, evidence, rollback, handoff, or approval matter. |
 | 4 profiles | General by default, plus Spatial, Media, and Growth when relevant. |
 | Safe installer | Dry-run, path containment, backup, atomic activation, rollback, and an ownership record. |
 
 The exact inventory is registered in [`global/manifest.yaml`](global/manifest.yaml).
+
+The Spatial pack uses the V5 Creative Constitution and five focused V5 specialists for story, visual-spatial concept, motion, media choreography, and critique. The older cinematic-showroom name remains as a narrow compatibility route.
 
 ## What makes V4 different
 

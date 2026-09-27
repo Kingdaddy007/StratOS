@@ -1,6 +1,6 @@
 # Resource Index
 
-Use this index to select only the reference needed for the current task.
+Use this index only for a named legacy reference or technical question that the V5 skill's current references do not answer. These resources do not choose a project concept.
 
 ## Resources
 
@@ -11,3 +11,6 @@ Use this index to select only the reference needed for the current task.
 - [reference/portfolio-proof-chapters.md](../reference/portfolio-proof-chapters.md): Portfolio Proof Chapters
 - [reference/scene-kit-and-asset-directive.md](../reference/scene-kit-and-asset-directive.md): Scene Kit And the user's Asset Directive
 - [extended-guidance.md](extended-guidance.md): Extended Guidance
+
+- [reference/page-grammar-and-fingerprint.md](../reference/page-grammar-and-fingerprint.md): Prior-site grammar and fingerprint comparison
+- [reference/project-phase-routing.md](../reference/project-phase-routing.md): Direct task versus coordinated project route
