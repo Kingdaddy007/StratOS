@@ -1,6 +1,6 @@
 # Engineering skills: verification and use
 
-Verified 2026-10-06 from the newer StratOS checkout, on local branch `codex/engineering-skills-adoption-20261006`. The older checkout's unrelated changes were preserved. No remote publication, default-branch merge, deployment, dependency installation, or memory update occurred.
+Local adoption verified 2026-10-06 from the newer StratOS checkout, on branch `codex/engineering-skills-adoption-20261006`. This record describes the adoption before its later publication. The older checkout's unrelated changes were preserved. No remote publication, default-branch merge, deployment, dependency installation, or memory update occurred during that adoption.
 
 ## Installed result
 
