@@ -6,6 +6,8 @@ This directory is the canonical source for Anti-Gravity task behavior. Every ski
 
 General engineering is the default. It includes architecture, coding, testing, debugging, security, database, API, DevOps, performance, product, research, review, refactoring, marketing, sales, general UI/UX, and other non-spatial capabilities.
 
+Engineering delivery adds `pr`, `retro`, `implement-spec`, `tdd`, `code-review`, and `writing-for-agents`. `retro` and `implement-spec` require an explicit user request; their Codex UI metadata disables implicit invocation. Use `learn` for broader capability promotion, `testing` for evidence selection, and `review-audit` for risk interpretation. Existing local specs and tracker configuration are sufficient; no upstream setup command is required. Source attribution and adaptation decisions are recorded in [the adoption record](../../docs/engineering-skills-adoption.md).
+
 `ui-ux/SKILL.md` detects product, brand, or spatial register. Product and application work uses its general workflow; spatial references load only when the spatial profile or request is explicit.
 
 ## Spatial profile

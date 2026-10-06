@@ -1,0 +1,6 @@
+interface:
+  display_name: "Implement Specification"
+  short_description: "Build approved dependency-linked tickets on one branch"
+  default_prompt: "Use $implement-spec to implement the approved specification and its tickets."
+policy:
+  allow_implicit_invocation: false

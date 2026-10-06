@@ -497,6 +497,60 @@
       ],
       "functional_owner": "design_direction",
       "delivery_role": "capability"
+    },
+    {
+      "id": "code-review",
+      "path": "global/skills/code-review",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "assurance_quality",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "implement-spec",
+      "path": "global/skills/implement-spec",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "pr",
+      "path": "global/skills/pr",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "retro",
+      "path": "global/skills/retro",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "tdd",
+      "path": "global/skills/tdd",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "staff_engineering",
+      "delivery_role": "procedure"
+    },
+    {
+      "id": "writing-for-agents",
+      "path": "global/skills/writing-for-agents",
+      "profiles": [
+        "general"
+      ],
+      "functional_owner": "studio_support",
+      "delivery_role": "capability"
     }
   ],
   "workflows": [

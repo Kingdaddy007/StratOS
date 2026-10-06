@@ -150,6 +150,37 @@ change authority or force a style. A pack changes discoverability only; it never
 | Coordinate independently owned work | Studio Director + owners | `task-dispatch` only when its independence, ownership, verification, and coordination-benefit gates are met |
 | Maintain this OS | Studio Director + affected owner | `os-maintenance`, `skill-creator`, `context-hygiene`, `learn` |
 
+### Engineering delivery helpers
+
+- Use `implement-spec` only for an explicitly requested implementation of an
+  approved specification and its dependency-linked tickets. Preserve the default
+  branch, dispatch only ready units with exclusive ownership, serialize integration,
+  and verify the combined result. Fall back to sequential work when delegation
+  is unavailable or not useful; tracker configuration does not authorize remote effects.
+- Use `tdd` for requested test-first work, regression repair, or nontrivial
+  `implement-spec` behavior at a stable public boundary. Use `testing` to select
+  evidence; do not force TDD on low-impact no-runtime edits or re-ask decisions
+  already settled by acceptance criteria.
+- Use `code-review` for the concrete Specification and Standards review of a
+  branch, PR, patch, or work in progress. Use `review-audit` for broader risk and
+  evidence interpretation. Pin the actual diff, including uncommitted work when in scope.
+- Use `pr` when writing a requested PR body; describe the final change, observed
+  evidence, impact, and recovery limits. Writing does not authorize publication or merge.
+- Use `retro` only when the user requests a coding-session retrospective. Read
+  session and relevant worker evidence, inspect existing preventive checks, and
+  recommend proportionate environment improvements. Do not auto-run it after a build.
+- Keep `learn` as the broader after-action and capability-promotion route. Use
+  `writing-for-agents` for authorized instruction/pointer improvements and
+  `skill-creator` for skill packaging. Reflection alone never authorizes mutation
+  of hooks, CI, global policy, or memory.
+
+For these helpers, use the host's supported skill-loading mechanism. Read the
+installed skill file when no callable Skill tool exists. Use existing local specs,
+ticket files, and repository tracker instructions; no upstream setup command is
+required. Follow `GLOSSARY-MAP.md` when present and use the relevant `GLOSSARY.md`;
+accept an authoritative legacy domain `CONTEXT.md` during migration. Keep broad
+project truth under `.agents/contexts/`; a glossary is not a replacement for it.
+
 ### Technical loading gate for product framing
 
 A product-framing request is a decision request, not an implementation request.

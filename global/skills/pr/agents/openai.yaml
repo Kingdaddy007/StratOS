@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pull Request Description"
+  short_description: "Write a clear PR body with evidence and merge risk"
+  default_prompt: "Use $pr to draft the PR body from the final change and verified evidence."
