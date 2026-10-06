@@ -25,7 +25,8 @@ class EngineeringSkillsPayloadTests(unittest.TestCase):
         cls.os_cli = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.os_cli)
         cls.temp = tempfile.TemporaryDirectory()
-        cls.root = Path(cls.temp.name)
+        # macOS aliases /var to /private/var; installer fixtures need the real path.
+        cls.root = Path(cls.temp.name).resolve()
         cls.payloads = {
             host: cls.os_cli.build_payload(
                 host, repo_root=REPO_ROOT, output_root=cls.root / "payloads"

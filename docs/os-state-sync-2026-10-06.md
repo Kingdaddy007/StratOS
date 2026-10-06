@@ -22,6 +22,7 @@ The portable manifest's OS release metadata remains `4.0.0`. V5 labels the spati
 - Six static routing fixtures, four build/native-installer packaging tests, and adoption/usage evidence.
 - README inventory correction from 51 to 57 and a link to the engineering usage guide.
 - Two public host-build regression tests restored from the useful profile-scoping intent of the older spatial-sprint test: General excludes the spatial sprint; Spatial includes the complete package on Codex and Anti-Gravity.
+- A portable temporary-directory fixture for native-installer tests: macOS's `/var` alias is resolved before constructing the controlled test home, preserving the installer's symlink protection.
 
 No existing workflow source or functional-agent contract needs replacement. GitHub already contains the V5 Creative Constitution, current spatial skills and private outreach lane, media choreography, design-audit resources, installer improvements, and router-linked shared-reference fix. The pre-existing `review-audit` remains intact; `code-review` is a new focused entry point using its risk guidance.
 
@@ -35,7 +36,7 @@ The repeat-install assertions already match current source. The dedicated older 
 
 Both existing native Full-profile installations were compared with generated payloads and version-controlled canonical skill/workflow resources. All 388 compared authored files matched on each host, as did all 82 Codex and 93 Anti-Gravity managed payload targets. Generated Python caches are excluded from authored-source comparison, matching the builder's packaging rules.
 
-The installed OS therefore already has the intended current source. Publication synchronizes GitHub with it; these documentation/test changes require no new global installation. User-authorized publication targets `main` after verification, using a normal fast-forward push without resetting the older dirty checkout or rewriting remote history.
+The installed OS therefore already has the intended current source. Publication synchronizes GitHub with it; these documentation/test changes require no new global installation. User-authorized publication targets `main` after verification, using a normal pull-request merge without resetting the older dirty checkout or rewriting remote history.
 
 ## Verification limits
 
