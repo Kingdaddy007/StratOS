@@ -85,6 +85,8 @@ Mark all other lessons `candidate` or `project-specific`.
 
 ## REFERENCE LOADING RULES
 
+For a specifically requested coding-session retrospective, use [retro](../retro/SKILL.md) to reconstruct tool and worker evidence and inspect preventive environment improvements. Keep `learn` for broader capability-impact analysis and promotion decisions; do not auto-run `retro` after every task. Use [writing-for-agents](../writing-for-agents/SKILL.md) when authorized changes concern agent-facing instructions. Audit/apply and host memory boundaries still apply.
+
 Load `references/after-action-review.md` for substantial tasks, incomplete context, conflicting recollections, failures, near-misses, or when durable evidence must reconstruct the event.
 
 Load `references/capability-impact-audit.md` whenever the user asks which skill/workflow should change, a new skill is proposed, or audit findings may affect global capability behavior.

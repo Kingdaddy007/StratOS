@@ -1,0 +1,4 @@
+interface:
+  display_name: "Specification and Standards Review"
+  short_description: "Review the requested diff against spec and standards"
+  default_prompt: "Use $code-review to review the actual requested change against its spec and repository standards."

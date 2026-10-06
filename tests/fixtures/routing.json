@@ -378,6 +378,90 @@
       "mode": "propose",
       "maximum_mutation_class": "read_only",
       "approval_required": false
+    },
+    {
+      "id": "engineering-pr",
+      "request": "Write a PR description from the final diff and the checks already run; do not publish it.",
+      "route_kind": "skill",
+      "route": "pr",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "staff_engineering"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "engineering-retro",
+      "request": "/retro: review this coding session and recommend preventive environment improvements without editing.",
+      "route_kind": "skill",
+      "route": "retro",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "studio_support"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "engineering-implement-spec",
+      "request": "/implement-spec: implement this approved local spec and its dependency-linked tickets; preserve main and do not publish.",
+      "route_kind": "skill",
+      "route": "implement-spec",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "staff_engineering"
+      ],
+      "mode": "implement",
+      "maximum_mutation_class": "local_edit",
+      "approval_required": false
+    },
+    {
+      "id": "engineering-tdd",
+      "request": "Implement this approved behavior test-first at the established public interface.",
+      "route_kind": "skill",
+      "route": "tdd",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "staff_engineering"
+      ],
+      "mode": "implement",
+      "maximum_mutation_class": "local_edit",
+      "approval_required": false
+    },
+    {
+      "id": "engineering-code-review",
+      "request": "Review this branch and its uncommitted changes against the supplied local spec and repository standards.",
+      "route_kind": "skill",
+      "route": "code-review",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "assurance_quality"
+      ],
+      "mode": "propose",
+      "maximum_mutation_class": "read_only",
+      "approval_required": false
+    },
+    {
+      "id": "engineering-writing-for-agents",
+      "request": "Improve these approved agent-facing navigation instructions while preserving their authority boundaries.",
+      "route_kind": "skill",
+      "route": "writing-for-agents",
+      "base_profile": "general",
+      "active_packs": [],
+      "functional_leads": [
+        "studio_support"
+      ],
+      "mode": "implement",
+      "maximum_mutation_class": "local_edit",
+      "approval_required": false
     }
   ]
 }

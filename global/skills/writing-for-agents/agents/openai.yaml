@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing for Agents"
+  short_description: "Write clear instructions with conditional pointers"
+  default_prompt: "Use $writing-for-agents to improve these authorized agent-facing instructions."

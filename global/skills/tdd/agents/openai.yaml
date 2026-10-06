@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test-Driven Development"
+  short_description: "Build behavior through public-interface tests"
+  default_prompt: "Use $tdd for a focused red-green-refactor cycle at the approved public boundary."

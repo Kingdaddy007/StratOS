@@ -77,7 +77,7 @@ Publish in the format required by the repo (e.g. `tickets.md` locally or issues 
 Gather the spec, PRD, or conversation context. Review the codebase to understand the current architecture and domain vocabulary.
 
 ### Phase 2 — Contextualize
-Identify the target issue tracker configuration. Respect any ADRs and the glossary in `CONTEXT.md`.
+Identify the target issue tracker configuration from the project contract or supplied ticket file; local Markdown is sufficient. Respect relevant ADRs. Follow `GLOSSARY-MAP.md` to the relevant `GLOSSARY.md` when present; use an existing authoritative legacy domain `CONTEXT.md` during migration. Keep broader project truth in `.agents/contexts/`. Do not rename documents or infer remote publication permission from tracker configuration.
 
 ### Phase 3 — Analyze
 Draft the list of tickets. Group them by category: prefactoring, vertical slices, or expand-contract migration phases.
@@ -101,6 +101,8 @@ Iterate based on feedback.
 Write to the configured tracker:
 - **Local:** Generate a `tickets.md` file in the repo root following the template below.
 - **Remote:** Use API commands to create issues in dependency order, linking them with blocking relationships.
+
+Publish to a remote tracker only when that external effect is authorized. Otherwise return reviewable local ticket content. When the user requests implementation of the approved spec and tickets, use [implement-spec](../implement-spec/SKILL.md); ticket planning alone does not authorize implementation.
 
 ---
 
